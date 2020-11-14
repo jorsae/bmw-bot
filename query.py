@@ -3,6 +3,7 @@ import logging
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
+from RareModel import RareModel
 
 def add_pokemon_catch(pokemon):
     try:
@@ -32,3 +33,22 @@ def get_rare_definition(pokemon):
         return None
     except Exception as e:
         logging.critical(f'get_rare_definition: {e}')
+
+def add_rarity(rarity):
+    print(f'add_rarity: {rarity=}')
+    try:
+        rare_model, created = RareModel.get_or_create(rare_id=1)
+        print(f'{rare_model=}')
+        print(f'{created=}')
+        if rarity == 'legendary':
+            RareModel.update(legendary=RareModel.legendary + 1).where(RareModel.rare_id == 1).execute()
+        elif rarity == 'mythical':
+            RareModel.update(mythical=RareModel.mythical + 1).where(RareModel.rare_id == 1).execute()
+        elif rarity == 'ultra beast':
+            RareModel.update(ultrabeast=RareModel.ultrabeast + 1).where(RareModel.rare_id == 1).execute()
+        elif rarity == 'shiny':
+            RareModel.update(shiny=RareModel.shiny + 1).where(RareModel.rare_id == 1).execute()
+        else:
+            logging.warning(f'add_rarity none matched: {rarity}')
+    except Exception as e:
+        logging.critical(f'add_rarity: {e}')

@@ -9,7 +9,7 @@ async def leaderboard(ctx, bot):
     try:
         query = UserModel.select(UserModel).order_by(UserModel.catches.desc()).limit(10)
         
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top 10 catches!')
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {len(query)} catches!')
         rank = 1
         for user in query:
             discord_user = await bot.fetch_user(user.user_id)

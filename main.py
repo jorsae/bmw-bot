@@ -14,6 +14,7 @@ from BaseModel import BaseModel, database
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
+from RareModel import RareModel
 from settings import Settings
 
 settings = Settings('settings.json')
@@ -30,11 +31,6 @@ async def profile(ctx):
     profile_response = await commands.profile(ctx, bot)
     await ctx.send(embed=profile_response)
 
-@bot.command(name="test", hidden=True)
-async def test(ctx):
-    channel = bot.get_channel(777055535228911666)
-    await ctx.send("test")
-
 @bot.event
 async def on_message(message: discord.Message):
     await bot.wait_until_ready()
@@ -50,19 +46,45 @@ async def on_message(message: discord.Message):
     
     if str(message.author) == constants.POKETWO:
         print(f'[{str(message.author)=}]: {message.content=}')
-        await process_poketwo(message)
+        await process_poketwo(message.content)
 
     await bot.process_commands(message)
 
-async def process_poketwo(message):
-    if 'You caught a level' in message.content:
-        user_id, pokemon = get_userid_pokemon(message.content)
+async def process_poketwo(content):
+    content = content.lower()
+
+    if 'you caught a level' in content:
+        user_id, pokemon = get_userid_pokemon(content)
         
-        channel = bot.get_channel(777055535228911666)
+        # Handle rarity count
         rarity = query.get_rare_definition(pokemon)
-        await channel.send(f'{message.content}\n{bot.get_user(user_id).name} caught: "{pokemon}" Rarity: {rarity}')
+        handle_rarity_count(rarity)
+
+        # Handle shiny count
+        shiny = pokemon_is_shiny(content)
+        if shiny:
+            query.add_rarity('shiny')
+        
         query.add_user_catch(user_id)
         query.add_pokemon_catch(pokemon)
+        
+        # Temporary logging for debugging
+        channel = bot.get_channel(777055535228911666)
+        await channel.send(f'{content}\n{bot.get_user(user_id).name} caught: "{pokemon}" Rarity: {rarity}')
+
+def pokemon_is_shiny(content):
+    if 'these colors seem unusual..' in content:
+        logging.info(f'Found shiny: {content}')
+        return True
+    else:
+        return False
+
+def handle_rarity_count(rarity):
+    if rarity is None:
+        return
+    else:
+        query.add_rarity(rarity.rarity)
+        logging.info(f'Found rarity: {rarity}')
 
 def get_userid_pokemon(content):
     pokemon = constants.GET_POKEMON.search(content)
@@ -70,7 +92,6 @@ def get_userid_pokemon(content):
     user = int(user[2:])
     pokemon = get_from_message(constants.GET_POKEMON, content)
     pokemon = pokemon[2:len(pokemon) - 1]
-    pokemon = pokemon.lower()
     return user, pokemon
 
 def get_from_message(regex, content):
@@ -83,7 +104,7 @@ def get_from_message(regex, content):
             return None
 
 def setup_database():
-    database.create_tables([UserModel, PokemonModel, RareDefinitionModel])
+    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, RareModel])
 
 def build_rares():
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/legendary.txt', 'legendary')
@@ -102,10 +123,15 @@ def setup_logging():
         os.makedirs(logFolder)
     
     logging.basicConfig(filename=f'{logFolder}/{logFile}', level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
-        
+
 if __name__ == '__main__':
     setup_logging()
     setup_database()
     settings.parse_settings()
     build_rares()
-    bot.run(settings.token)
+
+    test_process(""" Congratulations <@!363800759030251530> You caught a level 19 Blacphalon!
+    
+    These colors seem unusual... :sparkles:""")
+
+    # bot.run(settings.token)

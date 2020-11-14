@@ -4,10 +4,10 @@ from BaseModel import BaseModel
 
 class RareModel(BaseModel):
     rare_id = PrimaryKeyField()
-    legendary = IntegerField()
-    Mythical = IntegerField()
-    UltraBeast = IntegerField()
-    Shinies = IntegerField()
+    legendary = IntegerField(default=0)
+    mythical = IntegerField(default=0)
+    ultrabeast = IntegerField(default=0)
+    shiny = IntegerField(default=0)
     
     class Meta:
-        db_table = 'Pokemon'
+        db_table = 'RareCount'
