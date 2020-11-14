@@ -3,6 +3,7 @@ import discord
 import logging
 
 import constants
+import utility
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareModel import RareModel
@@ -69,4 +70,21 @@ def rares():
     except Exception as e:
         logging.critical(f'commands.catch: {e}')
     embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+    return embed
+
+def help(ctx, settings, bot):
+    author = ctx.message.author
+    display_hidden_commands = utility.is_admin(author, settings)
+
+    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+    embed.set_author(name=f'BMW Help')
+    last_command = None
+    for command in bot.walk_commands():
+        command = bot.get_command(str(command))
+        if command is None:
+            continue
+        if command.hidden is False or display_hidden_commands:
+            if last_command != str(command):
+                embed.add_field(name=f'{constants.PREFIX}{command}', value=command.help, inline=False)
+            last_command = str(command)
     return embed
