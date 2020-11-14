@@ -31,6 +31,12 @@ async def profile(ctx):
     profile_response = await commands.profile(ctx, bot)
     await ctx.send(embed=profile_response)
 
+@bot.command(name="catch", help=f'Displays how many times a pokemon has been caught. usage: {constants.PREFIX}catch <pokemon_name>')
+async def catch(ctx, pokemon: str):
+    print(f'main.catch: {pokemon=}')
+    catch_response = commands.catch(pokemon)
+    await ctx.send(embed=catch_response)
+
 @bot.event
 async def on_message(message: discord.Message):
     await bot.wait_until_ready()
