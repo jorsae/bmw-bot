@@ -32,10 +32,12 @@ async def profile(ctx, bot):
         discord_user = await bot.fetch_user(user.user_id)
         
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
+        embed.set_thumbnail(url=ctx.author.avatar_url)
         embed.add_field(name=f'{rank}. {discord_user.name}#{discord_user.discriminator}', value=f'You have {user.catches} catches!', inline=False)
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
+        embed.set_thumbnail(url=ctx.author.avatar_url)
         embed.add_field(name=f'You have not caught any pokémon', value=f'Go catch pokémon!')
         return embed
     except Exception as e:
