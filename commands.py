@@ -17,7 +17,7 @@ async def leaderboard(ctx, bot):
         rank = 1
         for user in query:
             discord_user = await bot.fetch_user(user.user_id)
-            embed.add_field(name=f'{rank}. {discord_user.name}#{discord_user.discriminator}', value=f'{user.catches} catches!', inline=False)
+            embed.add_field(name=f'{rank}. {discord_user.name}#{discord_user.discriminator}', value=f'{user.catches} catches!', inline=True)
             rank += 1
         return embed
     except Exception as e:
