@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
 
 import query
+import commands
 import constants
 from BaseModel import BaseModel, database
 from UserModel import UserModel
@@ -18,6 +19,16 @@ from settings import Settings
 settings = Settings('settings.json')
 bot = discord_commands.Bot(command_prefix=constants.PREFIX)
 bot.remove_command('help')
+
+@bot.command(name="leaderboard", help="Displays the leaderboard")
+async def leaderboard(ctx):
+    leaderboard_response = await commands.leaderboard(ctx, bot)
+    await ctx.send(embed=leaderboard_response)
+
+@bot.command(name="profile", help="Displays your profile")
+async def profile(ctx):
+    profile_response = await commands.profile(ctx, bot)
+    await ctx.send(embed=profile_response)
 
 @bot.command(name="test", hidden=True)
 async def test(ctx):
@@ -45,18 +56,22 @@ async def on_message(message: discord.Message):
 
 async def process_poketwo(message):
     if 'You caught a level' in message.content:
-        pokemon = constants.GET_POKEMON.search(message.content)
-        user = get_from_message(constants.GET_USER, message.content)
-        user = user[2:]
-        pokemon = get_from_message(constants.GET_POKEMON, message.content)
-        pokemon = pokemon[2:len(pokemon) - 1]
-        pokemon = pokemon.lower()
+        user_id, pokemon = get_userid_pokemon(message.content)
         
         channel = bot.get_channel(777055535228911666)
         rarity = query.get_rare_definition(pokemon)
-        await channel.send(f'{message.content}\n{bot.get_user(int(user)).name} caught: "{pokemon}" Rarity: {rarity}')
-        query.add_user_catch(user)
+        await channel.send(f'{message.content}\n{bot.get_user(user_id).name} caught: "{pokemon}" Rarity: {rarity}')
+        query.add_user_catch(user_id)
         query.add_pokemon_catch(pokemon)
+
+def get_userid_pokemon(content):
+    pokemon = constants.GET_POKEMON.search(content)
+    user = get_from_message(constants.GET_USER, content)
+    user = int(user[2:])
+    pokemon = get_from_message(constants.GET_POKEMON, content)
+    pokemon = pokemon[2:len(pokemon) - 1]
+    pokemon = pokemon.lower()
+    return user, pokemon
 
 def get_from_message(regex, content):
         get = regex.search(content)

@@ -1,3 +1,4 @@
+from peewee import *
 import logging
 from UserModel import UserModel
 from PokemonModel import PokemonModel
