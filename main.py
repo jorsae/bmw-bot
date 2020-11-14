@@ -70,7 +70,7 @@ async def process_poketwo(content):
     if 'you caught a level' in content:
         user_id, pokemon = get_userid_pokemon(content)
         if user_id is None or pokemon is None:
-            logging.critical(f'process_poketwo error: user_id: {user_id}, pokemon: {pokemon}. {content=}')
+            logging.critical(f'process_poketwo error: user_id: {user_id}, pokemon: {pokemon}. {content}')
             return
         
         # Handle rarity count
