@@ -129,9 +129,5 @@ if __name__ == '__main__':
     setup_database()
     settings.parse_settings()
     build_rares()
-
-    test_process(""" Congratulations <@!363800759030251530> You caught a level 19 Blacphalon!
     
-    These colors seem unusual... :sparkles:""")
-
-    # bot.run(settings.token)
+    bot.run(settings.token)
