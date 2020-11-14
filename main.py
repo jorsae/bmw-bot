@@ -53,7 +53,8 @@ async def process_poketwo(message):
         pokemon = pokemon.lower()
         
         channel = bot.get_channel(777055535228911666)
-        await channel.send(f'{message.content}\n{bot.get_user(int(user)).name} caught: "{pokemon}"')
+        rarity = query.get_rare_definition(pokemon)
+        await channel.send(f'{message.content}\n{bot.get_user(int(user)).name} caught: "{pokemon}" Rarity: {rarity}')
         query.add_user_catch(user)
         query.add_pokemon_catch(pokemon)
 
@@ -92,4 +93,4 @@ if __name__ == '__main__':
     setup_database()
     settings.parse_settings()
     build_rares()
-    # bot.run(settings.token)
+    bot.run(settings.token)

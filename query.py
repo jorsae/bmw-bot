@@ -22,3 +22,12 @@ def add_rare_definition(pokemon, rarity):
         pokemon, _ = RareDefinitionModel.get_or_create(pokemon=pokemon, rarity=rarity)
     except Exception as e:
         logging.critical(f'add_rare_definition: {e}')
+
+def get_rare_definition(pokemon):
+    try:
+        rarity = RareDefinitionModel.select().where(RareDefinitionModel.pokemon == pokemon).get()
+        return rarity
+    except DoesNotExist:
+        return None
+    except Exception as e:
+        logging.critical(f'get_rare_definition: {e}')
