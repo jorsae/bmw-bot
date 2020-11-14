@@ -12,6 +12,7 @@ import constants
 from BaseModel import BaseModel, database
 from UserModel import UserModel
 from PokemonModel import PokemonModel
+from RareDefinitionModel import RareDefinitionModel
 from settings import Settings
 
 settings = Settings('settings.json')
@@ -47,13 +48,12 @@ async def process_poketwo(message):
         pokemon = constants.GET_POKEMON.search(message.content)
         user = get_from_message(constants.GET_USER, message.content)
         user = user[2:]
-        print(f'{user=}')
         pokemon = get_from_message(constants.GET_POKEMON, message.content)
         pokemon = pokemon[2:len(pokemon) - 1]
         pokemon = pokemon.lower()
-        print(f'{pokemon=}')
+        
         channel = bot.get_channel(777055535228911666)
-        await channel.send(f'{bot.get_user(int(user)).name} caught: "{pokemon}"')
+        await channel.send(f'{message.content}\n{bot.get_user(int(user)).name} caught: "{pokemon}"')
         query.add_user_catch(user)
         query.add_pokemon_catch(pokemon)
 
@@ -67,7 +67,17 @@ def get_from_message(regex, content):
             return None
 
 def setup_database():
-    database.create_tables([UserModel, PokemonModel])
+    database.create_tables([UserModel, PokemonModel, RareDefinitionModel])
+
+def build_rares():
+    add_rares(f'{constants.RARE_DEFINITION_FOLDER}/legendary.txt', 'legendary')
+    add_rares(f'{constants.RARE_DEFINITION_FOLDER}/mythical.txt', 'mythical')
+    add_rares(f'{constants.RARE_DEFINITION_FOLDER}/ultrabeast.txt', 'ultra beast')
+
+def add_rares(file, rarity):
+    for line in open(file, 'r').readlines():
+        line = line.strip()
+        query.add_rare_definition(line, rarity)
 
 def setup_logging():
     logFolder = 'logs'
@@ -81,4 +91,5 @@ if __name__ == '__main__':
     setup_logging()
     setup_database()
     settings.parse_settings()
-    bot.run(settings.token)
+    build_rares()
+    # bot.run(settings.token)

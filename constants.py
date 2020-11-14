@@ -1,5 +1,7 @@
 import re
 
+RARE_DEFINITION_FOLDER = 'RareDefinition'
+
 PREFIX = "."
 DATABASE_FILE = "bmw.db"
 POKETWO = 'Pokétwo#8236'
