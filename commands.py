@@ -1,5 +1,6 @@
 from peewee import *
 import discord
+import string
 import logging
 
 import constants
@@ -35,7 +36,7 @@ async def profile(ctx, bot):
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
-        embed.add_field(name=f'You have not caught any pokemon', value=f'Go catch pokémon!')
+        embed.add_field(name=f'You have not caught any pokémon', value=f'Go catch pokémon!')
         return embed
     except Exception as e:
         logging.critical(f'commands.profile: {e}')
@@ -46,15 +47,13 @@ def catch(pokemon):
     pokemon = pokemon.lower()
     try:
         pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
-        embed = discord.Embed(colour=constants.COLOUR_OK, title=f'{pokemon} has been caught {pokemon.catches} times!')
-        return embed
+        time = 'time' if pokemon.catches <= 1 else 'times'
+        return f'**{string.capwords(pokemon.pokemon)}** has been caught {pokemon.catches} {time}!'
     except DoesNotExist:
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{pokemon} has not yet been caught!')
-        return embed
+        return f'**{pokemon}** has yet to be caught!'
     except Exception as e:
         logging.critical(f'commands.catch: {e}')
-    embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
-    return embed
+    return 'Oops, something went wrong'
 
 def rares():
     try:

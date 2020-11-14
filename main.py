@@ -31,10 +31,10 @@ async def profile(ctx):
     profile_response = await commands.profile(ctx, bot)
     await ctx.send(embed=profile_response)
 
-@bot.command(name="catch", help=f'Displays how many times a pokémon has been caught. usage: {constants.PREFIX}catch <pokemon_name>')
+@bot.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: {constants.PREFIX}catch <pokemon name>')
 async def catch(ctx, pokemon: str):
     catch_response = commands.catch(pokemon)
-    await ctx.send(embed=catch_response)
+    await ctx.send(catch_response)
 
 @bot.command(name="rares", help=f'Displays how many rare pokémon have been caught')
 async def rares(ctx):
