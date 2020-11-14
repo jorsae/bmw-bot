@@ -59,11 +59,11 @@ def rares():
     try:
         rares = RareModel.get(RareModel.rare_id == 1)
         total = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
-        embed = discord.Embed(colour=constants.COLOUR_OK, title="Rare pokémon")
-        embed.add_field(name=f'Legendary: {rares.legendary}\nMythical: {rares.mythical}\nUltra beast: {rares.ultrabeast}\nShiny: {rares.shiny}', value=f'Total: {total} rare pokémon caught.')
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+        embed.add_field(name='Rare pokémon caught', value=f'**Total:** {total}\n**Legendary**: {rares.legendary}\n**Mythical**: {rares.mythical}\n**Ultra beast**: {rares.ultrabeast}\n**Shiny**: {rares.shiny}')
         return embed
     except DoesNotExist:
-        embed = discord.Embed(colour=constants.COLOUR_OK, title="Rare pokémon")
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title="Rare pokémon")
         embed.add_field(name=f'Legendary: 0\nMythical: 0\nUltra beast: 0\nShiny: 0', value=f'Total: 0 rare pokémon caught.')
         return embed
     except Exception as e:
