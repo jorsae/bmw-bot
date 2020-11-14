@@ -84,10 +84,6 @@ async def process_poketwo(content):
         
         query.add_user_catch(user_id)
         query.add_pokemon_catch(pokemon)
-        
-        # Temporary logging for debugging
-        channel = bot.get_channel(777055535228911666)
-        await channel.send(f'{content}\n{bot.get_user(user_id).name} caught: "{pokemon}" Rarity: {rarity}')
 
 def pokemon_is_shiny(content):
     if 'these colors seem unusual..' in content:
