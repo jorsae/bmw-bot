@@ -35,11 +35,9 @@ def get_rare_definition(pokemon):
         logging.critical(f'get_rare_definition: {e}')
 
 def add_rarity(rarity):
-    print(f'add_rarity: {rarity=}')
+    logging.info(f'add_rarity: {rarity}')
     try:
         rare_model, created = RareModel.get_or_create(rare_id=1)
-        print(f'{rare_model=}')
-        print(f'{created=}')
         if rarity == 'legendary':
             RareModel.update(legendary=RareModel.legendary + 1).where(RareModel.rare_id == 1).execute()
         elif rarity == 'mythical':

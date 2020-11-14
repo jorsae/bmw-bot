@@ -31,11 +31,15 @@ async def profile(ctx):
     profile_response = await commands.profile(ctx, bot)
     await ctx.send(embed=profile_response)
 
-@bot.command(name="catch", help=f'Displays how many times a pokemon has been caught. usage: {constants.PREFIX}catch <pokemon_name>')
+@bot.command(name="catch", help=f'Displays how many times a pokémon has been caught. usage: {constants.PREFIX}catch <pokemon_name>')
 async def catch(ctx, pokemon: str):
-    print(f'main.catch: {pokemon=}')
     catch_response = commands.catch(pokemon)
     await ctx.send(embed=catch_response)
+
+@bot.command(name="rares", help=f'Displays how many rare pokémon have been caught')
+async def rares(ctx, args: str="all"):
+    rares_response = commands.rares(args)
+    await ctx.send(embed=rares_response)
 
 @bot.event
 async def on_message(message: discord.Message):
@@ -51,7 +55,6 @@ async def on_message(message: discord.Message):
         logging.info(f'[{str(message.author)}] Command: "{message.content}"')
     
     if str(message.author) == constants.POKETWO:
-        print(f'[{str(message.author)=}]: {message.content=}')
         await process_poketwo(message.content)
 
     await bot.process_commands(message)

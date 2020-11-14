@@ -5,6 +5,7 @@ import logging
 import constants
 from UserModel import UserModel
 from PokemonModel import PokemonModel
+from RareModel import RareModel
 
 async def leaderboard(ctx, bot):
     try:
@@ -45,6 +46,21 @@ def catch(pokemon):
     try:
         pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
         embed = discord.Embed(colour=constants.COLOUR_OK, title=f'{pokemon} has been caught {pokemon.catches} times!')
+        return embed
+    except DoesNotExist:
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{pokemon} has not yet been caught!')
+        return embed
+    except Exception as e:
+        logging.critical(f'commands.catch: {e}')
+    embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+    return embed
+
+def rares(args):
+    try:
+        rares = RareModel.get(RareModel.rare_id == 1)
+        total = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
+        embed = discord.Embed(colour=constants.COLOUR_OK, title="Rare pokémon")
+        embed.add_field(name=f'Legendary: {rares.legendary}\nMythical: {rares.mythical}\nUltra beast: {rares.ultrabeast}\nShiny: {rares.shiny}', value=f'Total: {total} rare pokémon caught.')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{pokemon} has not yet been caught!')
