@@ -37,8 +37,8 @@ async def catch(ctx, pokemon: str):
     await ctx.send(embed=catch_response)
 
 @bot.command(name="rares", help=f'Displays how many rare pokémon have been caught')
-async def rares(ctx, args: str="all"):
-    rares_response = commands.rares(args)
+async def rares(ctx):
+    rares_response = commands.rares()
     await ctx.send(embed=rares_response)
 
 @bot.event

@@ -55,7 +55,7 @@ def catch(pokemon):
     embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
     return embed
 
-def rares(args):
+def rares():
     try:
         rares = RareModel.get(RareModel.rare_id == 1)
         total = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
@@ -63,7 +63,8 @@ def rares(args):
         embed.add_field(name=f'Legendary: {rares.legendary}\nMythical: {rares.mythical}\nUltra beast: {rares.ultrabeast}\nShiny: {rares.shiny}', value=f'Total: {total} rare pokémon caught.')
         return embed
     except DoesNotExist:
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{pokemon} has not yet been caught!')
+        embed = discord.Embed(colour=constants.COLOUR_OK, title="Rare pokémon")
+        embed.add_field(name=f'Legendary: 0\nMythical: 0\nUltra beast: 0\nShiny: 0', value=f'Total: 0 rare pokémon caught.')
         return embed
     except Exception as e:
         logging.critical(f'commands.catch: {e}')
