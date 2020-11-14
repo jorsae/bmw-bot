@@ -3,9 +3,8 @@ import datetime
 from BaseModel import BaseModel
 
 class PokemonModel(BaseModel):
-    pokemon_id = PrimaryKeyField()
-    pokemon = TextField()
-    catches = IntegerField()
+    pokemon = TextField(primary_key=True)
+    catches = IntegerField(default=0)
     
     class Meta:
         db_table = 'Pokemon'

@@ -7,6 +7,7 @@ import logging
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
 
+import query
 import constants
 from BaseModel import BaseModel, database
 from UserModel import UserModel
@@ -49,9 +50,12 @@ async def process_poketwo(message):
         print(f'{user=}')
         pokemon = get_from_message(constants.GET_POKEMON, message.content)
         pokemon = pokemon[2:len(pokemon) - 1]
+        pokemon = pokemon.lower()
         print(f'{pokemon=}')
         channel = bot.get_channel(777055535228911666)
-        await channel.send(f'{bot.get_user(int(user)).name} caught: {pokemon}')
+        await channel.send(f'{bot.get_user(int(user)).name} caught: "{pokemon}"')
+        query.add_user_catch(user)
+        query.add_pokemon_catch(pokemon)
 
 def get_from_message(regex, content):
         get = regex.search(content)

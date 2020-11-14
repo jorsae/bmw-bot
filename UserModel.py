@@ -4,8 +4,6 @@ from BaseModel import BaseModel
 
 class UserModel(BaseModel):
     user_id = PrimaryKeyField()
-    author = TextField()
-    catches = IntegerField()
-    
+    catches = IntegerField(default=0)
     class Meta:
         db_table = 'Users'
