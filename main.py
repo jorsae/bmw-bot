@@ -2,12 +2,15 @@ import discord
 import math
 import asyncio
 import os
+import re
 import logging
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
 
-from BaseModel import BaseModel, database
 import constants
+from BaseModel import BaseModel, database
+from UserModel import UserModel
+from PokemonModel import PokemonModel
 from settings import Settings
 
 settings = Settings('settings.json')
@@ -31,11 +34,36 @@ async def on_message(message: discord.Message):
     )
     if message.content.startswith(constants.PREFIX):
         logging.info(f'[{str(message.author)}] Command: "{message.content}"')
+    
+    if str(message.author) == constants.POKETWO:
+        print(f'[{str(message.author)=}]: {message.content=}')
+        await process_poketwo(message)
 
     await bot.process_commands(message)
 
+async def process_poketwo(message):
+    if 'You caught a level' in message.content:
+        pokemon = constants.GET_POKEMON.search(message.content)
+        user = get_from_message(constants.GET_USER, message.content)
+        user = user[2:]
+        print(f'{user=}')
+        pokemon = get_from_message(constants.GET_POKEMON, message.content)
+        pokemon = pokemon[2:len(pokemon) - 1]
+        print(f'{pokemon=}')
+        channel = bot.get_channel(777055535228911666)
+        await channel.send(f'{bot.get_user(int(user)).name} caught: {pokemon}')
+
+def get_from_message(regex, content):
+        get = regex.search(content)
+        if get:
+            get = get.group(0)
+            return get
+        else:
+            logging.warning(f'Failed to get: {content}')
+            return None
+
 def setup_database():
-    database.create_tables([UserModel])
+    database.create_tables([UserModel, PokemonModel])
 
 def setup_logging():
     logFolder = 'logs'
