@@ -56,6 +56,7 @@ async def on_message(message: discord.Message):
         .replace("‘", "′")
         .replace("’", "′")
     )
+    
     if message.content.startswith(constants.PREFIX):
         logging.info(f'[{str(message.author)}] Command: "{message.content}"')
     
@@ -66,9 +67,11 @@ async def on_message(message: discord.Message):
 
 async def process_poketwo(content):
     content = content.lower()
-
     if 'you caught a level' in content:
         user_id, pokemon = get_userid_pokemon(content)
+        if user_id is None or pokemon is None:
+            logging.critical(f'process_poketwo error: user_id: {user_id}, pokemon: {pokemon}. {content=}')
+            return
         
         # Handle rarity count
         rarity = query.get_rare_definition(pokemon)
@@ -101,21 +104,29 @@ def handle_rarity_count(rarity):
         logging.info(f'Found rarity: {rarity}')
 
 def get_userid_pokemon(content):
-    pokemon = constants.GET_POKEMON.search(content)
     user = get_from_message(constants.GET_USER, content)
-    user = int(user[2:])
-    pokemon = get_from_message(constants.GET_POKEMON, content)
-    pokemon = pokemon[2:len(pokemon) - 1]
+    if user is not None:
+        user = int(user[2:])
+
+    pokemon = constants.GET_POKEMON.search(content)
+    if '♀️' in content:
+        pokemon = 'nidoran:female_sign:'
+    elif '♂️' in content:
+        pokemon = 'nidoran:male_sign:'
+    else:
+        pokemon = get_from_message(constants.GET_POKEMON, content)
+        if pokemon is not None:
+            pokemon = pokemon[2:len(pokemon) - 1]
     return user, pokemon
 
 def get_from_message(regex, content):
-        get = regex.search(content)
-        if get:
-            get = get.group(0)
-            return get
-        else:
-            logging.warning(f'Failed to get: {content}')
-            return None
+    get = regex.search(content)
+    if get:
+        get = get.group(0)
+        return get
+    else:
+        logging.warning(f'Failed to get: {content}')
+        return None
 
 def setup_database():
     database.create_tables([UserModel, PokemonModel, RareDefinitionModel, RareModel])
@@ -135,8 +146,8 @@ def setup_logging():
     logFile = 'BMW.log'
     if not os.path.isdir(logFolder):
         os.makedirs(logFolder)
-    
-    logging.basicConfig(filename=f'{logFolder}/{logFile}', level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
+    handler = logging.FileHandler(filename=f'{logFolder}/{logFile}', encoding='utf-8', mode='a+')
+    logging.basicConfig(handlers=[handler], level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
 
 if __name__ == '__main__':
     setup_logging()
