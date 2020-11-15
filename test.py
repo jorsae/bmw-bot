@@ -1,6 +1,6 @@
 import re
 
-GET_POKEMON = re.compile("\d{1} [\w| |:|\-|′|\.]+!")
+GET_POKEMON = re.compile("\d{1} [\w| |:|\-|′|\.|%]+!")
 
 def p(s):
     print(GET_POKEMON.search(s))
@@ -15,3 +15,6 @@ p('congratulations <@!216077596679602176>! you caught a level 26 Porygon 2! This
 p('congratulations <@!216077596679602176>! you caught a level 26 Porygon-Z! This is your 10th mime jr.!')
 p('congratulations <@!216077596679602176>! you caught a level 26 Type: Null! This is your 10th mime jr.!')
 p('congratulations <@!216077596679602176>! you caught a level 26 Ho-Oh! This is your 10th mime jr.!')
+p('congratulations <@!216077596679602176>! you caught a level 26 10% Zygarde! This is your 10th mime jr.!')
+p('congratulations <@!216077596679602176>! you caught a level 26 50% Zygarde! This is your 10th mime jr.!')
+p('congratulations <@!216077596679602176>! you caught a level 27 Complete Zygarde! This is your 10th mime jr.!')
