@@ -150,7 +150,6 @@ def setup_logging():
 async def change_status():
     caught = await query.get_pokemon_caught()
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{caught} pokémon caught'))
-    await asyncio.sleep(1)
 
 @bot.event
 async def on_ready():
