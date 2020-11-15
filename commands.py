@@ -82,7 +82,7 @@ async def server():
         total_rares = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
 
         percent_rare = round(100 / total_caught * total_rares, 2)
-        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught}\n**Total rare pokémon:** {total_rares}\nPercentage rare pokémon: {percent_rare}%')
+        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught}\n**Total rare pokémon:** {total_rares}\n**Percentage rare pokémon:** {percent_rare}%')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
