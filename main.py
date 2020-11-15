@@ -18,7 +18,7 @@ from RareDefinitionModel import RareDefinitionModel
 from RareModel import RareModel
 from settings import Settings
 
-settings = Settings('settings.json')
+settings = Settings('../settings.json')
 bot = discord_commands.Bot(command_prefix=constants.PREFIX)
 bot.remove_command('help')
 
