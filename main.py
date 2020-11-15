@@ -102,7 +102,7 @@ def handle_rarity_count(rarity):
 def get_userid_pokemon(content):
     user = get_from_message(constants.GET_USER, content)
     if user is not None:
-        user = int(user[2:])
+        user = get_from_message(constants.GET_ALL_NUMBERS, user)
 
     pokemon = constants.GET_POKEMON.search(content)
     if '♀️' in content:

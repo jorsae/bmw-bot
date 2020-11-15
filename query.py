@@ -23,7 +23,7 @@ async def add_user_catch(bot, user_id):
             UserModel.update(catches=UserModel.catches + 1).where(UserModel.user_id == user_id).execute()
             logging.info(f'add_user_catch: Added user: {discord_user.name}#{discord_user.discriminator} | ({user_id})')
     except Exception as e:
-        logging.critical(f'add_user_catch: {e}')
+        logging.critical(f'add_user_catch: {e} | {user_id}')
 
 def add_rare_definition(pokemon, rarity):
     try:
