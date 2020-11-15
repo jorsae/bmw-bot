@@ -51,7 +51,7 @@ def catch(pokemon):
         time = 'time' if pokemon.catches <= 1 else 'times'
         return f'**{string.capwords(pokemon.pokemon)}** has been caught {pokemon.catches} {time}!'
     except DoesNotExist:
-        return f'**{pokemon}** has yet to be caught!'
+        return f'**{string.capwords(pokemon)}** has yet to be caught!'
     except Exception as e:
         logging.critical(f'commands.catch: {e}')
     return 'Oops, something went wrong'

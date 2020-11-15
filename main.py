@@ -21,7 +21,7 @@ settings = Settings('settings.json')
 bot = discord_commands.Bot(command_prefix=constants.PREFIX)
 bot.remove_command('help')
 
-@bot.command(name="leaderboard", help="Displays the leaderboard")
+@bot.command(name="leaderboard", help="Displays the leaderboard for total catches in BMW")
 async def leaderboard(ctx):
     leaderboard_response = await commands.leaderboard(ctx, bot)
     await ctx.send(embed=leaderboard_response)
