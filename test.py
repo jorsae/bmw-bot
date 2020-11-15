@@ -1,7 +1,7 @@
 import re
-GET_USER = re.compile('@!?\d{18}')
+GET_USER = re.compile('@!?\d{17,18}')
 
-a = 'congratulations <@!300744899563618306>! you caught a level 27 gastly!'
+a = '<@!89452245153779712>! '
 b = 'congratulations <@300744899563618306>! you caught a level 27 gastly!'
 
 print(GET_USER.search(a))

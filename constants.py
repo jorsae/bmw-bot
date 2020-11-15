@@ -12,7 +12,7 @@ PREFIX = "."
 DATABASE_FILE = "../bmw.db"
 POKETWO = 'Pokétwo#8236'
 
-GET_USER = re.compile('@!?\d{18}')
+GET_USER = re.compile('@!?\d{17,18}')
 GET_POKEMON = re.compile('\d{1} .[\w| |:|-]+!')
 GET_ALL_NUMBERS = re.compile('\d+')
 
