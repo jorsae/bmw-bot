@@ -12,10 +12,15 @@ def add_pokemon_catch(pokemon):
     except Exception as e:
         logging.critical(f'add_pokemon_catch: {e}')
 
-def add_user_catch(user_id):
+async def add_user_catch(bot, user_id):
     try:
-        user, _ = UserModel.get_or_create(user_id=user_id)
+        user, _ = UserModel.get(user_id=user_id)
         UserModel.update(catches=UserModel.catches + 1).where(UserModel.user_id == user_id).execute()
+    except DoesNotExist:
+        discord_user = await bot.fetch_user(user_id)
+        user, _ = UserModel.get_or_create(user_id=user_id, username=f'{discord_user.name}#{discord_user.discriminator}')
+        UserModel.update(catches=UserModel.catches + 1).where(UserModel.user_id == user_id).execute()
+        logging.info(f'add_user_catch: Added user: {user_id}')
     except Exception as e:
         logging.critical(f'add_user_catch: {e}')
 

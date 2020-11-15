@@ -61,11 +61,11 @@ async def on_message(message: discord.Message):
         logging.info(f'[{str(message.author)}] Command: "{message.content}"')
     
     if str(message.author) == constants.POKETWO:
-        await process_poketwo(message.content)
+        await process_poketwo(bot, message.content)
 
     await bot.process_commands(message)
 
-async def process_poketwo(content):
+async def process_poketwo(bot, content):
     content = content.lower()
     if 'you caught a level' in content:
         user_id, pokemon = get_userid_pokemon(content)
@@ -82,7 +82,7 @@ async def process_poketwo(content):
         if shiny:
             query.add_rarity('shiny')
         
-        query.add_user_catch(user_id)
+        await query.add_user_catch(bot, user_id)
         query.add_pokemon_catch(pokemon)
 
 def pokemon_is_shiny(content):
