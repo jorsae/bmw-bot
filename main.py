@@ -6,6 +6,7 @@ import re
 import logging
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
+from discord.ext import tasks
 
 import query
 import commands
@@ -144,6 +145,16 @@ def setup_logging():
         os.makedirs(logFolder)
     handler = logging.FileHandler(filename=f'{logFolder}/{logFile}', encoding='utf-8', mode='a+')
     logging.basicConfig(handlers=[handler], level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
+
+@tasks.loop(seconds=600, reconnect=True)
+async def change_status():
+    caught = await query.get_pokemon_caught()
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{caught} pokémon caught'))
+    await asyncio.sleep(1)
+
+@bot.event
+async def on_ready():
+        change_status.start()
 
 if __name__ == '__main__':
     setup_logging()

@@ -56,3 +56,10 @@ def add_rarity(rarity):
             logging.warning(f'add_rarity none matched: {rarity}')
     except Exception as e:
         logging.critical(f'add_rarity: {e}')
+
+async def get_pokemon_caught():
+    try:
+        return UserModel.select(fn.SUM(UserModel.catches)).scalar()
+    except Exception as e:
+        logging.critical(f'get_pokemon_caught: {e}')
+        return 0
