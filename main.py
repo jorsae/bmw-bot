@@ -42,15 +42,15 @@ async def rares(ctx):
     rares_response = commands.rares()
     await ctx.send(embed=rares_response)
 
-@bot.command(name='help', help='Displays this help message')
-async def help(ctx):
-    help_embed = commands.help(ctx, settings, bot)
-    await ctx.send(embed=help_embed)
-
 @bot.command(name="server", help='Displays pokémon statistics for BMW')
 async def server(ctx):
     server_response = await commands.server()
     await ctx.send(embed=server_response)
+
+@bot.command(name='help', help='Displays this help message')
+async def help(ctx):
+    help_embed = commands.help(ctx, settings, bot)
+    await ctx.send(embed=help_embed)
 
 @bot.event
 async def on_message(message: discord.Message):
