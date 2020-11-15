@@ -33,7 +33,7 @@ async def profile(ctx):
     await ctx.send(embed=profile_response)
 
 @bot.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: {constants.PREFIX}catch <pokemon name>')
-async def catch(ctx, pokemon: str):
+async def catch(ctx, pokemon: str=None):
     catch_response = commands.catch(pokemon)
     await ctx.send(catch_response)
 

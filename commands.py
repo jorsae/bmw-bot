@@ -46,6 +46,8 @@ async def profile(ctx, bot):
     return embed
 
 def catch(pokemon):
+    if pokemon is None:
+        return f'You need to specify a pokemon'
     pokemon = pokemon.lower()
     try:
         pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
