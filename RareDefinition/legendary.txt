@@ -35,6 +35,8 @@ kyurem
 xerneas
 yveltal
 zygarde
+10% zygarde
+complete zygarde
 type: null
 silvally
 tapu koko
