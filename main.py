@@ -47,6 +47,11 @@ async def help(ctx):
     help_embed = commands.help(ctx, settings, bot)
     await ctx.send(embed=help_embed)
 
+@bot.command(name="server", help='Displays pokémon statistics for BMW')
+async def server(ctx):
+    server_response = await commands.server()
+    await ctx.send(embed=server_response)
+
 @bot.event
 async def on_message(message: discord.Message):
     await bot.wait_until_ready()

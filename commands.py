@@ -4,6 +4,7 @@ import string
 import logging
 
 import constants
+import query
 import utility
 from UserModel import UserModel
 from PokemonModel import PokemonModel
@@ -69,6 +70,26 @@ def rares():
         return embed
     except Exception as e:
         logging.critical(f'commands.catch: {e}')
+    embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+    return embed
+
+async def server():
+    total_caught = await query.get_pokemon_caught()
+    try:
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+
+        rares = RareModel.get(RareModel.rare_id == 1)
+        total_rares = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
+
+        percent_rare = round(100 / total_caught * total_rares, 2)
+        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught}\n**Total rare pokémon:** {total_rares}\nPercentage rare pokémon: {percent_rare}%')
+        return embed
+    except DoesNotExist:
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught}\n**Total rare pokémon:** 0\n**Percentage rare pokémon:** 0%')
+        return embed
+    except Exception as e:
+        logging.critical(f'server: {e}')
     embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
     return embed
 
