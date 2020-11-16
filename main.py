@@ -28,6 +28,7 @@ bot.remove_command('help')
 async def leaderboard(ctx):
     leaderboard_response = await commands.leaderboard(ctx, bot)
     await ctx.send(embed=leaderboard_response)
+"""
 
 @bot.command(name="profile", help="Displays your profile")
 async def profile(ctx):
@@ -48,6 +49,7 @@ async def rares(ctx):
 async def server(ctx):
     server_response = await commands.server()
     await ctx.send(embed=server_response)
+"""
 
 @bot.command(name='help', help='Displays this help message')
 async def help(ctx):
@@ -145,8 +147,9 @@ def setup_logging():
 
 @tasks.loop(seconds=600, reconnect=True)
 async def change_status():
-    caught = await query.get_pokemon_caught()
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{caught:,} pokémon caught'))
+    pass
+    # caught = await query.get_pokemon_caught()
+    # await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{caught:,} pokémon caught'))
 
 @bot.event
 async def on_ready():

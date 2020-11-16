@@ -6,18 +6,20 @@ import logging
 import constants
 import query
 import utility
+from UserStatModel import UserStatModel
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareModel import RareModel
 
 async def leaderboard(ctx, bot):
     try:
-        query = UserModel.select(UserModel).order_by(UserModel.catches.desc()).limit(10)
-        
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top catches!')
+        query = UserStatModel.select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id).group_by(UserStatModel.user_id).order_by("sum").limit(10)
+
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {len(query)} rankings')
         rank = 1
-        for user in query:
-            embed.add_field(name=f'{rank}. {user.username}', value=f'{user.catches:,} catches!', inline=True)
+        for user_stat in query:
+            user = UserModel.get(UserModel.user_id == user_stat.user_id)
+            embed.add_field(name=f'{rank}. {user.username}', value=f'{user_stat.sum} catches!')
             rank += 1
         return embed
     except Exception as e:

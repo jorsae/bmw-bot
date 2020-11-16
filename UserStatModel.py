@@ -5,7 +5,7 @@ from UserModel import UserModel
 
 class UserStatModel(BaseModel):
     userstat_id = PrimaryKeyField()
-    date = DateTimeField(default=datetime.datetime.now().date)
+    date = DateField(default=datetime.datetime.now().date)
     catches = IntegerField(default=0)
     legendary = IntegerField(default=0)
     mythical = IntegerField(default=0)
