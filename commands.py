@@ -67,7 +67,6 @@ def catch(pokemon):
 
 def rares():
     try:
-        total = UserStatModel.select(fn.SUM(UserStatModel.catches)).scalar()
         legendary = UserStatModel.select(fn.SUM(UserStatModel.legendary)).scalar()
         mythical = UserStatModel.select(fn.SUM(UserStatModel.mythical)).scalar()
         ultrabeast = UserStatModel.select(fn.SUM(UserStatModel.ultrabeast)).scalar()
@@ -75,7 +74,7 @@ def rares():
 
         total_rares = legendary + mythical + ultrabeast
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-        embed.add_field(name='Rare pokémon caught', value=f'**Total: **{total}\n**Legendary: **{legendary:,}\n**Mythical: **{mythical:,}\n**Ultra beast: **{ultrabeast:,}\n**Shiny: **{shiny:,}')
+        embed.add_field(name='Rare pokémon caught', value=f'**Total: **{total_rares:,}\n**Legendary: **{legendary:,}\n**Mythical: **{mythical:,}\n**Ultra beast: **{ultrabeast:,}\n**Shiny: **{shiny:,}')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
