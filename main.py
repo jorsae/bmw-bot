@@ -16,7 +16,6 @@ from BaseModel import BaseModel, database
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
-from RareModel import RareModel
 from UserStatModel import UserStatModel
 from settings import Settings
 
@@ -123,7 +122,7 @@ def get_from_message(regex, content):
         return None
 
 def setup_database():
-    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, RareModel, UserStatModel])
+    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel])
 
 def build_rares():
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/legendary.txt', 'legendary')

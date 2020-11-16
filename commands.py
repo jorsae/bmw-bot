@@ -9,7 +9,6 @@ import utility
 from UserStatModel import UserStatModel
 from UserModel import UserModel
 from PokemonModel import PokemonModel
-from RareModel import RareModel
 
 async def leaderboard(ctx, bot):
     try:

@@ -5,7 +5,6 @@ import logging
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
-from RareModel import RareModel
 from UserStatModel import UserStatModel
 
 async def add_pokemon(bot, discord_id, rarity, is_shiny):
@@ -74,23 +73,6 @@ def get_rare_definition(pokemon):
     except Exception as e:
         logging.critical(f'get_rare_definition: {e}')
         return None
-
-def add_rarity(rarity):
-    logging.info(f'add_rarity: {rarity}')
-    try:
-        rare_model, created = RareModel.get_or_create(rare_id=1)
-        if rarity == 'legendary':
-            RareModel.update(legendary=RareModel.legendary + 1).where(RareModel.rare_id == 1).execute()
-        elif rarity == 'mythical':
-            RareModel.update(mythical=RareModel.mythical + 1).where(RareModel.rare_id == 1).execute()
-        elif rarity == 'ultra beast':
-            RareModel.update(ultrabeast=RareModel.ultrabeast + 1).where(RareModel.rare_id == 1).execute()
-        elif rarity == 'shiny':
-            RareModel.update(shiny=RareModel.shiny + 1).where(RareModel.rare_id == 1).execute()
-        else:
-            logging.warning(f'add_rarity none matched: {rarity}')
-    except Exception as e:
-        logging.critical(f'add_rarity: {e}')
 
 async def get_pokemon_caught():
     try:
