@@ -9,6 +9,7 @@ class Settings():
         self.channel_reminder = None
         self.admin = None
         self.token = None
+        self.prefix = constants.DEFAULT_PREFIX
     
     def parse_settings(self):
         try:
@@ -16,6 +17,7 @@ class Settings():
                 data = json.loads(f.read())
             self.token = data.get("token")
             self.admin = data.get("admin")
+            self.prefix = data.get("prefix")
             return True
         except Exception as e:
             logging.critical(f'Failed to parse_settings: {e}')

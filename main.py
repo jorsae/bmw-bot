@@ -20,7 +20,7 @@ from RareModel import RareModel
 from settings import Settings
 
 settings = Settings('../settings.json')
-bot = discord_commands.Bot(command_prefix=constants.PREFIX)
+bot = discord_commands.Bot(command_prefix=constants.DEFAULT_PREFIX)
 bot.remove_command('help')
 
 @bot.command(name="leaderboard", help="Displays the leaderboard for total catches in BMW")
@@ -33,7 +33,7 @@ async def profile(ctx):
     profile_response = await commands.profile(ctx, bot)
     await ctx.send(embed=profile_response)
 
-@bot.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: {constants.PREFIX}catch <pokemon name>')
+@bot.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: {settings.prefix}catch <pokemon name>')
 async def catch(ctx, pokemon: str=None):
     catch_response = commands.catch(pokemon)
     await ctx.send(catch_response)
@@ -64,7 +64,7 @@ async def on_message(message: discord.Message):
         .replace("’", "′")
     )
     
-    if message.content.startswith(constants.PREFIX):
+    if message.content.startswith(settings.prefix):
         logging.info(f'[{str(message.author)}] Command: "{message.content}"')
     
     if str(message.author) == constants.POKETWO:
@@ -165,6 +165,7 @@ if __name__ == '__main__':
     setup_logging()
     setup_database()
     settings.parse_settings()
+    bot.command_prefix = settings.prefix
     build_rares()
     
     bot.run(settings.token)
