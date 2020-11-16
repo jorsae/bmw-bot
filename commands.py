@@ -14,10 +14,10 @@ async def leaderboard(ctx, bot):
     try:
         query = UserModel.select(UserModel).order_by(UserModel.catches.desc()).limit(10)
         
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {len(query)} catches!')
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top catches!')
         rank = 1
         for user in query:
-            embed.add_field(name=f'{rank}. {user.username}', value=f'{user.catches} catches!', inline=True)
+            embed.add_field(name=f'{rank}. {user.username}', value=f'{user.catches:,} catches!', inline=True)
             rank += 1
         return embed
     except Exception as e:
@@ -33,7 +33,7 @@ async def profile(ctx, bot):
         
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
         embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name=f'{rank}. {discord_user.name}#{discord_user.discriminator}', value=f'You have {user.catches} catches!', inline=False)
+        embed.add_field(name=f'{rank}. {discord_user.name}#{discord_user.discriminator}', value=f'You have {user.catches:,} catches!', inline=False)
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
@@ -52,7 +52,7 @@ def catch(pokemon):
     try:
         pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
         time = 'time' if pokemon.catches <= 1 else 'times'
-        return f'**{string.capwords(pokemon.pokemon)}** has been caught {pokemon.catches} {time}!'
+        return f'**{string.capwords(pokemon.pokemon)}** has been caught {pokemon.catches:,} {time}!'
     except DoesNotExist:
         return f'**{string.capwords(pokemon)}** has yet to be caught!'
     except Exception as e:
@@ -64,7 +64,7 @@ def rares():
         rares = RareModel.get(RareModel.rare_id == 1)
         total = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-        embed.add_field(name='Rare pokémon caught', value=f'**Total:** {total}\n**Legendary**: {rares.legendary}\n**Mythical**: {rares.mythical}\n**Ultra beast**: {rares.ultrabeast}\n**Shiny**: {rares.shiny}')
+        embed.add_field(name='Rare pokémon caught', value=f'**Total:** {total}\n**Legendary**: {rares.legendary:,}\n**Mythical**: {rares.mythical:,}\n**Ultra beast**: {rares.ultrabeast:,}\n**Shiny**: {rares.shiny:,}')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
@@ -84,11 +84,11 @@ async def server():
         total_rares = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
 
         percent_rare = round(100 / total_caught * total_rares, 2)
-        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught}\n**Total rare pokémon:** {total_rares}\n**Percentage rare pokémon:** {percent_rare}%')
+        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught:,}\n**Total rare pokémon:** {total_rares:,}\n**Percentage rare pokémon:** {percent_rare}%')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught}\n**Total rare pokémon:** 0\n**Percentage rare pokémon:** 0%')
+        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught:,}\n**Total rare pokémon:** 0\n**Percentage rare pokémon:** 0%')
         return embed
     except Exception as e:
         logging.critical(f'server: {e}')

@@ -11,6 +11,7 @@ from discord.ext import tasks
 import query
 import commands
 import constants
+import utility
 from BaseModel import BaseModel, database
 from UserModel import UserModel
 from PokemonModel import PokemonModel
@@ -154,7 +155,7 @@ def setup_logging():
 @tasks.loop(seconds=600, reconnect=True)
 async def change_status():
     caught = await query.get_pokemon_caught()
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{caught} pokémon caught'))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{caught:,} pokémon caught'))
 
 @bot.event
 async def on_ready():
