@@ -38,13 +38,13 @@ async def profile(ctx):
 async def catch(ctx, pokemon: str=None):
     catch_response = commands.catch(pokemon)
     await ctx.send(catch_response)
-"""
 
 @bot.command(name="rares", help=f'Displays how many rare pokémon have been caught')
 async def rares(ctx):
     rares_response = commands.rares()
     await ctx.send(embed=rares_response)
 
+"""
 @bot.command(name="server", help='Displays pokémon statistics for BMW')
 async def server(ctx):
     server_response = await commands.server()
