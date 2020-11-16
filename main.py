@@ -17,6 +17,7 @@ from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
 from RareModel import RareModel
+from UserStatModel import UserStatModel
 from settings import Settings
 
 settings = Settings('../settings.json')
@@ -75,21 +76,18 @@ async def on_message(message: discord.Message):
 async def process_poketwo(bot, content):
     content = content.lower()
     if 'you caught a level' in content:
-        user_id, pokemon = get_userid_pokemon(content)
-        if user_id is None or pokemon is None:
-            logging.critical(f'process_poketwo error: user_id: {user_id}, pokemon: {pokemon}. {content}')
+        discord_id, pokemon = get_discordid_pokemon(content)
+        if discord_id is None or pokemon is None:
+            logging.critical(f'process_poketwo error: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
             return
         
         # Handle rarity count
         rarity = query.get_rare_definition(pokemon)
-        handle_rarity_count(rarity)
 
         # Handle shiny count
-        shiny = pokemon_is_shiny(content)
-        if shiny:
-            query.add_rarity('shiny')
+        is_shiny = pokemon_is_shiny(content)
         
-        await query.add_user_catch(bot, user_id)
+        await query.add_pokemon(bot, discord_id, rarity, is_shiny)
         query.add_pokemon_catch(pokemon)
 
 def pokemon_is_shiny(content):
@@ -99,14 +97,7 @@ def pokemon_is_shiny(content):
     else:
         return False
 
-def handle_rarity_count(rarity):
-    if rarity is None:
-        return
-    else:
-        query.add_rarity(rarity.rarity)
-        logging.info(f'Found rarity: {rarity}')
-
-def get_userid_pokemon(content):
+def get_discordid_pokemon(content):
     user = get_from_message(constants.GET_USER, content)
     if user is not None:
         user = get_from_message(constants.GET_ALL_NUMBERS, user)
@@ -132,7 +123,7 @@ def get_from_message(regex, content):
         return None
 
 def setup_database():
-    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, RareModel])
+    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, RareModel, UserStatModel])
 
 def build_rares():
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/legendary.txt', 'legendary')

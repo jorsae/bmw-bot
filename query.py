@@ -1,9 +1,43 @@
 from peewee import *
+from datetime import datetime
 import logging
+
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
 from RareModel import RareModel
+from UserStatModel import UserStatModel
+
+async def add_pokemon(bot, discord_id, rarity, is_shiny):
+    today = datetime.now().date()
+    try:
+        # Ensure User is in database
+        discord_user = await bot.fetch_user(discord_id)
+        user, _ = UserModel.get_or_create(discord_id=discord_id, username=f'{discord_user.name}#{discord_user.discriminator}')
+
+        # Ensure UserStatModel object exist for user today
+        userstat, _ = UserStatModel.get_or_create(date=today, user_id=user.user_id)
+        
+        # Check if we need to add rarity or shiny
+        legendary_count, mythical_count, ultrabeast_count = 0, 0, 0
+        if rarity is not None:
+            if rarity.rarity == 'legendary':
+                legendary_count = 1
+            elif rarity.rarity == 'mythical':
+                mythical_count = 1
+            elif rarity.rarity == 'ultra beast':
+                ultrabeast_count = 1
+        shiny_count = 1 if is_shiny else 0
+
+        UserStatModel.update(catches=UserStatModel.catches + 1, legendary=UserStatModel.legendary + legendary_count, 
+                            mythical=UserStatModel.mythical + mythical_count,
+                            ultrabeast=UserStatModel.ultrabeast + ultrabeast_count,
+                            shiny=UserStatModel.shiny + shiny_count).where(
+                                (UserStatModel.user_id == user.user_id) &
+                                (UserStatModel.date == today)
+                            ).execute()
+    except Exception as e:
+        logging.critical(f'add_pokemon: {e}')
 
 def add_pokemon_catch(pokemon):
     try:
@@ -39,6 +73,7 @@ def get_rare_definition(pokemon):
         return None
     except Exception as e:
         logging.critical(f'get_rare_definition: {e}')
+        return None
 
 def add_rarity(rarity):
     logging.info(f'add_rarity: {rarity}')
