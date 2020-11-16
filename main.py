@@ -112,9 +112,9 @@ def get_userid_pokemon(content):
 
     pokemon = constants.GET_POKEMON.search(content)
     if '♀️' in content:
-        pokemon = 'nidoran:female_sign:'
+        pokemon = 'nidoran-f'
     elif '♂️' in content:
-        pokemon = 'nidoran:male_sign:'
+        pokemon = 'nidoran-m'
     else:
         pokemon = get_from_message(constants.GET_POKEMON, content)
         if pokemon is not None:
