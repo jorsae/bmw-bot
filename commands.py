@@ -75,7 +75,7 @@ def rares():
 
         total_rares = legendary + mythical + ultrabeast
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-        embed.add_field(name='Rare pokémon caught', value=f'**Total:** {total}\n**Legendary**: {legendary:,}\n**Mythical**: {mythical:,}\n**Ultra beast**: {ultrabeast:,}\n**Shiny**: {shiny:,}\n**Shiny: **{shiny:,}')
+        embed.add_field(name='Rare pokémon caught', value=f'**Total: **{total}\n**Legendary: **{legendary:,}\n**Mythical: **{mythical:,}\n**Ultra beast: **{ultrabeast:,}\n**Shiny: **{shiny:,}\n**Shiny: **{shiny:,}')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
@@ -89,17 +89,21 @@ def rares():
 async def server():
     total_caught = await query.get_pokemon_caught()
     try:
+        legendary = UserStatModel.select(fn.SUM(UserStatModel.legendary)).scalar()
+        mythical = UserStatModel.select(fn.SUM(UserStatModel.mythical)).scalar()
+        ultrabeast = UserStatModel.select(fn.SUM(UserStatModel.ultrabeast)).scalar()
+        shiny = UserStatModel.select(fn.SUM(UserStatModel.shiny)).scalar()
+
+        total_rares = legendary + mythical + ultrabeast
+
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-
-        rares = RareModel.get(RareModel.rare_id == 1)
-        total_rares = rares.legendary + rares.mythical + rares.ultrabeast + rares.shiny
-
         percent_rare = round(100 / total_caught * total_rares, 2)
-        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught:,}\n**Total rare pokémon:** {total_rares:,}\n**Percentage rare pokémon:** {percent_rare}%')
+        percent_shiny = round(100 / total_caught * shiny, 2)
+        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught: **{total_caught:,}\n**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught:,}\n**Total rare pokémon:** 0\n**Percentage rare pokémon:** 0%')
+        embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught:,}\n**Total rare pokémon:** 0\n**Percentage rare pokémon:** 0%\n**Total shiny pokémon: **0\n**Percentage shiny pokémon **0%')
         return embed
     except Exception as e:
         logging.critical(f'server: {e}')

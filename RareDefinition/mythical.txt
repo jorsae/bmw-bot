@@ -2,7 +2,7 @@ celebi
 jirachi
 deoxys
 attack deoxys
-defense dexoys
+defense deoxys
 speed deoxys
 phione
 manaphy

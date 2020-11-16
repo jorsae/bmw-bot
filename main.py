@@ -44,12 +44,10 @@ async def rares(ctx):
     rares_response = commands.rares()
     await ctx.send(embed=rares_response)
 
-"""
 @bot.command(name="server", help='Displays pokémon statistics for BMW')
 async def server(ctx):
     server_response = await commands.server()
     await ctx.send(embed=server_response)
-"""
 
 @bot.command(name='help', help='Displays this help message')
 async def help(ctx):
@@ -147,9 +145,8 @@ def setup_logging():
 
 @tasks.loop(seconds=600, reconnect=True)
 async def change_status():
-    pass
-    # caught = await query.get_pokemon_caught()
-    # await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{caught:,} pokémon caught'))
+    total_caught = await query.get_pokemon_caught()
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{total_caught:,} pokémon caught'))
 
 @bot.event
 async def on_ready():

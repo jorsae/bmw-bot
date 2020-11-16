@@ -94,7 +94,7 @@ def add_rarity(rarity):
 
 async def get_pokemon_caught():
     try:
-        return UserModel.select(fn.SUM(UserModel.catches)).scalar()
+        return UserStatModel.select(fn.SUM(UserStatModel.catches)).scalar()
     except Exception as e:
         logging.critical(f'get_pokemon_caught: {e}')
         return 0
