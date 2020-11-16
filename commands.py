@@ -75,7 +75,7 @@ def rares():
 
         total_rares = legendary + mythical + ultrabeast
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-        embed.add_field(name='Rare pokémon caught', value=f'**Total: **{total}\n**Legendary: **{legendary:,}\n**Mythical: **{mythical:,}\n**Ultra beast: **{ultrabeast:,}\n**Shiny: **{shiny:,}\n**Shiny: **{shiny:,}')
+        embed.add_field(name='Rare pokémon caught', value=f'**Total: **{total}\n**Legendary: **{legendary:,}\n**Mythical: **{mythical:,}\n**Ultra beast: **{ultrabeast:,}\n**Shiny: **{shiny:,}')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
