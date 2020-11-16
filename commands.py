@@ -13,13 +13,17 @@ from RareModel import RareModel
 
 async def leaderboard(ctx, bot):
     try:
-        query = UserStatModel.select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id).group_by(UserStatModel.user_id).order_by("sum").limit(10)
+        query = (UserStatModel
+                .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
+                .group_by(UserStatModel.user_id)
+                .order_by(fn.SUM(UserStatModel.catches).desc())
+                .limit(10))
 
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {len(query)} rankings')
         rank = 1
         for user_stat in query:
             user = UserModel.get(UserModel.user_id == user_stat.user_id)
-            embed.add_field(name=f'{rank}. {user.username}', value=f'{user_stat.sum} catches!')
+            embed.add_field(name=f'{rank}. {user.username}', value=f'{user_stat.sum:,} catches!')
             rank += 1
         return embed
     except Exception as e:
@@ -29,13 +33,13 @@ async def leaderboard(ctx, bot):
 
 async def profile(ctx, bot):
     try:
-        user = UserModel.get(UserModel.user_id == ctx.author.id)
-        rank = UserModel.select().where(UserModel.catches > user.catches).count() + 1
-        discord_user = await bot.fetch_user(user.user_id)
+        user = UserModel.get(UserModel.discord_id == ctx.author.id)
+        catches = UserStatModel.select(fn.SUM(UserStatModel.catches).alias("sum")).where(UserStatModel.user_id == user.user_id).scalar()
+        rank = UserStatModel.select().group_by(UserStatModel.user_id).having(fn.SUM(UserStatModel.catches) > catches).count() + 1
         
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
         embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name=f'{rank}. {discord_user.name}#{discord_user.discriminator}', value=f'You have {user.catches:,} catches!', inline=False)
+        embed.add_field(name=f'{rank}. {user.username}', value=f'You have {catches:,} catches!', inline=False)
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')

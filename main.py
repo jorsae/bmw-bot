@@ -28,13 +28,13 @@ bot.remove_command('help')
 async def leaderboard(ctx):
     leaderboard_response = await commands.leaderboard(ctx, bot)
     await ctx.send(embed=leaderboard_response)
-"""
 
 @bot.command(name="profile", help="Displays your profile")
 async def profile(ctx):
     profile_response = await commands.profile(ctx, bot)
     await ctx.send(embed=profile_response)
 
+"""
 @bot.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: {settings.prefix}catch <pokemon name>')
 async def catch(ctx, pokemon: str=None):
     catch_response = commands.catch(pokemon)
