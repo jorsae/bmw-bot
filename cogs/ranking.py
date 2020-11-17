@@ -5,9 +5,11 @@ from datetime import datetime
 import asyncio
 import logging
 
+
 import constants
 import utility
 import query
+from titles import HallOfFame
 from UserStatModel import UserStatModel
 from UserModel import UserModel
 from PokemonModel import PokemonModel
@@ -84,7 +86,6 @@ class Ranking(commands.Cog):
                     .count()) + 1
             
             titles = query.get_hof_titles(user.user_id)
-            print(f'{titles=}')
 
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
             embed.set_thumbnail(url=ctx.author.avatar_url)
@@ -153,29 +154,28 @@ class Ranking(commands.Cog):
     @commands.command(name='hof', help=f'Hall of fame!')
     async def hof(self, ctx):
         try:
-            val = ''
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title='Hall of Fame')
+
             max_catches = query.get_max_from_userstatmodel(UserStatModel.catches)
-            max_catches_user = query.get_user_by_userid(max_catches.user_id)
-            val += f'Catches - **{max_catches_user.username}**: {max_catches.catches}\n'
-
+            name, value = utility.get_text_from_hof(max_catches, 'Most catches')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.catches)} {name}', value=f'{value}')
+            
             max_legendary = query.get_max_from_userstatmodel(UserStatModel.legendary)
-            max_legendary_user = query.get_user_by_userid(max_legendary.user_id)
-            val += f'Legendary - **{max_legendary_user.username}**: {max_legendary.legendary}\n'
-
+            name, value = utility.get_text_from_hof(max_legendary, 'Legendary')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.legendary)} {name}', value=f'{value}')
+            
             max_mythical = query.get_max_from_userstatmodel(UserStatModel.mythical)
-            max_mythical_user = query.get_user_by_userid(max_mythical.user_id)
-            val += f'Mythical - **{max_mythical_user.username}**: {max_mythical.mythical}\n'
+            name, value = utility.get_text_from_hof(max_mythical, 'Mythical')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.mythical)} {name}', value=f'{value}')
 
             max_ultrabeast = query.get_max_from_userstatmodel(UserStatModel.ultrabeast)
-            max_ultrabeast_user = query.get_user_by_userid(max_ultrabeast.user_id)
-            val += f'Ultra beast - **{max_ultrabeast_user.username}**: {max_ultrabeast.ultrabeast}\n'
+            name, value = utility.get_text_from_hof(max_ultrabeast, 'Ultra Beast')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.ultrabeast)} {name}', value=f'{value}')
 
             max_shiny = query.get_max_from_userstatmodel(UserStatModel.shiny)
-            max_shiny_user = query.get_user_by_userid(max_shiny.user_id)
-            val += f'Shiny - **{max_shiny_user.username}**: {max_shiny.shiny}'
+            name, value = utility.get_text_from_hof(max_shiny, 'Shiny')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.shiny)} {name}', value=f'{value}')
             
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title='Hall of Fame')
-            embed.add_field(name='Most in a single day!', value=val)
             await ctx.send(embed=embed)
         except Exception as e:
             logging.critical(f'commands.hof: {e}')

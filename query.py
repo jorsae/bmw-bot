@@ -1,8 +1,9 @@
 from peewee import *
 from datetime import datetime, date
 import logging
-from titles import HallOfFame
 
+import utility
+from titles import HallOfFame
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
@@ -62,20 +63,23 @@ async def add_user_catch(bot, user_id):
 def get_hof_titles(user_id):
     titles = []
     catches = get_max_from_userstatmodel(UserStatModel.catches)
-    legendary = get_max_from_userstatmodel(UserStatModel.legendary)
-    mythical = get_max_from_userstatmodel(UserStatModel.mythical)
-    ultrabeast = get_max_from_userstatmodel(UserStatModel.ultrabeast)
-    shiny = get_max_from_userstatmodel(UserStatModel.shiny)
-    
-    if catches.user_id.user_id == user_id:
+    if utility.get_userid_in_max_statmodel(user_id, catches):
         titles.append(HallOfFame.catches)
-    if legendary.user_id.user_id == user_id:
+
+    legendary = get_max_from_userstatmodel(UserStatModel.legendary)
+    if utility.get_userid_in_max_statmodel(user_id, legendary):
         titles.append(HallOfFame.legendary)
-    if mythical.user_id.user_id == user_id:
+
+    mythical = get_max_from_userstatmodel(UserStatModel.mythical)
+    if utility.get_userid_in_max_statmodel(user_id, mythical):
         titles.append(HallOfFame.mythical)
-    if ultrabeast.user_id.user_id == user_id:
+
+    ultrabeast = get_max_from_userstatmodel(UserStatModel.ultrabeast)
+    if utility.get_userid_in_max_statmodel(user_id, ultrabeast):
         titles.append(HallOfFame.ultrabeast)
-    if shiny.user_id.user_id == user_id:
+
+    shiny = get_max_from_userstatmodel(UserStatModel.shiny)
+    if utility.get_userid_in_max_statmodel(user_id, shiny):
         titles.append(HallOfFame.shiny)
     return titles
 
@@ -88,7 +92,7 @@ def get_max_from_userstatmodel(attribute):
     subquery = UserStatModel.select(fn.MAX(attribute))
     return (UserStatModel
             .select()
-            .where(attribute == subquery)).get()
+            .where(attribute == subquery))
 
 # Gets <amount> catches, after <after_date> on page: <page>
 def get_top_catches_desc(amount, page, after_date):
