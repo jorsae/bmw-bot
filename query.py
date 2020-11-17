@@ -36,7 +36,7 @@ async def add_pokemon(bot, discord_id, rarity, is_shiny):
                                 (UserStatModel.date == today)
                             ).execute()
     except Exception as e:
-        logging.critical(f'add_pokemon: {e}')
+        logging.critical(f'add_pokemon: {e} | discord_id: {discord_id}, rarity: {rarity}, is_shiny: {is_shiny}')
 
 def add_pokemon_catch(pokemon):
     try:
