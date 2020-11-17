@@ -74,14 +74,14 @@ def get_rare_definition(pokemon):
         logging.critical(f'get_rare_definition: {e}')
         return None
 
-async def get_pokemon_caught(this_month=True):
+async def get_pokemon_caught(alltime=False):
     try:
-        if this_month:
+        if alltime:
+            return UserStatModel.select(fn.SUM(UserStatModel.catches)).scalar()
+        else:
             now = datetime.now()
             this_month = date(now.year, now.month, 1)
             return UserStatModel.select(fn.SUM(UserStatModel.catches)).where(UserStatModel.date >= this_month).scalar()
-        else:
-            return UserStatModel.select(fn.SUM(UserStatModel.catches)).scalar()
     except Exception as e:
         logging.critical(f'get_pokemon_caught: {e}')
         return 0
