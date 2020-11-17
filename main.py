@@ -33,7 +33,6 @@ async def on_message(message: discord.Message):
         .replace("‘", "′")
         .replace("’", "′")
     )
-    
     if message.content.startswith(settings.prefix):
         logging.info(f'[{str(message.author)}] Command: "{message.content}"')
     

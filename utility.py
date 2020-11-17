@@ -1,5 +1,19 @@
 from datetime import datetime, date
+from titles import HallOfFame
 
+# returns emote for the given HallOfFame title
+def get_hof_emote(title):
+    if title == HallOfFame.catches:
+        return '<:BMW:767973944857985114>'
+    if title == HallOfFame.legendary:
+        return ':leg:'
+    if title == HallOfFame.mythical:
+        return ':a:'
+    if title == HallOfFame.ultrabeast:
+        return ':cow:'
+    if title == HallOfFame.shiny:
+        return ':sparkles:'
+    
 # returns true if the user is an admin. False otherwise
 def is_admin(author, settings):
     if type(author) == str:

@@ -1,6 +1,7 @@
 from peewee import *
 from datetime import datetime, date
 import logging
+from titles import HallOfFame
 
 from UserModel import UserModel
 from PokemonModel import PokemonModel
@@ -57,6 +58,26 @@ async def add_user_catch(bot, user_id):
             logging.info(f'add_user_catch: Added user: {discord_user.name}#{discord_user.discriminator} | ({user_id})')
     except Exception as e:
         logging.critical(f'add_user_catch: {e} | {user_id}')
+
+def get_hof_titles(user_id):
+    titles = []
+    catches = get_max_from_userstatmodel(UserStatModel.catches)
+    legendary = get_max_from_userstatmodel(UserStatModel.legendary)
+    mythical = get_max_from_userstatmodel(UserStatModel.mythical)
+    ultrabeast = get_max_from_userstatmodel(UserStatModel.ultrabeast)
+    shiny = get_max_from_userstatmodel(UserStatModel.shiny)
+    
+    if catches.user_id.user_id == user_id:
+        titles.append(HallOfFame.catches)
+    if legendary.user_id.user_id == user_id:
+        titles.append(HallOfFame.legendary)
+    if mythical.user_id.user_id == user_id:
+        titles.append(HallOfFame.mythical)
+    if ultrabeast.user_id.user_id == user_id:
+        titles.append(HallOfFame.ultrabeast)
+    if shiny.user_id.user_id == user_id:
+        titles.append(HallOfFame.shiny)
+    return titles
 
 # Get UserModel by user_id
 def get_user_by_userid(user_id):

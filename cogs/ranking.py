@@ -83,9 +83,16 @@ class Ranking(commands.Cog):
                     .having(fn.SUM(UserStatModel.catches) > catches)
                     .count()) + 1
             
+            titles = query.get_hof_titles(user.user_id)
+            print(f'{titles=}')
+
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
             embed.set_thumbnail(url=ctx.author.avatar_url)
-            embed.add_field(name=f'{rank}. {user.username}', value=f'You have {catches:,} catches!', inline=False)
+            embed.add_field(name=f'{rank}. {user.username}', value=f'You have {catches:,} catches!')
+            medals = ''
+            for title in titles:
+                medals += f'{utility.get_hof_emote(title)} '
+            embed.add_field(name=f'Medals', value=f'{medals}')
             await ctx.send(embed=embed)
         except DoesNotExist:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
