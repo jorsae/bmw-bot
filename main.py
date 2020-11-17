@@ -24,27 +24,11 @@ settings = Settings('../settings.json')
 bot = discord_commands.Bot(command_prefix=constants.DEFAULT_PREFIX)
 bot.remove_command('help')
 
-@bot.command(name="profile", help="Displays your profile")
-async def profile(ctx):
-    profile_response = await commands.profile(ctx, bot)
-    await ctx.send(embed=profile_response)
-
 @bot.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: {settings.prefix}catch <pokemon name>')
 async def catch(ctx, pokemon: str=None):
     catch_response = commands.catch(pokemon)
     await ctx.send(catch_response)
 
-@bot.command(name="rares", help=f'Displays how many rare pokémon have been caught')
-async def rares(ctx):
-    rares_response = commands.rares()
-    await ctx.send(embed=rares_response)
-
-@bot.command(name="server", help='Displays pokémon statistics for BMW')
-async def server(ctx):
-    server_response = await commands.server()
-    await ctx.send(embed=server_response)
-
-@flags.add_flag("--all", action="store_true")
 @bot.command(name='help', help='Displays this help message')
 async def help(ctx):
     help_embed = commands.help(ctx, settings, bot)
