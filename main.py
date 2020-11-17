@@ -86,6 +86,7 @@ async def process_poketwo(bot, content):
         # Handle shiny count
         is_shiny = pokemon_is_shiny(content)
         
+        logging.info(f'proess_poketwo: {discord_id}')
         await query.add_pokemon(bot, discord_id, rarity, is_shiny)
         query.add_pokemon_catch(pokemon)
 
