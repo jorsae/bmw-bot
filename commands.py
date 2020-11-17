@@ -14,8 +14,6 @@ from PokemonModel import PokemonModel
 async def leaderboard(ctx, bot, page):
     try:
         current_page = page
-        def check(reaction, user):
-            return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
 
         query = (UserStatModel
                 .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
@@ -26,6 +24,13 @@ async def leaderboard(ctx, bot, page):
         message = await ctx.send(embed=create_leaderboard_embed(query, page))
         await message.add_reaction("◀️")
         await message.add_reaction("▶️")
+        
+        def check(reaction, user):
+            if reaction.message.id == message.id:
+                return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+            else:
+                return False
+        
         while True:
             reaction, user = await bot.wait_for("reaction_add", timeout=60, check=check)
             if str(reaction.emoji) == "▶️":
