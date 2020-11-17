@@ -154,7 +154,7 @@ class Ranking(commands.Cog):
     @commands.command(name='hof', help=f'Hall of fame!')
     async def hof(self, ctx):
         try:
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title='Hall of Fame')
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title='Hall of Fame [daily records]')
             
             catches = UserStatModel.select(fn.MAX(UserStatModel.catches)).scalar()
             legendary = UserStatModel.select(fn.MAX(UserStatModel.legendary)).scalar()
@@ -164,23 +164,23 @@ class Ranking(commands.Cog):
 
             max_catches = query.get_max_from_userstatmodel(UserStatModel.catches)
             name = utility.get_text_from_hof(max_catches)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.catches)} Most catches: {catches}', value=f'{name}')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.catches)} Most catches: {catches:,}', value=f'{name}', inline=False)
             
             max_legendary = query.get_max_from_userstatmodel(UserStatModel.legendary)
             name = utility.get_text_from_hof(max_legendary)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.legendary)} Legendary: {legendary}', value=f'{name}')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.legendary)} Legendary: {legendary}', value=f'{name}', inline=False)
             
             max_mythical = query.get_max_from_userstatmodel(UserStatModel.mythical)
             name = utility.get_text_from_hof(max_mythical)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.mythical)} Mythical: {mythical}', value=f'{name}')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.mythical)} Mythical: {mythical}', value=f'{name}', inline=False)
 
             max_ultrabeast = query.get_max_from_userstatmodel(UserStatModel.ultrabeast)
             name = utility.get_text_from_hof(max_ultrabeast)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.ultrabeast)} Ultra Beast: {ultrabeast}', value=f'{name}')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.ultrabeast)} Ultra Beast: {ultrabeast}', value=f'{name}', inline=False)
 
             max_shiny = query.get_max_from_userstatmodel(UserStatModel.shiny)
             name = utility.get_text_from_hof(max_shiny)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.shiny)} Shiny: {shiny}', value=f'{name}')
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.shiny)} Shiny: {shiny}', value=f'{name}', inline=False)
             
             await ctx.send(embed=embed)
         except Exception as e:
