@@ -30,14 +30,9 @@ class Ranking(commands.Cog):
         try:
             current_page = page
 
-            query = (UserStatModel
-                    .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
-                    .where(UserStatModel.date >= date)
-                    .group_by(UserStatModel.user_id)
-                    .order_by(fn.SUM(UserStatModel.catches).desc())
-                    .limit(10)).paginate(page, 10)
+            top_catches = query.get_top_catches_desc(10, current_page, date)
 
-            message = await ctx.send(embed=self.create_leaderboard_embed(query, page))
+            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, page))
             await message.add_reaction("◀️")
             await message.add_reaction("▶️")
             
@@ -53,12 +48,8 @@ class Ranking(commands.Cog):
                     current_page += 1
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
-                query = (UserStatModel
-                        .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
-                        .group_by(UserStatModel.user_id)
-                        .order_by(fn.SUM(UserStatModel.catches).desc())
-                        .limit(10)).paginate(current_page, 10)
-                await message.edit(embed=self.create_leaderboard_embed(query, current_page))
+                top_catches = query.get_top_catches_desc(10, current_page, date)
+                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page))
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:
             pass

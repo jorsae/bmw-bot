@@ -58,12 +58,23 @@ async def add_user_catch(bot, user_id):
     except Exception as e:
         logging.critical(f'add_user_catch: {e} | {user_id}')
 
+# Gets <amount> catches, after <after_date> on page: <page>
+def get_top_catches_desc(amount, page, after_date):
+    return (UserStatModel
+            .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
+            .where(UserStatModel.date >= after_date)
+            .group_by(UserStatModel.user_id)
+            .order_by(fn.SUM(UserStatModel.catches).desc())
+            .limit(amount)).paginate(page, 10)
+
+# Adds a pokemon to the rarity definition
 def add_rare_definition(pokemon, rarity):
     try:
         pokemon, _ = RareDefinitionModel.get_or_create(pokemon=pokemon, rarity=rarity)
     except Exception as e:
         logging.critical(f'add_rare_definition: {e}')
 
+# Gets the rarity description for a given pokemon. e.g: legendary, mythical
 def get_rare_definition(pokemon):
     try:
         rarity = RareDefinitionModel.select().where(RareDefinitionModel.pokemon == pokemon).get()
@@ -74,6 +85,7 @@ def get_rare_definition(pokemon):
         logging.critical(f'get_rare_definition: {e}')
         return None
 
+# Returns count of all pokemon caught
 async def get_pokemon_caught(alltime=False):
     try:
         if alltime:
