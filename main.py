@@ -9,7 +9,6 @@ from discord.ext import commands as discord_commands
 from discord.ext import tasks, flags
 
 import query
-import commands
 import constants
 import utility
 from BaseModel import BaseModel, database
@@ -23,16 +22,6 @@ import cogs
 settings = Settings('../settings.json')
 bot = discord_commands.Bot(command_prefix=constants.DEFAULT_PREFIX)
 bot.remove_command('help')
-
-@bot.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: {settings.prefix}catch <pokemon name>')
-async def catch(ctx, pokemon: str=None):
-    catch_response = commands.catch(pokemon)
-    await ctx.send(catch_response)
-
-@bot.command(name='help', help='Displays this help message')
-async def help(ctx):
-    help_embed = commands.help(ctx, settings, bot)
-    await ctx.send(embed=help_embed)
 
 @bot.event
 async def on_message(message: discord.Message):
@@ -141,5 +130,6 @@ if __name__ == '__main__':
     build_rares()
 
     bot.add_cog(cogs.Ranking(bot, settings))
+    bot.add_cog(cogs.Utility(bot, settings))
     
     bot.run(settings.token)
