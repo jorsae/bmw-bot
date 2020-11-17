@@ -2,6 +2,7 @@ from peewee import *
 import discord
 import string
 import logging
+import asyncio
 
 import constants
 import query
@@ -38,10 +39,12 @@ async def leaderboard(ctx, bot, page):
                     .limit(10)).paginate(current_page, 10)
             await message.edit(embed=create_leaderboard_embed(query, current_page))
             await message.remove_reaction(reaction, user)
+    except asyncio.TimeoutError:
+        pass
     except Exception as e:
         logging.critical(f'commands.leaderboard: {e}')
-    embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
-    await ctx.send(embed=embed)
+        embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+        await ctx.send(embed=embed)
 
 def create_leaderboard_embed(query, page):
     rank = (page * 10) - 10 + 1
