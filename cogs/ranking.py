@@ -72,8 +72,16 @@ class Ranking(commands.Cog):
     async def profile(self, ctx):
         try:
             user = UserModel.get(UserModel.discord_id == ctx.author.id)
-            catches = UserStatModel.select(fn.SUM(UserStatModel.catches).alias("sum")).where(UserStatModel.user_id == user.user_id).scalar()
-            rank = UserStatModel.select().group_by(UserStatModel.user_id).having(fn.SUM(UserStatModel.catches) > catches).count() + 1
+            catches = (UserStatModel
+                        .select(fn.SUM(UserStatModel.catches).alias("sum"))
+                        .where(UserStatModel.user_id == user.user_id)
+                        .scalar())
+            
+            rank = (UserStatModel
+                    .select()
+                    .group_by(UserStatModel.user_id)
+                    .having(fn.SUM(UserStatModel.catches) > catches)
+                    .count()) + 1
             
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
             embed.set_thumbnail(url=ctx.author.avatar_url)
@@ -132,5 +140,37 @@ class Ranking(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as e:
             logging.critical(f'commands.catch: {e}')
+            embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+            await ctx.send(embed=embed)
+        
+    @commands.command(name='hof', help=f'Hall of fame!')
+    async def hof(self, ctx):
+        try:
+            val = ''
+            max_catches = query.get_max_from_userstatmodel(UserStatModel.catches)
+            max_catches_user = query.get_user_by_userid(max_catches.user_id)
+            val += f'Catches - **{max_catches_user.username}**: {max_catches.catches}\n'
+
+            max_legendary = query.get_max_from_userstatmodel(UserStatModel.legendary)
+            max_legendary_user = query.get_user_by_userid(max_legendary.user_id)
+            val += f'Legendary - **{max_legendary_user.username}**: {max_legendary.legendary}\n'
+
+            max_mythical = query.get_max_from_userstatmodel(UserStatModel.mythical)
+            max_mythical_user = query.get_user_by_userid(max_mythical.user_id)
+            val += f'Mythical - **{max_mythical_user.username}**: {max_mythical.mythical}\n'
+
+            max_ultrabeast = query.get_max_from_userstatmodel(UserStatModel.ultrabeast)
+            max_ultrabeast_user = query.get_user_by_userid(max_ultrabeast.user_id)
+            val += f'Ultra beast - **{max_ultrabeast_user.username}**: {max_ultrabeast.ultrabeast}\n'
+
+            max_shiny = query.get_max_from_userstatmodel(UserStatModel.shiny)
+            max_shiny_user = query.get_user_by_userid(max_shiny.user_id)
+            val += f'Shiny - **{max_shiny_user.username}**: {max_shiny.shiny}'
+            
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title='Hall of Fame')
+            embed.add_field(name='Most in a single day!', value=val)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            logging.critical(f'commands.hof: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)

@@ -58,6 +58,17 @@ async def add_user_catch(bot, user_id):
     except Exception as e:
         logging.critical(f'add_user_catch: {e} | {user_id}')
 
+# Get UserModel by user_id
+def get_user_by_userid(user_id):
+    return UserModel.get(UserModel.user_id == user_id)
+
+# Gets UserStatModel with max <attribute>
+def get_max_from_userstatmodel(attribute):
+    subquery = UserStatModel.select(fn.MAX(attribute))
+    return (UserStatModel
+            .select()
+            .where(attribute == subquery)).get()
+
 # Gets <amount> catches, after <after_date> on page: <page>
 def get_top_catches_desc(amount, page, after_date):
     return (UserStatModel
