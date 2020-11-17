@@ -2,6 +2,7 @@ import discord
 from peewee import *
 from discord.ext import commands, flags
 from datetime import datetime
+import string
 import asyncio
 import logging
 
@@ -27,7 +28,7 @@ class Utility(commands.Cog):
             await ctx.send(f'**{string.capwords(pokemon)}** has yet to be caught!')
         except Exception as e:
             logging.critical(f'commands.catch: {e}')
-        await ctx.send('Oops, something went wrong')
+            await ctx.send('Oops, something went wrong')
     
     @commands.command(name='help', help='Displays this help message')
     async def help(self, ctx):
