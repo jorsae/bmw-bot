@@ -79,8 +79,7 @@ async def get_pokemon_caught(alltime=False):
         if alltime:
             return UserStatModel.select(fn.SUM(UserStatModel.catches)).scalar()
         else:
-            now = datetime.now()
-            this_month = date(now.year, now.month, 1)
+            this_month = utility.get_date_current_month()
             return UserStatModel.select(fn.SUM(UserStatModel.catches)).where(UserStatModel.date >= this_month).scalar()
     except Exception as e:
         logging.critical(f'get_pokemon_caught: {e}')

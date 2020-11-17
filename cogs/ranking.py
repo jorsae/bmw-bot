@@ -17,17 +17,22 @@ class Ranking(commands.Cog):
         self.bot = bot
         self.settings = settings
     
-    @flags.add_flag("--all", action="store_true")
-    @flags.add_flag("message", nargs="+")
+    @flags.add_flag("--all", action="store_true", default=False)
+    @flags.add_flag("page", nargs="?", type=str, default=1)
     @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n usage: leaderboard <page>')
     async def leaderboard(self, ctx, **flags):
-        message = flags['message'][0]
-        page = abs(utility.str_to_int(message))
+        page = abs(utility.str_to_int(flags['page']))
+        
+        date = utility.get_date_current_month()
+        if flags["all"]:
+            date = utility.get_date_forever_ago()
+        
         try:
             current_page = page
 
             query = (UserStatModel
                     .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
+                    .where(UserStatModel.date >= date)
                     .group_by(UserStatModel.user_id)
                     .order_by(fn.SUM(UserStatModel.catches).desc())
                     .limit(10)).paginate(page, 10)
