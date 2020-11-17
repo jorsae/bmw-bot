@@ -10,16 +10,16 @@ from UserStatModel import UserStatModel
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 
-async def leaderboard(ctx, bot):
+async def leaderboard(ctx, bot, page):
     try:
         query = (UserStatModel
                 .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
                 .group_by(UserStatModel.user_id)
                 .order_by(fn.SUM(UserStatModel.catches).desc())
-                .limit(10))
+                .limit(10)).paginate(page, 10)
 
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {len(query)} rankings')
-        rank = 1
+        rank = (page * 10) - 10 + 1
         for user_stat in query:
             user = UserModel.get(UserModel.user_id == user_stat.user_id)
             embed.add_field(name=f'{rank}. {user.username}', value=f'{user_stat.sum:,} catches!')
