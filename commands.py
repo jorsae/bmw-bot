@@ -13,7 +13,7 @@ from PokemonModel import PokemonModel
 
 async def leaderboard(ctx, bot, page):
     try:
-        current_page = 1
+        current_page = page
         def check(reaction, user):
             return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
 
