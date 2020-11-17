@@ -93,7 +93,7 @@ class Ranking(commands.Cog):
             medals = ''
             for title in titles:
                 medals += f'{utility.get_hof_emote(title)} '
-            embed.add_field(name=f'Medals', value=f'{medals}')
+            embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals == "" else medals}')
             await ctx.send(embed=embed)
         except DoesNotExist:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
