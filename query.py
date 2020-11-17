@@ -12,6 +12,7 @@ async def add_pokemon(bot, discord_id, rarity, is_shiny):
     try:
         # Ensure User is in database
         discord_user = await bot.fetch_user(discord_id)
+        logging.info('discord_user: {discord_user.name}#{discord_user.discriminator}')
         user, _ = UserModel.get_or_create(discord_id=discord_id, username=f'{discord_user.name}#{discord_user.discriminator}')
 
         # Ensure UserStatModel object exist for user today
