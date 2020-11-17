@@ -8,6 +8,7 @@ COLOUR_OK = Colour.green()
 COLOUR_NEUTRAL = Colour.orange()
 COLOUR_ERROR = Colour.red()
 
+CURRENT_PREFIX = '.'
 DEFAULT_PREFIX = "."
 DATABASE_FILE = "../bmw.db"
 POKETWO = 'Pokétwo#8236'

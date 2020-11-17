@@ -19,7 +19,7 @@ class Ranking(commands.Cog):
     
     @flags.add_flag("--all", action="store_true", default=False)
     @flags.add_flag("page", nargs="?", type=str, default=1)
-    @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n usage: leaderboard <page>')
+    @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\nUsage: {constants.CURRENT_PREFIX}leaderboard <page> --all')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
         

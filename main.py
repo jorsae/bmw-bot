@@ -127,6 +127,7 @@ if __name__ == '__main__':
     setup_database()
     settings.parse_settings()
     bot.command_prefix = settings.prefix
+    constants.CURRENT_PREFIX = settings.prefix # Way to have prefix in command.help description
     build_rares()
 
     bot.add_cog(cogs.Ranking(bot, settings))

@@ -14,7 +14,7 @@ class Utility(commands.Cog):
         self.bot = bot
         self.settings = settings
     
-    @commands.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nusage: catch <pokemon name>')
+    @commands.command(name="catch", help=f'Displays how many times a pokémon has been caught.\nUsage: {constants.CURRENT_PREFIX}catch <pokemon name>')
     async def catch(self, ctx, pokemon: str=None):
         if pokemon is None:
             await ctx.send(f'You need to specify a pokémon')
