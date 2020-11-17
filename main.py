@@ -6,7 +6,7 @@ import re
 import logging
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
-from discord.ext import tasks
+from discord.ext import tasks, flags
 
 import query
 import commands
@@ -18,15 +18,11 @@ from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
 from UserStatModel import UserStatModel
 from settings import Settings
+import cogs
 
 settings = Settings('../settings.json')
 bot = discord_commands.Bot(command_prefix=constants.DEFAULT_PREFIX)
 bot.remove_command('help')
-
-@bot.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n usage: {settings.prefix}leaderboard <page>')
-async def leaderboard(ctx, page: str='1'):
-    page = abs(utility.str_to_int(page))
-    await commands.leaderboard(ctx, bot, page)
 
 @bot.command(name="profile", help="Displays your profile")
 async def profile(ctx):
@@ -48,6 +44,7 @@ async def server(ctx):
     server_response = await commands.server()
     await ctx.send(embed=server_response)
 
+@flags.add_flag("--all", action="store_true")
 @bot.command(name='help', help='Displays this help message')
 async def help(ctx):
     help_embed = commands.help(ctx, settings, bot)
@@ -144,9 +141,9 @@ def setup_logging():
 
 @tasks.loop(seconds=600, reconnect=True)
 async def change_status():
-    total_caught = await query.get_pokemon_caught()
+    total_caught = await query.get_pokemon_caught(alltime=True)
     total_caught = 0 if total_caught is None else total_caught
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{total_caught:,} pokémon caught'))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{total_caught:,} caught'))
 
 @bot.event
 async def on_ready():
@@ -158,5 +155,7 @@ if __name__ == '__main__':
     settings.parse_settings()
     bot.command_prefix = settings.prefix
     build_rares()
+
+    bot.add_cog(cogs.Ranking(bot, settings))
     
     bot.run(settings.token)

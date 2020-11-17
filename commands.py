@@ -11,57 +11,6 @@ from UserStatModel import UserStatModel
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 
-async def leaderboard(ctx, bot, page):
-    try:
-        current_page = page
-
-        query = (UserStatModel
-                .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
-                .group_by(UserStatModel.user_id)
-                .order_by(fn.SUM(UserStatModel.catches).desc())
-                .limit(10)).paginate(page, 10)
-
-        message = await ctx.send(embed=create_leaderboard_embed(query, page))
-        await message.add_reaction("◀️")
-        await message.add_reaction("▶️")
-        
-        def check(reaction, user):
-            if reaction.message.id == message.id:
-                return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
-            else:
-                return False
-        
-        while True:
-            reaction, user = await bot.wait_for("reaction_add", timeout=60, check=check)
-            if str(reaction.emoji) == "▶️":
-                current_page += 1
-            elif str(reaction.emoji) == "◀️" and current_page > 1:
-                current_page -= 1
-            query = (UserStatModel
-                    .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
-                    .group_by(UserStatModel.user_id)
-                    .order_by(fn.SUM(UserStatModel.catches).desc())
-                    .limit(10)).paginate(current_page, 10)
-            await message.edit(embed=create_leaderboard_embed(query, current_page))
-            await message.remove_reaction(reaction, user)
-    except asyncio.TimeoutError:
-        pass
-    except Exception as e:
-        logging.critical(f'commands.leaderboard: {e}')
-        embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
-        await ctx.send(embed=embed)
-
-def create_leaderboard_embed(query, page):
-    rank = (page * 10) - 10 + 1
-    top_rank = '10' if page == 1 else f'{(page*10)-9}-{page*10}'
-    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings')
-    for user_stat in query:
-        user = UserModel.get(UserModel.user_id == user_stat.user_id)
-        embed.add_field(name=f'{rank}. {user.username}', value=f'{user_stat.sum:,} catches!')
-        rank += 1
-    return embed
-
-
 async def profile(ctx, bot):
     try:
         user = UserModel.get(UserModel.discord_id == ctx.author.id)
