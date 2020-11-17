@@ -26,9 +26,7 @@ bot.remove_command('help')
 @bot.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n usage: {settings.prefix}leaderboard <page>')
 async def leaderboard(ctx, page: str='1'):
     page = abs(utility.str_to_int(page))
-
-    leaderboard_response = await commands.leaderboard(ctx, bot, page)
-    await ctx.send(embed=leaderboard_response)
+    await commands.leaderboard(ctx, bot, page)
 
 @bot.command(name="profile", help="Displays your profile")
 async def profile(ctx):
