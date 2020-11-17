@@ -105,7 +105,7 @@ def add_rares(file, rarity):
         query.add_rare_definition(line, rarity)
 
 def setup_logging():
-    logFolder = 'logs'
+    logFolder = '../logs'
     logFile = 'BMW.log'
     if not os.path.isdir(logFolder):
         os.makedirs(logFolder)
