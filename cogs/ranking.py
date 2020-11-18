@@ -24,17 +24,19 @@ class Ranking(commands.Cog):
     @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\nUsage: {constants.CURRENT_PREFIX}leaderboard <page> --all')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
+        flag_all = False
         
         date = utility.get_date_current_month()
         if flags["all"]:
             date = utility.get_date_forever_ago()
+            flag_all = True
         
         try:
             current_page = page
 
             top_catches = query.get_top_catches_desc(10, current_page, date)
 
-            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, page))
+            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, page, flag_all))
             await message.add_reaction("◀️")
             await message.add_reaction("▶️")
             
@@ -51,7 +53,7 @@ class Ranking(commands.Cog):
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
                 top_catches = query.get_top_catches_desc(10, current_page, date)
-                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page))
+                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page, flag_all))
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:
             pass
@@ -60,10 +62,15 @@ class Ranking(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
-    def create_leaderboard_embed(self, query, page):
+    def create_leaderboard_embed(self, query, page, flag_all):
         rank = (page * 10) - 10 + 1
         top_rank = '10' if page == 1 else f'{(page*10)-9}-{page*10}'
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings')
+        if flag_all:
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [All time]')
+        else:
+            date_stamp = utility.get_month()
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{date_stamp}]')
+
         for user_stat in query:
             user = UserModel.get(UserModel.user_id == user_stat.user_id)
             embed.add_field(name=f'{rank}. {user.username}', value=f'{user_stat.sum:,} catches!')
@@ -74,26 +81,27 @@ class Ranking(commands.Cog):
     async def profile(self, ctx):
         try:
             user = UserModel.get(UserModel.discord_id == ctx.author.id)
-            catches = (UserStatModel
-                        .select(fn.SUM(UserStatModel.catches).alias("sum"))
-                        .where(UserStatModel.user_id == user.user_id)
-                        .scalar())
-            
+            total = query.get_sum(user.user_id).get()
+            stats = f'**Catches: **{total.sum_catches}\n'
+            stats += f'**Legendary: **{total.sum_legendary}\n'
+            stats += f'**Mythical: **{total.sum_mythical}\n'
+            stats += f'**Ultra Beast: **{total.sum_ultrabeast}\n'
+            stats += f'**Shiny: **{total.sum_shiny}'
             rank = (UserStatModel
                     .select()
                     .group_by(UserStatModel.user_id)
-                    .having(fn.SUM(UserStatModel.catches) > catches)
+                    .having(fn.SUM(UserStatModel.catches) > total.sum_catches)
                     .count()) + 1
             
             titles = query.get_hof_titles(user.user_id)
 
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
             embed.set_thumbnail(url=ctx.author.avatar_url)
-            embed.add_field(name=f'{rank}. {user.username}', value=f'You have {catches:,} catches!')
+            embed.add_field(name=f'{rank}. {user.username}', value=f'{stats}', inline=False)
             medals = ''
             for title in titles:
                 medals += f'{utility.get_hof_emote(title)} '
-            embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals == "" else medals}')
+            embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals == "" else medals}', inline=False)
             await ctx.send(embed=embed)
         except DoesNotExist:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
@@ -154,33 +162,38 @@ class Ranking(commands.Cog):
     @commands.command(name='hof', help=f'Hall of fame!')
     async def hof(self, ctx):
         try:
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title='Hall of Fame [daily records]')
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+            embed.add_field(name='Hall of Fame [daily records]', value='For achieving the highest amount of catches in a single day\nThe medals will be displayed in your `.profile`')
             
             catches = UserStatModel.select(fn.MAX(UserStatModel.catches)).scalar()
+            catches_users = "\n".join(query.get_username_by_stat(UserStatModel.catches, catches))
+
             legendary = UserStatModel.select(fn.MAX(UserStatModel.legendary)).scalar()
+            legendary_users = "\n".join(query.get_username_by_stat(UserStatModel.legendary, legendary))
+
             mythical = UserStatModel.select(fn.MAX(UserStatModel.mythical)).scalar()
+            mythical_users = "\n".join(query.get_username_by_stat(UserStatModel.mythical, mythical))
+
             ultrabeast = UserStatModel.select(fn.MAX(UserStatModel.ultrabeast)).scalar()
+            ultrabeast_users = "\n".join(query.get_username_by_stat(UserStatModel.ultrabeast, ultrabeast))
+
             shiny = UserStatModel.select(fn.MAX(UserStatModel.shiny)).scalar()
+            shiny_users = "\n".join(query.get_username_by_stat(UserStatModel.shiny, shiny))
 
             max_catches = query.get_max_from_userstatmodel(UserStatModel.catches)
-            name = utility.get_text_from_hof(max_catches)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.catches)} Most catches: {catches:,}', value=f'{name}', inline=False)
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.catches)} All pokémon: {catches:,}', value=f'{catches_users}', inline=False)
             
             max_legendary = query.get_max_from_userstatmodel(UserStatModel.legendary)
-            name = utility.get_text_from_hof(max_legendary)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.legendary)} Legendary: {legendary}', value=f'{name}', inline=False)
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.legendary)} Legendary: {legendary}', value=f'{legendary_users}', inline=False)
             
             max_mythical = query.get_max_from_userstatmodel(UserStatModel.mythical)
-            name = utility.get_text_from_hof(max_mythical)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.mythical)} Mythical: {mythical}', value=f'{name}', inline=False)
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.mythical)} Mythical: {mythical}', value=f'{mythical_users}', inline=False)
 
             max_ultrabeast = query.get_max_from_userstatmodel(UserStatModel.ultrabeast)
-            name = utility.get_text_from_hof(max_ultrabeast)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.ultrabeast)} Ultra Beast: {ultrabeast}', value=f'{name}', inline=False)
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.ultrabeast)} Ultra Beast: {ultrabeast}', value=f'{ultrabeast_users}', inline=False)
 
             max_shiny = query.get_max_from_userstatmodel(UserStatModel.shiny)
-            name = utility.get_text_from_hof(max_shiny)
-            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.shiny)} Shiny: {shiny}', value=f'{name}', inline=False)
+            embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.shiny)} Shiny: {shiny}', value=f'{shiny_users}', inline=False)
             
             await ctx.send(embed=embed)
         except Exception as e:

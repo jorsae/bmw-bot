@@ -83,6 +83,32 @@ def get_hof_titles(user_id):
         titles.append(HallOfFame.shiny)
     return titles
 
+# Returns sum of attribute, by a user
+def get_sum(user_id):
+    return (UserStatModel
+            .select(
+                fn.SUM(UserStatModel.catches).alias("sum_catches"),
+                fn.SUM(UserStatModel.legendary).alias("sum_legendary"),
+                fn.SUM(UserStatModel.mythical).alias("sum_mythical"),
+                fn.SUM(UserStatModel.ultrabeast).alias("sum_ultrabeast"),
+                fn.SUM(UserStatModel.shiny).alias("sum_shiny"),
+                )
+            .where(UserStatModel.user_id == user_id))
+
+# Returns list of all username who matches the max(value) of a certain attribute
+def get_username_by_stat(attribute, value):
+    users = []
+    try:
+        subquery = UserStatModel.select(fn.MAX(attribute))
+        query = (UserStatModel
+                .select()
+                .where(attribute == subquery))
+        for user in query:
+            users.append(get_user_by_userid(user.user_id).username)
+        return users
+    except Exception as e:
+        logging.critical(f'get_username_by_stat: {e}')
+
 # Get UserModel by user_id
 def get_user_by_userid(user_id):
     return UserModel.get(UserModel.user_id == user_id)

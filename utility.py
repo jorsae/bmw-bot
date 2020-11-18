@@ -3,21 +3,16 @@ import query
 from datetime import datetime, date
 from titles import HallOfFame
 
+# Returns year + month in text format
+def get_month():
+    return datetime.now().strftime("%B")
+
+# Returns boolean if user_id is in max_statmodel
 def get_userid_in_max_statmodel(user_id, max_statmodel):
     for stat in max_statmodel:
         if stat.user_id.user_id == user_id:
             return True
     return False
-
-# Gets output text from potential list of HoF leaders
-def get_text_from_hof(max_statmodel):
-    value = '**'
-    for catches in max_statmodel:
-        user = query.get_user_by_userid(catches.user_id)
-        value += f'{user.username}\n'
-    value = value[:-1]
-    value += f'**\n'
-    return value
 
 # returns emote for the given HallOfFame title
 def get_hof_emote(title):
