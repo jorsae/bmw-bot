@@ -19,8 +19,8 @@ class Utility(commands.Cog):
     async def catch(self, ctx, pokemon: str=None):
         if pokemon is None:
             await ctx.send(f'You need to specify a pokémon')
-        if pokemon == '<@!777052225099792386>':
-            await ctx.send(f"I am uncatchable")
+        if pokemon == '<@!777052225099792386>' or pokemon == 'bmw':
+            await ctx.send(f"Wild <@777052225099792386> fled!")
             return
         pokemon = pokemon.lower()
         try:
