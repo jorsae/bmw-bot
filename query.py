@@ -105,8 +105,10 @@ def get_username_by_stat(attribute, value):
     try:
         subquery = UserStatModel.select(fn.MAX(attribute))
         query = (UserStatModel
-                .select()
-                .where(attribute == subquery))
+                .select(UserStatModel.user_id)
+                .distinct()
+                .where(attribute == subquery)
+                .order_by(UserStatModel.userstat_id))
         for user in query:
             users.append(get_user_by_userid(user.user_id).username)
         return users
