@@ -1,15 +1,16 @@
-import query
+import logging
 
+import query
 from datetime import datetime, date
 from titles import HallOfFame
 
 # returns true if the user is an admin. False otherwise
-def is_admin(author, settings):
+def is_admin(author, admin_list):
     logging.warning(f'is_admin: {author}')
     if type(author) == str:
-        return author in settings.admin
+        return author in admin_list
     else:
-        return str(author) in settings.admin
+        return str(author) in admin_list
 
 # Returns month in text format
 def get_month():
@@ -35,13 +36,6 @@ def get_hof_emote(title):
     if title == HallOfFame.shiny:
         return ':sparkles:'
     
-# returns true if the user is an admin. False otherwise
-def is_admin(author, settings):
-    if type(author) == str:
-        return author in settings.admin
-    else:
-        return str(author) in settings.admin
-
 # Converts a string to integer, defaults to 1
 def str_to_int(value):
     try:

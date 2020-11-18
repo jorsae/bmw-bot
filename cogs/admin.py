@@ -17,7 +17,7 @@ class Admin(commands.Cog):
     
     @commands.command(name='dbstats', help=f'Display table count', hidden=True)
     async def dbstats(self, ctx):
-        is_admin = utility.is_admin(ctx.message.author, self.settings)
+        is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
         if is_admin is False:
             return
         total_users = UserModel.select(fn.COUNT()).scalar()
@@ -29,7 +29,7 @@ class Admin(commands.Cog):
     
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
-        is_admin = utility.is_admin(ctx.message.author, self.settings)
+        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
         if is_admin is False:
             return
         try:
