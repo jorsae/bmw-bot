@@ -5,7 +5,7 @@ GET_POKEMON = re.compile("\d{1} [\w| |:|\-|′|\.|%]+!")
 def p(s):
     print(GET_POKEMON.search(s))
 
-
+p('congratulations <@!620471915148083205>! you caught a level 14 10% zygarde!')
 p('congratulations <@!208812982728261632>! you caught a level 24 Pa′u oricorio! Added to your pokédex!')
 p('congratulations <@!564876529251909633>! you caught a level 12 Farfetch′d!')
 p('congratulations <@!216077596679602176>! you caught a level 39 Mr. Mime!')
