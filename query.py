@@ -14,10 +14,14 @@ async def add_pokemon(bot, discord_id, rarity, is_shiny):
     try:
         # Ensure User is in database
         discord_user = await bot.fetch_user(discord_id)
-        user, _ = UserModel.get_or_create(discord_id=discord_id)
+        user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_id).scalar()
+        if user_id is None:
+            username = f'{discord_user.name}#{discord_user.discriminator}'
+            user, created = UserModel.get_or_create(discord_id=discord_id, username=username)
+            user_id = user.user_id
 
         # Ensure UserStatModel object exist for user today
-        userstat, _ = UserStatModel.get_or_create(date=today, user_id=user.user_id)
+        userstat, created = UserStatModel.get_or_create(date=today, user_id=user_id)
         
         # Check if we need to add rarity or shiny
         legendary_count, mythical_count, ultrabeast_count = 0, 0, 0
@@ -34,7 +38,7 @@ async def add_pokemon(bot, discord_id, rarity, is_shiny):
                             mythical=UserStatModel.mythical + mythical_count,
                             ultrabeast=UserStatModel.ultrabeast + ultrabeast_count,
                             shiny=UserStatModel.shiny + shiny_count).where(
-                                (UserStatModel.user_id == user.user_id) &
+                                (UserStatModel.user_id == user_id) &
                                 (UserStatModel.date == today)
                             ).execute()
     except Exception as e:
