@@ -36,7 +36,7 @@ class Utility(commands.Cog):
     @commands.command(name='help', help='Displays this help message')
     async def help(self, ctx):
         author = ctx.message.author
-        display_hidden_commands = utility.is_admin(author, self.settings)
+        display_hidden_commands = utility.is_admin(author, self.settings.admin)
 
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
         embed.set_author(name=f'BMW Help')
