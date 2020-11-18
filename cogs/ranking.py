@@ -13,12 +13,16 @@ from titles import HallOfFame
 from UserStatModel import UserStatModel
 from UserModel import UserModel
 from PokemonModel import PokemonModel
+from enumeration import TimeFlag
 
 class Ranking(commands.Cog):
     def __init__(self, bot, settings):
         self.bot = bot
         self.settings = settings
     
+    @flags.add_flag("--week", action="store_true", default=False)
+    @flags.add_flag("--day", action="store_true", default=False)
+    @flags.add_flag("--month", action="store_true", default=True)
     @flags.add_flag("--all", action="store_true", default=False)
     @flags.add_flag("page", nargs="?", type=str, default=1)
     @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> --all`')
@@ -27,19 +31,15 @@ class Ranking(commands.Cog):
         if page > 100:
             await ctx.send('Please put a more realistic number...')
             return
-        flag_all = False
         
-        date = utility.get_date_current_month()
-        if flags["all"]:
-            date = utility.get_date_forever_ago()
-            flag_all = True
+        date, time_flag = utility.parse_time_flags(**flags)
         
         try:
             current_page = page
 
             top_catches = query.get_top_catches_desc(10, current_page, date)
 
-            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, page, flag_all))
+            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, page, time_flag))
             await message.add_reaction("◀️")
             await message.add_reaction("▶️")
             
@@ -56,7 +56,7 @@ class Ranking(commands.Cog):
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
                 top_catches = query.get_top_catches_desc(10, current_page, date)
-                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page, flag_all))
+                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page, time_flag))
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:
             pass
@@ -65,14 +65,16 @@ class Ranking(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
-    def create_leaderboard_embed(self, query, page, flag_all):
+    def create_leaderboard_embed(self, query, page, time_flag):
         rank = (page * 10) - 10 + 1
         top_rank = '10' if page == 1 else f'{(page*10)-9}-{page*10}'
-        if flag_all:
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [All time]')
-        else:
-            date_stamp = utility.get_month()
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{date_stamp}]')
+        print(f'before get_title: {time_flag=}')
+        
+        title, author = utility.get_title_author_by_timeflag(time_flag)
+        print(f'{title=}')
+        print(f'{author=}')
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{str(title)}]')
+        embed.set_author(name=f'Time remaining: {str(author)}')
 
         for user_stat in query:
             user = UserModel.get(UserModel.user_id == user_stat.user_id)
