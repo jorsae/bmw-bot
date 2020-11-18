@@ -82,7 +82,7 @@ class Ranking(commands.Cog):
         try:
             user = UserModel.get(UserModel.discord_id == ctx.author.id)
             total = query.get_sum(user.user_id).get()
-            stats = f'**Catches: **{total.sum_catches}\n'
+            stats = f'**Catches: **{total.sum_catches:,}\n'
             stats += f'**Legendary: **{total.sum_legendary}\n'
             stats += f'**Mythical: **{total.sum_mythical}\n'
             stats += f'**Ultra Beast: **{total.sum_ultrabeast}\n'
