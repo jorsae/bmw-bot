@@ -3,6 +3,14 @@ import query
 from datetime import datetime, date
 from titles import HallOfFame
 
+# returns true if the user is an admin. False otherwise
+def is_admin(author, settings):
+    logging.warning(f'is_admin: {author}')
+    if type(author) == str:
+        return author in settings.admin
+    else:
+        return str(author) in settings.admin
+
 # Returns month in text format
 def get_month():
     return datetime.now().strftime("%B")
