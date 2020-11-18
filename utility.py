@@ -3,7 +3,7 @@ import query
 from datetime import datetime, date
 from titles import HallOfFame
 
-# Returns year + month in text format
+# Returns month in text format
 def get_month():
     return datetime.now().strftime("%B")
 

@@ -134,5 +134,6 @@ if __name__ == '__main__':
 
     bot.add_cog(cogs.Ranking(bot, settings))
     bot.add_cog(cogs.Utility(bot, settings))
+    bot.add_cog(cogs.Admin(bot, settings))
     
     bot.run(settings.token)
