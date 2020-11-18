@@ -10,7 +10,7 @@ COLOUR_ERROR = Colour.red()
 
 CURRENT_PREFIX = '.'
 DEFAULT_PREFIX = "."
-DATABASE_FILE = "../bmw.db"
+DATABASE_FILE = "../production.db"
 POKETWO = 'Pokétwo#8236'
 
 GET_USER = re.compile('@!?\d{17,18}')
