@@ -24,6 +24,9 @@ class Ranking(commands.Cog):
     @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> --all`')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
+        if page > 100:
+            await ctx.send('Please put a more realistic number...')
+            return
         flag_all = False
         
         date = utility.get_date_current_month()
