@@ -17,8 +17,12 @@ class Utility(commands.Cog):
     
     @commands.command(name="catch", help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
     async def catch(self, ctx, pokemon: str=None):
+        print(f'{pokemon=}')
         if pokemon is None:
             await ctx.send(f'You need to specify a pokémon')
+        if pokemon == '<@!777052225099792386>':
+            await ctx.send(f"I am uncatchable")
+            return
         pokemon = pokemon.lower()
         try:
             pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
