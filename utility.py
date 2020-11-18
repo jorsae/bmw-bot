@@ -4,12 +4,22 @@ import query
 from datetime import datetime, date, timedelta
 from enumeration import TimeFlag
 from titles import HallOfFame
+from UserStatModel import UserStatModel
+
+def parse_attribute_flags(**flags):
+    if flags["legendary"]:
+        return UserStatModel.legendary, 'Legendary'
+    elif flags["mythical"]:
+        return UserStatModel.mythical, 'Mythical'
+    elif flags["ultrabeast"]:
+        return UserStatModel.ultrabeast, 'Ultra beast'
+    elif flags["shiny"]:
+        return UserStatModel.shiny, 'Shiny'
+    return UserStatModel.catches, 'Catches'
 
 def parse_time_flags(**flags):
     date = get_date_current_month()
     if flags["all"]:
-        print('ALLL')
-        print(f'{flags["all"]=}')
         return get_date_forever_ago(), TimeFlag.ALL
     if flags["week"]:
         return get_date_current_week(), TimeFlag.WEEK
@@ -53,7 +63,6 @@ def str_to_int(value):
         return 1
 
 def get_title_author_by_timeflag(timeflag):
-    print(f'{timeflag=}')
     if timeflag == TimeFlag.ALL:
         return 'All time', 'Infinite'
     elif timeflag == TimeFlag.MONTH:
@@ -63,18 +72,21 @@ def get_title_author_by_timeflag(timeflag):
         end_month = today.replace(day=28) + timedelta(days=4)
         end_month = end_month - timedelta(days=end_month.day)
         end_month = datetime.combine(end_month, datetime.min.time()) + timedelta(days=1)
-        print(f'{end_month=}')
-        print(f'{type(end_month)=}')
-
-        return f'{str(current_month)}', end_month - datetime.now()
+        
+        time_remaining = str(end_month - datetime.now()).split('.')[0]
+        return f'{str(current_month)}', time_remaining
     elif timeflag == TimeFlag.WEEK:
         start = get_date_current_week()
         end = start + timedelta(days=6)
         end_week = datetime.combine(end, datetime.min.time()) + timedelta(days=1)
-        return f'{start.strftime("%d/%m/%Y")} - {end.strftime("%d/%m/%Y")}', end_week - datetime.now()
+        
+        time_remaining = str(end_week - datetime.now()).split('.')[0]
+        return f'{start.strftime("%d/%m/%Y")} - {end.strftime("%d/%m/%Y")}', time_remaining
     else:
         tomorrow = datetime.combine(date.today(), datetime.min.time()) + timedelta(days=1)
-        return 'Today', tomorrow - datetime.now()
+
+        time_remaining = str(tomorrow - datetime.now()).split('.')[0]
+        return 'Today', time_remaining
 
 def get_date_current_week():
     now = date.today()

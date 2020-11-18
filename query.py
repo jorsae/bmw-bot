@@ -127,12 +127,15 @@ def get_max_from_userstatmodel(attribute):
             .where(attribute == subquery))
 
 # Gets <amount> catches, after <after_date> on page: <page>
-def get_top_catches_desc(amount, page, after_date):
+def get_top_attribute_desc(attribute, amount, page, after_date):
     return (UserStatModel
-            .select(fn.SUM(UserStatModel.catches).alias("sum"), UserStatModel.user_id)
-            .where(UserStatModel.date >= after_date)
+            .select(fn.SUM(attribute).alias("sum"), UserStatModel.user_id)
+            .where(
+                (UserStatModel.date >= after_date) &
+                (attribute > 0)
+                )
             .group_by(UserStatModel.user_id)
-            .order_by(fn.SUM(UserStatModel.catches).desc())
+            .order_by(fn.SUM(attribute).desc())
             .limit(amount)).paginate(page, 10)
 
 # Adds a pokemon to the rarity definition
