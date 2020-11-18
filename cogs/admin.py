@@ -21,3 +21,12 @@ class Admin(commands.Cog):
         total_pokemon = PokemonModel.select(fn.COUNT()).scalar()
 
         await ctx.send(f'Total users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}')
+    
+    @commands.command(name='speak', help=f'Make me speak.\nUsage: `.speak <channel_id> "<message>"`', hidden=True)
+    async def speak(self, ctx, channel_id, message):
+        try:
+            channel_id = int(channel_id)
+            channel = self.bot.get_channel(channel_id)
+            await channel.send(message)
+        except:
+            pass
