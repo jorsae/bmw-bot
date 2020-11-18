@@ -25,13 +25,12 @@ class Ranking(commands.Cog):
     @flags.add_flag("--mythical", action="store_true", default=False)
     @flags.add_flag("--ultrabeast", action="store_true", default=False)
     @flags.add_flag("--shiny", action="store_true", default=False)
-
     @flags.add_flag("--week", action="store_true", default=False)
     @flags.add_flag("--day", action="store_true", default=False)
     @flags.add_flag("--month", action="store_true", default=True)
     @flags.add_flag("--all", action="store_true", default=False)
     @flags.add_flag("page", nargs="?", type=str, default=1)
-    @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> --all`')
+    @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ultrabeast, --shiny`')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
         if page > 100:
