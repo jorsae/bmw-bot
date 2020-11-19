@@ -87,7 +87,6 @@ class Ranking(commands.Cog):
     
     @commands.command(name='profile', aliases=['p'], help="Displays your profile")
     async def profile(self, ctx, **flags):
-        print(f'{flags=}')
         try:
             user = UserModel.get(UserModel.discord_id == ctx.author.id)
             total = query.get_sum(user.user_id).get()
