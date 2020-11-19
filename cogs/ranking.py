@@ -10,11 +10,10 @@ import constants
 import utility
 import query
 import medals
-from titles import HallOfFame
 from UserStatModel import UserStatModel
 from UserModel import UserModel
 from PokemonModel import PokemonModel
-from enumeration import TimeFlag
+from enumeration import TimeFlag, HallOfFame
 
 class Ranking(commands.Cog):
     def __init__(self, bot, settings):

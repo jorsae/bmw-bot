@@ -3,7 +3,7 @@ from datetime import datetime, date
 import logging
 
 import utility
-from titles import HallOfFame
+from enumeration import HallOfFame
 from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
