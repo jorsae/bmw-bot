@@ -5,6 +5,7 @@ from datetime import datetime
 import string
 import asyncio
 import logging
+import time
 
 import utility
 import constants
@@ -51,3 +52,9 @@ class Utility(commands.Cog):
                 last_command = str(command)
         await ctx.send(embed=embed)
     
+    @commands.command(name='ping', help="Checks the bot's latency")
+    async def ping(self, ctx):
+        start = time.monotonic()
+        message = await ctx.send('Pong!')
+        ping = (time.monotonic() - start) * 1000
+        await message.edit(content=f'Pong! {int(ping)} ms')
