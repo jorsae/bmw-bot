@@ -16,6 +16,10 @@ class Utility(commands.Cog):
         self.bot = bot
         self.settings = settings
     
+    @commands.command(name='medal', alias=['m', 'medals'], help=f'Displays list of all available medals')
+    async def medals(self, ctx):
+        await ctx.send('medals')
+
     @commands.command(name="catch", help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
     async def catch(self, ctx, pokemon: str=None):
         if pokemon is None:

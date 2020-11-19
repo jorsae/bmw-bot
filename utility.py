@@ -88,6 +88,20 @@ def get_title_author_by_timeflag(timeflag):
         time_remaining = str(tomorrow - datetime.now()).split('.')[0]
         return 'Today', time_remaining
 
+def get_datespan_all():
+    return date(1000, 1, 1), date(4000, 1, 1)
+
+def get_datespan_month():
+    today = date.today()
+    start_month = get_date_current_month()
+    end_month = today.replace(day=28) + timedelta(days=4)
+    end_month = end_month - timedelta(days=end_month.day)
+    return start_month, end_month
+
+def get_datespan_day():
+    now = datetime.now()
+    return date(now.year, now.month, now.day), date(now.year, now.month, now.day)
+
 def get_date_current_week():
     now = date.today()
     return now - timedelta(days=now.weekday())

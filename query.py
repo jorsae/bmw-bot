@@ -87,6 +87,21 @@ def get_hof_titles(user_id):
         titles.append(HallOfFame.shiny)
     return titles
 
+# Returns sum of attributes, by a user, before and after date
+def get_max_day(user_id):
+    return (UserStatModel
+            .select(
+                fn.SUM(UserStatModel.catches).alias("sum_catches"),
+                fn.SUM(UserStatModel.legendary).alias("sum_legendary"),
+                fn.SUM(UserStatModel.mythical).alias("sum_mythical"),
+                fn.SUM(UserStatModel.ultrabeast).alias("sum_ultrabeast"),
+                fn.SUM(UserStatModel.shiny).alias("sum_shiny"),
+                )
+            .where(
+                UserStatModel.user_id == user_id
+                )
+            )
+
 # Returns sum of attribute, by a user
 def get_sum(user_id):
     return (UserStatModel

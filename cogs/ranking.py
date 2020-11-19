@@ -1,7 +1,7 @@
 import discord
 from peewee import *
 from discord.ext import commands, flags
-from datetime import datetime
+from datetime import datetime, date
 import asyncio
 import logging
 
@@ -9,6 +9,7 @@ import logging
 import constants
 import utility
 import query
+import medals
 from titles import HallOfFame
 from UserStatModel import UserStatModel
 from UserModel import UserModel
@@ -100,16 +101,21 @@ class Ranking(commands.Cog):
                     .group_by(UserStatModel.user_id)
                     .having(fn.SUM(UserStatModel.catches) > total.sum_catches)
                     .count()) + 1
-            
-            titles = query.get_hof_titles(user.user_id)
 
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
             embed.set_thumbnail(url=ctx.author.avatar_url)
             embed.add_field(name=f'{rank}. {user.username}', value=f'{stats}', inline=False)
-            medals = ''
-            for title in titles:
-                medals += f'{utility.get_hof_emote(title)} '
-            embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals == "" else medals}', inline=False)
+            
+            sum_day = query.get_max_day(user.user_id).get()
+            sum_all = query.get_sum(user.user_id).get()
+            total_medals = medals.get_medals(sum_day, sum_all)
+
+            medals_text = ''
+            for medal in query.get_hof_titles(user.user_id):
+                medals_text += f'{utility.get_hof_emote(medal)} '
+            for medal in total_medals:
+                medals_text += f'{medal} '
+            embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals_text == "" else medals_text}', inline=False)
             await ctx.send(embed=embed)
         except DoesNotExist:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
@@ -171,7 +177,7 @@ class Ranking(commands.Cog):
     async def hof(self, ctx):
         try:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-            embed.add_field(name='Hall of Fame [daily records]', value='For achieving the highest amount of catches in a single day\nThe medals will be displayed in your `.profile`')
+            embed.add_field(name='Hall of Fame [daily records]', value=f'For achieving the highest amount of catches in a single day\nThe medals will be displayed in your `{constants.CURRENT_PREFIX}profile`')
             
             catches = UserStatModel.select(fn.MAX(UserStatModel.catches)).scalar()
             catches_users = "\n".join(query.get_username_by_stat(UserStatModel.catches, catches))
