@@ -24,7 +24,7 @@ class Utility(commands.Cog):
                     .select()
                     .order_by(MedalModel.pokemon_category))
         for medal in query:
-            embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal}, category: {medal.pokemon_category}', inline=False)
+            embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
 
         await ctx.send(embed=embed)
 
