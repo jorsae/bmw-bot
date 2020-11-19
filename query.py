@@ -75,17 +75,17 @@ def get_hof_medals(username):
     medals = []
 
     catches = get_max_attribute(UserStatModel.catches)
-    catches_users = get_username_by_stat(UserStatModel.ultrabeast, catches)
+    catches_users = get_username_by_stat(UserStatModel.catches, catches)
     if username in catches_users:
         medals.append(HallOfFame.catches)
     
     legendary = get_max_attribute(UserStatModel.legendary)
-    legendary_users = get_username_by_stat(UserStatModel.ultrabeast, legendary)
+    legendary_users = get_username_by_stat(UserStatModel.legendary, legendary)
     if username in legendary_users:
         medals.append(HallOfFame.legendary)
 
     mythical = get_max_attribute(UserStatModel.mythical)
-    mythical_users = get_username_by_stat(UserStatModel.ultrabeast, mythical)
+    mythical_users = get_username_by_stat(UserStatModel.mythical, mythical)
     if username in mythical_users:
         medals.append(HallOfFame.mythical)
 
