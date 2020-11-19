@@ -110,10 +110,20 @@ class Ranking(commands.Cog):
             total_medals = medals.get_medals(sum_day, sum_all)
 
             medals_text = ''
+            total = 0
             for medal in query.get_hof_medals(f'{ctx.author.name}#{ctx.author.discriminator}'):
                 medals_text += f'{utility.get_hof_emote(medal)} '
+                total += 1
+            
+            if total > 0:
+                medals_text += '\n\n'
+                total = 0
+            
             for medal in total_medals:
                 medals_text += f'{medal} '
+                total += 1
+                if (total % 5) == 0:
+                    medals_text += '\n'
             embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals_text == "" else medals_text}', inline=False)
             await ctx.send(embed=embed)
         except DoesNotExist:
