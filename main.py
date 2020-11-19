@@ -114,7 +114,7 @@ def setup_logging():
     handler = logging.FileHandler(filename=f'{logFolder}/{logFile}', encoding='utf-8', mode='a+')
     logging.basicConfig(handlers=[handler], level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
 
-@tasks.loop(seconds=300, reconnect=True)
+@tasks.loop(seconds=120, reconnect=True)
 async def change_status():
     total_caught = await query.get_pokemon_caught(alltime=True)
     total_caught = 0 if total_caught is None else total_caught
