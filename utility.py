@@ -28,11 +28,14 @@ def parse_time_flags(**flags):
 
 # returns true if the user is an admin. False otherwise
 def is_admin(author, admin_list):
-    logging.warning(f'is_admin: {author}')
     if type(author) == str:
-        return author in admin_list
+        if author in admin_list:
+            logging.warning(f'is_admin == true: {author}')
+            return True
     else:
-        return str(author) in admin_list
+        if str(author) in admin_list:
+            logging.warning(f'is_admin == true: {author}')
+            return True
 
 # returns emote for the given HallOfFame title
 def get_hof_emote(title):

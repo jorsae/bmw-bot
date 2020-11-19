@@ -35,7 +35,7 @@ async def on_message(message: discord.Message):
         .replace("’", "′")
     )
     if message.content.startswith(settings.prefix):
-        logging.info(f'[{str(message.author)}] Command: "{message.content}"')
+        logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Command: "{message.content}"')
     
     if str(message.author) == constants.POKETWO:
         await process_poketwo(bot, message.content)
