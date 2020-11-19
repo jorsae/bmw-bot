@@ -32,6 +32,7 @@ class Ranking(commands.Cog):
     @flags.add_flag("page", nargs="?", type=str, default=1)
     @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ultrabeast, --shiny`')
     async def leaderboard(self, ctx, **flags):
+        print('leaderboard')
         page = abs(utility.str_to_int(flags['page']))
         if page > 20:
             await ctx.send('Please put a more realistic number...')
@@ -214,3 +215,8 @@ class Ranking(commands.Cog):
             logging.critical(f'commands.hof: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
+    
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        username = f'{ctx.message.author.name}#{ctx.message.author.discriminator}'
+        logging.error(f'ranking.on_command_error {username}: {error}')
