@@ -8,6 +8,7 @@ from UserModel import UserModel
 from PokemonModel import PokemonModel
 from RareDefinitionModel import RareDefinitionModel
 from UserStatModel import UserStatModel
+from MedalModel import MedalModel
 
 async def add_pokemon(bot, discord_id, rarity, is_shiny):
     today = datetime.now().date()
@@ -71,6 +72,7 @@ def get_max_attribute(attribute):
                 .scalar()
             )
 
+# TODO: Move this to utility or somewhere. query should only have pure database queries
 def get_hof_medals(username):
     medals = []
 
@@ -148,6 +150,14 @@ def get_username_by_stat(attribute, value):
 def get_user_by_userid(user_id):
     return UserModel.get(UserModel.user_id == user_id)
 
+# Gets MedalList
+def get_medallist(amount, page):
+    return (MedalModel
+            .select()
+            .order_by(MedalModel.pokemon_category)
+            .limit(amount)
+            ).paginate(page, amount)
+
 # Gets <amount> catches, after <after_date> on page: <page>
 def get_top_attribute_desc(attribute, amount, page, after_date):
     return (UserStatModel
@@ -158,7 +168,7 @@ def get_top_attribute_desc(attribute, amount, page, after_date):
                 )
             .group_by(UserStatModel.user_id)
             .order_by(fn.SUM(attribute).desc())
-            .limit(amount)).paginate(page, 10)
+            .limit(amount)).paginate(page, amount)
 
 # Adds a pokemon to the rarity definition
 def add_rare_definition(pokemon, rarity):

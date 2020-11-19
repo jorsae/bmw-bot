@@ -8,6 +8,7 @@ import logging
 import time
 
 import utility
+import query
 import constants
 from PokemonModel import PokemonModel
 from MedalModel import MedalModel
@@ -19,14 +20,46 @@ class Utility(commands.Cog):
     
     @commands.command(name='medal', alias=['m', 'medals'], help=f'Displays list of all available medals')
     async def medals(self, ctx):
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title="List of all available medals")
-        query = (MedalModel
-                    .select()
-                    .order_by(MedalModel.pokemon_category))
-        for medal in query:
-            embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+        try:
+            current_page = 1
 
-        await ctx.send(embed=embed)
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title="List of all available medals")
+            medalmodel = query.get_medallist(10, current_page)
+            for medal in medalmodel:
+                embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+
+            message = await ctx.send(embed=embed)
+            await message.add_reaction("◀️")
+            await message.add_reaction("▶️")
+
+            def check(reaction, user):
+                if reaction.message.id == message.id:
+                    return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+                else:
+                    return False
+            
+            while True:
+                reaction, user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
+                if str(reaction.emoji) == "▶️":
+                    current_page += 1
+                elif str(reaction.emoji) == "◀️" and current_page > 1:
+                    current_page -= 1
+                
+                embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title="List of all available medals")
+                medalmodel = query.get_medallist(10, current_page)
+                for medal in medalmodel:
+                    embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+                
+                await message.edit(embed=embed)
+                await message.remove_reaction(reaction, user)
+            await ctx.send(embed=embed)
+        except asyncio.TimeoutError:
+            pass
+        except Exception as e:
+            logging.critical(f'commands.leaderboard: {e}')
+            embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+            await ctx.send(embed=embed)
+        
 
     @commands.command(name="catch", help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
     async def catch(self, ctx, pokemon: str=None):
