@@ -64,28 +64,42 @@ async def add_user_catch(bot, user_id):
     except Exception as e:
         logging.critical(f'add_user_catch: {e} | {user_id}')
 
-def get_hof_titles(user_id):
-    titles = []
-    catches = get_max_from_userstatmodel(UserStatModel.catches)
-    if utility.get_userid_in_max_statmodel(user_id, catches):
-        titles.append(HallOfFame.catches)
+# Returns the max value of a given attribute in UserStatModel
+def get_max_attribute(attribute):
+    return (UserStatModel
+                .select(fn.MAX(attribute))
+                .scalar()
+            )
 
-    legendary = get_max_from_userstatmodel(UserStatModel.legendary)
-    if utility.get_userid_in_max_statmodel(user_id, legendary):
-        titles.append(HallOfFame.legendary)
+def get_hof_medals(username):
+    medals = []
 
-    mythical = get_max_from_userstatmodel(UserStatModel.mythical)
-    if utility.get_userid_in_max_statmodel(user_id, mythical):
-        titles.append(HallOfFame.mythical)
+    catches = get_max_attribute(UserStatModel.catches)
+    catches_users = get_username_by_stat(UserStatModel.ultrabeast, catches)
+    if username in catches_users:
+        medals.append(HallOfFame.catches)
+    
+    legendary = get_max_attribute(UserStatModel.legendary)
+    legendary_users = get_username_by_stat(UserStatModel.ultrabeast, legendary)
+    if username in legendary_users:
+        medals.append(HallOfFame.legendary)
 
-    ultrabeast = get_max_from_userstatmodel(UserStatModel.ultrabeast)
-    if utility.get_userid_in_max_statmodel(user_id, ultrabeast):
-        titles.append(HallOfFame.ultrabeast)
+    mythical = get_max_attribute(UserStatModel.mythical)
+    mythical_users = get_username_by_stat(UserStatModel.ultrabeast, mythical)
+    if username in mythical_users:
+        medals.append(HallOfFame.mythical)
 
-    shiny = get_max_from_userstatmodel(UserStatModel.shiny)
-    if utility.get_userid_in_max_statmodel(user_id, shiny):
-        titles.append(HallOfFame.shiny)
-    return titles
+    ultrabeast = get_max_attribute(UserStatModel.ultrabeast)
+    ultrabeast_users = get_username_by_stat(UserStatModel.ultrabeast, ultrabeast)
+    if username in ultrabeast_users:
+        medals.append(HallOfFame.ultrabeast)
+
+    shiny = get_max_attribute(UserStatModel.shiny)
+    shiny_users = get_username_by_stat(UserStatModel.shiny, shiny)
+    if username in shiny_users:
+        medals.append(HallOfFame.shiny)
+    
+    return medals
 
 # Returns sum of attributes, by a user, before and after date
 def get_max_day(user_id):
@@ -133,13 +147,6 @@ def get_username_by_stat(attribute, value):
 # Get UserModel by user_id
 def get_user_by_userid(user_id):
     return UserModel.get(UserModel.user_id == user_id)
-
-# Gets UserStatModel with max <attribute>
-def get_max_from_userstatmodel(attribute):
-    subquery = UserStatModel.select(fn.MAX(attribute))
-    return (UserStatModel
-            .select()
-            .where(attribute == subquery))
 
 # Gets <amount> catches, after <after_date> on page: <page>
 def get_top_attribute_desc(attribute, amount, page, after_date):

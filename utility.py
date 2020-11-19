@@ -34,13 +34,6 @@ def is_admin(author, admin_list):
     else:
         return str(author) in admin_list
 
-# Returns boolean if user_id is in max_statmodel
-def get_userid_in_max_statmodel(user_id, max_statmodel):
-    for stat in max_statmodel:
-        if stat.user_id.user_id == user_id:
-            return True
-    return False
-
 # returns emote for the given HallOfFame title
 def get_hof_emote(title):
     if title == HallOfFame.catches:
@@ -71,7 +64,7 @@ def get_title_author_by_timeflag(timeflag):
         end_month = today.replace(day=28) + timedelta(days=4)
         end_month = end_month - timedelta(days=end_month.day)
         end_month = datetime.combine(end_month, datetime.min.time()) + timedelta(days=1)
-        
+
         time_remaining = str(end_month - datetime.now()).split('.')[0]
         return f'{str(current_month)}', time_remaining
     elif timeflag == TimeFlag.WEEK:

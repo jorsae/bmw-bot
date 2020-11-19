@@ -33,7 +33,7 @@ class Ranking(commands.Cog):
     @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ultrabeast, --shiny`')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
-        if page > 100:
+        if page > 20:
             await ctx.send('Please put a more realistic number...')
             return
         
@@ -110,7 +110,7 @@ class Ranking(commands.Cog):
             total_medals = medals.get_medals(sum_day, sum_all)
 
             medals_text = ''
-            for medal in query.get_hof_titles(user.user_id):
+            for medal in query.get_hof_medals(f'{ctx.author.name}#{ctx.author.discriminator}'):
                 medals_text += f'{utility.get_hof_emote(medal)} '
             for medal in total_medals:
                 medals_text += f'{medal} '
@@ -178,34 +178,25 @@ class Ranking(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
             embed.add_field(name='Hall of Fame [daily records]', value=f'For achieving the highest amount of catches in a single day\nThe medals will be displayed in your `{constants.CURRENT_PREFIX}profile`')
             
-            catches = UserStatModel.select(fn.MAX(UserStatModel.catches)).scalar()
+            catches = query.get_max_attribute(UserStatModel.catches)
             catches_users = "\n".join(query.get_username_by_stat(UserStatModel.catches, catches))
 
-            legendary = UserStatModel.select(fn.MAX(UserStatModel.legendary)).scalar()
+            legendary = query.get_max_attribute(UserStatModel.legendary)
             legendary_users = "\n".join(query.get_username_by_stat(UserStatModel.legendary, legendary))
 
-            mythical = UserStatModel.select(fn.MAX(UserStatModel.mythical)).scalar()
+            mythical = query.get_max_attribute(UserStatModel.mythical)
             mythical_users = "\n".join(query.get_username_by_stat(UserStatModel.mythical, mythical))
 
-            ultrabeast = UserStatModel.select(fn.MAX(UserStatModel.ultrabeast)).scalar()
+            ultrabeast = query.get_max_attribute(UserStatModel.ultrabeast)
             ultrabeast_users = "\n".join(query.get_username_by_stat(UserStatModel.ultrabeast, ultrabeast))
 
-            shiny = UserStatModel.select(fn.MAX(UserStatModel.shiny)).scalar()
+            shiny = query.get_max_attribute(UserStatModel.shiny)
             shiny_users = "\n".join(query.get_username_by_stat(UserStatModel.shiny, shiny))
 
-            max_catches = query.get_max_from_userstatmodel(UserStatModel.catches)
             embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.catches)} All pokémon: {catches:,}', value=f'{catches_users}', inline=False)
-            
-            max_legendary = query.get_max_from_userstatmodel(UserStatModel.legendary)
             embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.legendary)} Legendary: {legendary}', value=f'{legendary_users}', inline=False)
-            
-            max_mythical = query.get_max_from_userstatmodel(UserStatModel.mythical)
             embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.mythical)} Mythical: {mythical}', value=f'{mythical_users}', inline=False)
-
-            max_ultrabeast = query.get_max_from_userstatmodel(UserStatModel.ultrabeast)
             embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.ultrabeast)} Ultra Beast: {ultrabeast}', value=f'{ultrabeast_users}', inline=False)
-
-            max_shiny = query.get_max_from_userstatmodel(UserStatModel.shiny)
             embed.add_field(name=f'{utility.get_hof_emote(HallOfFame.shiny)} Shiny: {shiny}', value=f'{shiny_users}', inline=False)
             
             await ctx.send(embed=embed)
