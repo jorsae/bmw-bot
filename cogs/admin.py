@@ -37,6 +37,30 @@ class Admin(commands.Cog):
         new_medal, created = MedalModel.get_or_create(description=description, pokemon_category=pokemon_category, value_requirement=value_requirement, time_category=time_category, medal=medal)
         await ctx.send(f'New medal, created: {created}')
 
+    @commands.command(name='delmedal', help=f'Deletes a medal: `{constants.CURRENT_PREFIX}delmedal <medal_id>`')
+    async def delmedal(self, ctx, medal_id):
+        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
+        if is_admin is False:
+            return
+        
+        if medal_id is None:
+            await ctx.send('medal_id is None')
+        deleted = MedalModel.delete().where(MedalModel.medal_id == medal_id).execute()
+        await ctx.send(f'Deleted: {deleted} MedalModels')
+
+    @commands.command(name='dumpmedal', help=f'Displays medals', hidden=True)
+    async def dumpmedal(self, ctx):
+        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
+        if is_admin is False:
+            return
+        query = (MedalModel
+                .select()
+                .order_by(MedalModel.pokemon_category))
+        output = ''
+        for medal in query:
+            output += f'[{medal.medal_id}] {medal.description}: {medal.pokemon_category}, {medal.time_category}\n'
+        await ctx.send(output)
+
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
