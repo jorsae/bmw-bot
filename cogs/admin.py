@@ -34,10 +34,11 @@ class Admin(commands.Cog):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
         if is_admin is False:
             return
+        
         new_medal, created = MedalModel.get_or_create(description=description, pokemon_category=pokemon_category, value_requirement=value_requirement, time_category=time_category, medal=medal)
         await ctx.send(f'New medal, created: {created}')
 
-    @commands.command(name='delmedal', help=f'Deletes a medal: `{constants.CURRENT_PREFIX}delmedal <medal_id>`')
+    @commands.command(name='delmedal', help=f'Deletes a medal: `{constants.CURRENT_PREFIX}delmedal <medal_id>`', hidden=True)
     async def delmedal(self, ctx, medal_id):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
         if is_admin is False:
