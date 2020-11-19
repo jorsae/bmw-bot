@@ -9,6 +9,7 @@ from UserModel import UserModel
 from UserStatModel import UserStatModel
 from RareDefinitionModel import RareDefinitionModel
 from PokemonModel import PokemonModel
+from MedalModel import MedalModel
 
 class Admin(commands.Cog):
     def __init__(self, bot, settings):
@@ -27,6 +28,14 @@ class Admin(commands.Cog):
 
         await ctx.send(f'Total users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}')
     
+    @commands.command(name='addmedal', help=f'Adds a medal to MedalList.\nUsage: `{constants.CURRENT_PREFIX}addmedal description pokemon_category value_requirement time_category medal`')
+    async def addmedal(self, ctx, description, pokemon_category, value_requirement, time_category, medal):
+        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
+        if is_admin is False:
+            return
+        new_medal, created = MedalModel.get_or_create(description=description, pokemon_category=pokemon_category, value_requirement=value_requirement, time_category=time_category, medal=medal)
+        await ctx.send(f'New medal, created: {created}')
+
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
