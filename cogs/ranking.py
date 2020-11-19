@@ -30,7 +30,7 @@ class Ranking(commands.Cog):
     @flags.add_flag("--month", action="store_true", default=True)
     @flags.add_flag("--all", action="store_true", default=False)
     @flags.add_flag("page", nargs="?", type=str, default=1)
-    @flags.command(name="leaderboard", help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ultrabeast, --shiny`')
+    @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ultrabeast, --shiny`')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
         if page > 100:
@@ -85,8 +85,9 @@ class Ranking(commands.Cog):
             rank += 1
         return embed
     
-    @commands.command(name="profile", help="Displays your profile")
-    async def profile(self, ctx):
+    @commands.command(name='profile', aliases=['p'], help="Displays your profile")
+    async def profile(self, ctx, **flags):
+        print(f'{flags=}')
         try:
             user = UserModel.get(UserModel.discord_id == ctx.author.id)
             total = query.get_sum(user.user_id).get()
@@ -121,7 +122,7 @@ class Ranking(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
-    @commands.command(name="server", help='Displays pokémon statistics for BMW')
+    @commands.command(name='server', aliases=['s'], help='Displays pokémon statistics for BMW')
     async def server(self, ctx):
         total_caught = await query.get_pokemon_caught()
         try:
@@ -146,7 +147,7 @@ class Ranking(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
-    @commands.command(name="rares", help=f'Displays how many rare pokémon have been caught')
+    @commands.command(name='rares', aliases=['r'], help=f'Displays how many rare pokémon have been caught')
     async def rares(self, ctx):
         try:
             legendary = UserStatModel.select(fn.SUM(UserStatModel.legendary)).scalar()

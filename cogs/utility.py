@@ -50,3 +50,4 @@ class Utility(commands.Cog):
                     embed.add_field(name=f'{self.settings.prefix}{command}', value=command.help, inline=False)
                 last_command = str(command)
         await ctx.send(embed=embed)
+    
