@@ -28,8 +28,6 @@ def parse_time_flags(**flags):
 
 # returns true if the user is an admin. False otherwise
 def is_admin(author, admin_list):
-    print(f'{author=}')
-    print(f'{admin_list=}')
     if type(author) == str:
         if author in admin_list:
             logging.warning(f'is_admin == true: {author}')
