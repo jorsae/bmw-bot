@@ -10,6 +10,7 @@ import time
 import utility
 import constants
 from PokemonModel import PokemonModel
+from MedalModel import MedalModel
 
 class Utility(commands.Cog):
     def __init__(self, bot, settings):
@@ -18,7 +19,14 @@ class Utility(commands.Cog):
     
     @commands.command(name='medal', alias=['m', 'medals'], help=f'Displays list of all available medals')
     async def medals(self, ctx):
-        await ctx.send('medals')
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title="List of all available medals")
+        query = (MedalModel
+                    .select()
+                    .order_by(MedalModel.pokemon_category))
+        for medal in query:
+            embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal}, category: {medal.pokemon_category}', inline=False)
+
+        await ctx.send(embed=embed)
 
     @commands.command(name="catch", help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
     async def catch(self, ctx, pokemon: str=None):
