@@ -25,8 +25,9 @@ class Admin(commands.Cog):
         total_userstat = UserStatModel.select(fn.COUNT()).scalar()
         total_rares_definition = RareDefinitionModel.select(fn.COUNT()).scalar()
         total_pokemon = PokemonModel.select(fn.COUNT()).scalar()
+        total_medals = MedalModel.select(fn.COUNT()).scalar()
 
-        await ctx.send(f'Total users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}')
+        await ctx.send(f'Total users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}\nTotal Medals: {total_medals}')
     
     @commands.command(name='addmedal', help=f'Adds a medal to MedalList.\nUsage: `{constants.CURRENT_PREFIX}addmedal description pokemon_category value_requirement time_category medal`')
     async def addmedal(self, ctx, description, pokemon_category, value_requirement, time_category, medal):
