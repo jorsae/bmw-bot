@@ -21,7 +21,7 @@ from settings import Settings
 import cogs
 
 settings = Settings('../settings.json')
-bot = discord_commands.Bot(command_prefix=constants.DEFAULT_PREFIX)
+bot = discord_commands.Bot(command_prefix=discord_commands.when_mentioned_or(constants.DEFAULT_PREFIX))
 bot.remove_command('help')
 
 @bot.event
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     setup_logging()
     setup_database()
     settings.parse_settings()
-    bot.command_prefix = settings.prefix
+    bot.command_prefix = discord_commands.when_mentioned_or(settings.prefix)
     constants.CURRENT_PREFIX = settings.prefix # Way to have prefix in command.help description
     build_rares()
 
