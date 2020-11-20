@@ -27,6 +27,7 @@ async def add_pokemon(bot, discord_id, rarity, is_shiny):
         # Check if we need to add rarity or shiny
         legendary_count, mythical_count, ultrabeast_count = 0, 0, 0
         if rarity is not None:
+            logging.info(f'({discord_user.name}#{discord_user.discriminator}) - [{message.guild.name}]#{message.channel.name} Found rare: {message.content}')
             if rarity.rarity == 'legendary':
                 legendary_count = 1
             elif rarity.rarity == 'mythical':
@@ -196,7 +197,7 @@ def get_rare_definition(pokemon):
         return None
 
 # Returns count of all pokemon caught
-async def get_pokemon_caught(alltime=False):
+def get_pokemon_caught(alltime=False):
     try:
         if alltime:
             return UserStatModel.select(fn.SUM(UserStatModel.catches)).scalar()

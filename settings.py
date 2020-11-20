@@ -9,6 +9,7 @@ class Settings():
         self.channel_reminder = None
         self.admin = None
         self.token = None
+        self.total_pokemon = 0
         self.prefix = constants.DEFAULT_PREFIX
     
     def parse_settings(self):

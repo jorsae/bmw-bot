@@ -5,6 +5,7 @@ from discord.ext import commands, flags
 
 import utility
 import constants
+import query
 from UserModel import UserModel
 from UserStatModel import UserStatModel
 from RareDefinitionModel import RareDefinitionModel
@@ -72,6 +73,11 @@ class Admin(commands.Cog):
         for medal in query:
             output += f'[{medal.medal_id}] {medal.description}: {medal.pokemon_category}, {medal.time_category}\n'
         await ctx.send(output)
+
+    @commands.command(name='sync', help=f'Check pokémon', hidden=True)
+    async def sync(self, ctx):
+        total_caught = query.get_pokemon_caught(alltime=True)
+        await ctx.send(f'db: {total_caught}, settings: {self.settings.total_pokemon}')
 
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):

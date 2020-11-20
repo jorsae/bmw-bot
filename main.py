@@ -44,12 +44,12 @@ async def on_message(message: discord.Message):
         logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Command: "{message.content}"')
     
     if str(message.author) == constants.POKETWO:
-        await process_poketwo(bot, message.content)
+        await process_poketwo(bot, message)
 
     await bot.process_commands(message)
 
-async def process_poketwo(bot, content):
-    if content is None:
+async def process_poketwo(bot, message):
+    if message.content is None:
         return
     
     content = content.lower()
@@ -63,14 +63,16 @@ async def process_poketwo(bot, content):
         rarity = query.get_rare_definition(pokemon)
 
         # Handle shiny count
-        is_shiny = pokemon_is_shiny(content)
+        is_shiny = pokemon_is_shiny(message)
+
+        settings.total_pokemon += 1
         
         await query.add_pokemon(bot, discord_id, rarity, is_shiny)
         query.add_pokemon_catch(pokemon)
 
-def pokemon_is_shiny(content):
-    if 'these colors seem unusual..' in content:
-        logging.info(f'Found shiny: {content}')
+def pokemon_is_shiny(message):
+    if 'these colors seem unusual..' in message.content:
+        logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Found shiny: {message.content}')
         return True
     else:
         return False
@@ -138,9 +140,12 @@ if __name__ == '__main__':
     bot.command_prefix = discord_commands.when_mentioned_or(settings.prefix)
     constants.CURRENT_PREFIX = settings.prefix # Way to have prefix in command.help description
     build_rares()
-
+    
     bot.add_cog(cogs.Ranking(bot, settings))
     bot.add_cog(cogs.Utility(bot, settings))
     bot.add_cog(cogs.Admin(bot, settings))
+
+    # Sync settings.total_pokemon
+    settings.total_pokemon = total_caught = query.get_pokemon_caught(alltime=True)
     
     bot.run(settings.token)
