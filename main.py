@@ -146,7 +146,7 @@ if __name__ == '__main__':
     bot.add_cog(cogs.Admin(bot, settings))
 
     # Sync settings.total_pokemon
-    settings.total_pokemon_before_parse = total_caught = query.get_pokemon_caught(alltime=True)
+    settings.total_pokemon_before_parse = query.get_pokemon_caught(alltime=True)
     settings.total_pokemon_after_parse = settings.total_pokemon_before_parse
     
     bot.run(settings.token)
