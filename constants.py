@@ -3,6 +3,8 @@ import re
 
 RARE_DEFINITION_FOLDER = 'RareDefinition'
 
+ITEMS_PER_PAGE = 10
+
 # Discord
 COLOUR_OK = Colour.green()
 COLOUR_NEUTRAL = Colour.orange()

@@ -65,6 +65,13 @@ async def add_user_catch(bot, user_id):
     except Exception as e:
         logging.critical(f'add_user_catch: {e} | {user_id}')
 
+# Returns the count of a given table
+def get_table_count(table):
+    return (table
+            .select(fn.COUNT())
+            .scalar()
+            )
+
 # Returns the max value of a given attribute in UserStatModel
 def get_max_attribute(attribute):
     return (UserStatModel

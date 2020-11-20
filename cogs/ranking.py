@@ -3,6 +3,7 @@ from peewee import *
 from discord.ext import commands, flags
 from datetime import datetime, date
 import asyncio
+import math
 import logging
 
 
@@ -33,19 +34,29 @@ class Ranking(commands.Cog):
     @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ultrabeast, --shiny`')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
-        if page > 20:
-            await ctx.send('Please put a more realistic number...')
-            return
-        
         date, time_flag = utility.parse_time_flags(**flags)
         attribute, field_attribute = utility.parse_attribute_flags(**flags)
+
+        total_ranks = (UserStatModel
+                        .select()
+                        .where(
+                            (UserStatModel.date >= date) &
+                            (attribute > 0)
+                            )
+                        .group_by(UserStatModel.user_id)
+                        .count()
+                        )
+        max_page = math.ceil(total_ranks / constants.ITEMS_PER_PAGE)
         
+        if page > max_page:
+            page = max_page
+
         try:
             current_page = page
 
-            top_catches = query.get_top_attribute_desc(attribute, 10, current_page, date)
+            top_catches = query.get_top_attribute_desc(attribute, constants.ITEMS_PER_PAGE, current_page, date)
 
-            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, page, time_flag, field_attribute))
+            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, current_page, max_page, time_flag, field_attribute))
             await message.add_reaction("◀️")
             await message.add_reaction("▶️")
             
@@ -57,12 +68,12 @@ class Ranking(commands.Cog):
             
             while True:
                 reaction, user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
-                if str(reaction.emoji) == "▶️":
+                if str(reaction.emoji) == "▶️" and current_page < max_page:
                     current_page += 1
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
-                top_catches = query.get_top_attribute_desc(attribute, 10, current_page, date)
-                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page, time_flag, field_attribute))
+                top_catches = query.get_top_attribute_desc(attribute, constants.ITEMS_PER_PAGE, current_page, date)
+                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page, max_page, time_flag, field_attribute))
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:
             pass
@@ -71,12 +82,13 @@ class Ranking(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
-    def create_leaderboard_embed(self, query, page, time_flag, field_attribute):
-        rank = (page * 10) - 10 + 1
-        top_rank = '10' if page == 1 else f'{(page*10)-9}-{page*10}'
+    def create_leaderboard_embed(self, query, current_page, max_page, time_flag, field_attribute):
+        rank = (current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1
+        top_rank = {constants.ITEMS_PER_PAGE} if current_page == 1 else f'{(current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1} - {current_page * constants.ITEMS_PER_PAGE}'
         
         title, author = utility.get_title_author_by_timeflag(time_flag)
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{str(title)}]')
+        embed.set_footer(text=f'Page: {current_page}/{max_page}')
         embed.set_author(name=f'Time remaining: {str(author)}')
 
         for user_stat in query:

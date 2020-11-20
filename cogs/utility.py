@@ -4,8 +4,9 @@ from discord.ext import commands, flags
 from datetime import datetime
 import string
 import asyncio
-import logging
+import math
 import time
+import logging
 
 import utility
 import query
@@ -18,15 +19,20 @@ class Utility(commands.Cog):
         self.bot = bot
         self.settings = settings
     
-    @commands.command(name='medal', alias=['m', 'medals'], help=f'Displays list of all available medals')
+    @commands.command(name='medal', aliases=['m', 'medals'], help=f'Displays list of all available medals')
     async def medals(self, ctx):
+        total_medals_available = query.get_table_count(MedalModel)
+        max_page = math.ceil(total_medals_available / constants.ITEMS_PER_PAGE)
         try:
             current_page = 1
 
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title="List of all available medals")
-            medalmodel = query.get_medallist(10, current_page)
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'List of all available medals [{total_medals_available}]')
+            embed.set_footer(text=f'Page: {current_page}/{max_page}')
+            medalmodel = query.get_medallist(constants.ITEMS_PER_PAGE, current_page)
+            medal_number = (current_page - 1) * constants.ITEMS_PER_PAGE + 1
             for medal in medalmodel:
-                embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+                embed.add_field(name=f'{medal_number}. {medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+                medal_number += 1
 
             message = await ctx.send(embed=embed)
             await message.add_reaction("◀️")
@@ -40,15 +46,18 @@ class Utility(commands.Cog):
             
             while True:
                 reaction, user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
-                if str(reaction.emoji) == "▶️":
+                if str(reaction.emoji) == "▶️" and current_page < max_page:
                     current_page += 1
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
                 
-                embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title="List of all available medals")
-                medalmodel = query.get_medallist(10, current_page)
+                embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'List of all available medals [{total_medals_available}]')
+                embed.set_footer(text=f'Page: {current_page}/{max_page}')
+                medalmodel = query.get_medallist(constants.ITEMS_PER_PAGE, current_page)
+                medal_number = (current_page - 1) * constants.ITEMS_PER_PAGE + 1
                 for medal in medalmodel:
-                    embed.add_field(name=f'{medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+                    embed.add_field(name=f'{medal_number}. {medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+                    medal_number += 1
                 
                 await message.edit(embed=embed)
                 await message.remove_reaction(reaction, user)
