@@ -54,6 +54,8 @@ async def process_poketwo(bot, message):
     
     content = message.content.lower()
     if 'you caught a level' in content:
+        settings.total_pokemon += 1
+
         discord_id, pokemon = get_discordid_pokemon(content)
         if discord_id is None or pokemon is None:
             logging.critical(f'process_poketwo error: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
@@ -65,8 +67,6 @@ async def process_poketwo(bot, message):
         # Handle shiny count
         is_shiny = pokemon_is_shiny(message)
 
-        settings.total_pokemon += 1
-        
         await query.add_pokemon(bot, discord_id, rarity, is_shiny)
         query.add_pokemon_catch(pokemon)
 
@@ -146,6 +146,7 @@ if __name__ == '__main__':
     bot.add_cog(cogs.Admin(bot, settings))
 
     # Sync settings.total_pokemon
-    settings.total_pokemon = total_caught = query.get_pokemon_caught(alltime=True)
+    settings.total_pokemon_before_parse = total_caught = query.get_pokemon_caught(alltime=True)
+    settings.total_pokemon_after_parse = settings.total_pokemon_before_parse
     
     bot.run(settings.token)
