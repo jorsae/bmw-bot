@@ -25,6 +25,11 @@ bot = discord_commands.Bot(command_prefix=discord_commands.when_mentioned_or(con
 bot.remove_command('help')
 
 @bot.event
+async def on_guild_join(guild):
+    discord_user = await bot.fetch_user(321079228810657793)
+    await discord_user.send(f'Joined server: {guild.name}')
+
+@bot.event
 async def on_message(message: discord.Message):
     await bot.wait_until_ready()
     message.content = (
@@ -34,6 +39,7 @@ async def on_message(message: discord.Message):
         .replace("‘", "′")
         .replace("’", "′")
     )
+    
     if message.content.startswith(settings.prefix):
         logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Command: "{message.content}"')
     
