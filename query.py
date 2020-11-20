@@ -114,11 +114,11 @@ def get_hof_medals(username):
 def get_max_day(user_id):
     return (UserStatModel
             .select(
-                fn.SUM(UserStatModel.catches).alias("sum_catches"),
-                fn.SUM(UserStatModel.legendary).alias("sum_legendary"),
-                fn.SUM(UserStatModel.mythical).alias("sum_mythical"),
-                fn.SUM(UserStatModel.ultrabeast).alias("sum_ultrabeast"),
-                fn.SUM(UserStatModel.shiny).alias("sum_shiny"),
+                fn.MAX(UserStatModel.catches).alias("sum_catches"),
+                fn.MAX(UserStatModel.legendary).alias("sum_legendary"),
+                fn.MAX(UserStatModel.mythical).alias("sum_mythical"),
+                fn.MAX(UserStatModel.ultrabeast).alias("sum_ultrabeast"),
+                fn.MAX(UserStatModel.shiny).alias("sum_shiny"),
                 )
             .where(
                 UserStatModel.user_id == user_id
