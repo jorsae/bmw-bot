@@ -54,7 +54,7 @@ async def process_poketwo(bot, message):
     
     content = message.content.lower()
     if 'you caught a level' in content:
-        settings.total_pokemon += 1
+        settings.total_pokemon_before_parse += 1
 
         discord_id, pokemon = get_discordid_pokemon(content)
         if discord_id is None or pokemon is None:
@@ -69,6 +69,7 @@ async def process_poketwo(bot, message):
 
         await query.add_pokemon(bot, discord_id, rarity, is_shiny)
         query.add_pokemon_catch(pokemon)
+        settings.total_pokemon_after_parse += 1
 
 def pokemon_is_shiny(message):
     if 'these colors seem unusual..' in message.content:
