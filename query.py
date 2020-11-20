@@ -10,7 +10,7 @@ from RareDefinitionModel import RareDefinitionModel
 from UserStatModel import UserStatModel
 from MedalModel import MedalModel
 
-async def add_pokemon(bot, discord_id, rarity, is_shiny):
+async def add_pokemon(bot, discord_id, rarity, is_shiny, message):
     today = datetime.now().date()
     try:
         # Ensure User is in database
