@@ -84,7 +84,7 @@ class Ranking(commands.Cog):
 
     def create_leaderboard_embed(self, query, current_page, max_page, time_flag, field_attribute):
         rank = (current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1
-        top_rank = {constants.ITEMS_PER_PAGE} if current_page == 1 else f'{(current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1} - {current_page * constants.ITEMS_PER_PAGE}'
+        top_rank = constants.ITEMS_PER_PAGE if current_page == 1 else f'{(current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1} - {current_page * constants.ITEMS_PER_PAGE}'
         
         title, author = utility.get_title_author_by_timeflag(time_flag)
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{str(title)}]')
