@@ -52,7 +52,7 @@ async def process_poketwo(bot, message):
     if message.content is None:
         return
     
-    content = content.lower()
+    content = message.content.lower()
     if 'you caught a level' in content:
         discord_id, pokemon = get_discordid_pokemon(content)
         if discord_id is None or pokemon is None:
