@@ -41,15 +41,15 @@ def is_admin(author, admin_list):
 # returns emote for the given HallOfFame title
 def get_hof_emote(title):
     if title == HallOfFame.catches:
-        return '<:pokedex:779038741045182495>'
+        return '<:GoMedalPokedex:779248403502202901>'
     if title == HallOfFame.legendary:
-        return '<:mewtwo:779038066807537664>'
+        return '<:GoMedalLegendary:779249178525564947>'
     if title == HallOfFame.mythical:
-        return '<:mew:779031900610232340>'
+        return '<:GoMedalMythical:779248236892258307>'
     if title == HallOfFame.ultrabeast:
-        return '<:nihilego:779038578634260600>'
+        return '<:GoMedalUltrabeast:779247337977413642>'
     if title == HallOfFame.shiny:
-        return '<:shiny_gyarados:779039693181419561>'
+        return '<:GoMedalShiny:779250293849587743>'
     
 # Converts a string to integer, defaults to 1
 def str_to_int(value):
