@@ -76,6 +76,10 @@ class Admin(commands.Cog):
 
     @commands.command(name='sync', help=f'Check sync', hidden=True)
     async def sync(self, ctx):
+        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
+        if is_admin is False:
+            return
+
         total_caught = query.get_pokemon_caught(alltime=True)
         await ctx.send(f'before parse: {self.settings.total_pokemon_before_parse}\ndb: {total_caught}\nafter parse: {self.settings.total_pokemon_after_parse}')
 
