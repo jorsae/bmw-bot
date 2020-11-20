@@ -125,7 +125,7 @@ def setup_logging():
 
 @tasks.loop(seconds=120, reconnect=True)
 async def change_status():
-    total_caught = await query.get_pokemon_caught(alltime=True)
+    total_caught = query.get_pokemon_caught(alltime=True)
     total_caught = 0 if total_caught is None else total_caught
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{total_caught:,} caught'))
 
