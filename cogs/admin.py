@@ -74,15 +74,6 @@ class Admin(commands.Cog):
             output += f'[{medal.medal_id}] {medal.description}: {medal.pokemon_category}, {medal.time_category}\n'
         await ctx.send(output)
 
-    @commands.command(name='sync', help=f'Check sync', hidden=True)
-    async def sync(self, ctx):
-        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
-        if is_admin is False:
-            return
-
-        total_caught = query.get_pokemon_caught(alltime=True)
-        await ctx.send(f'before parse: {self.settings.total_pokemon_before_parse}\ndb: {total_caught}\nafter parse: {self.settings.total_pokemon_after_parse}')
-
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])

@@ -10,42 +10,6 @@ from RareDefinitionModel import RareDefinitionModel
 from UserStatModel import UserStatModel
 from MedalModel import MedalModel
 
-async def add_pokemon(bot, discord_id, rarity, is_shiny, message):
-    today = datetime.now().date()
-    try:
-        # Ensure User is in database
-        discord_user = await bot.fetch_user(discord_id)
-        user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_id).scalar()
-        if user_id is None:
-            username = f'{discord_user.name}#{discord_user.discriminator}'
-            user, created = UserModel.get_or_create(discord_id=discord_id, username=username)
-            user_id = user.user_id
-
-        # Ensure UserStatModel object exist for user today
-        userstat, created = UserStatModel.get_or_create(date=today, user_id=user_id)
-        
-        # Check if we need to add rarity or shiny
-        legendary_count, mythical_count, ultrabeast_count = 0, 0, 0
-        if rarity is not None:
-            logging.info(f'({discord_user.name}#{discord_user.discriminator}) - [{message.guild.name}]#{message.channel.name} Found rare: {message.content}')
-            if rarity.rarity == 'legendary':
-                legendary_count = 1
-            elif rarity.rarity == 'mythical':
-                mythical_count = 1
-            elif rarity.rarity == 'ultra beast':
-                ultrabeast_count = 1
-        shiny_count = 1 if is_shiny else 0
-
-        UserStatModel.update(catches=UserStatModel.catches + 1, legendary=UserStatModel.legendary + legendary_count, 
-                            mythical=UserStatModel.mythical + mythical_count,
-                            ultrabeast=UserStatModel.ultrabeast + ultrabeast_count,
-                            shiny=UserStatModel.shiny + shiny_count).where(
-                                (UserStatModel.user_id == user_id) &
-                                (UserStatModel.date == today)
-                            ).execute()
-    except Exception as e:
-        logging.critical(f'add_pokemon: {e} | discord_id: {discord_id}, rarity: {rarity}, is_shiny: {is_shiny}')
-
 def add_pokemon_catch(pokemon):
     try:
         pokemon, _ = PokemonModel.get_or_create(pokemon=pokemon)
@@ -188,7 +152,7 @@ def add_rare_definition(pokemon, rarity):
 # Gets the rarity description for a given pokemon. e.g: legendary, mythical
 def get_rare_definition(pokemon):
     try:
-        rarity = RareDefinitionModel.select().where(RareDefinitionModel.pokemon == pokemon).get()
+        rarity = RareDefinitionModel.select(RareDefinitionModel.pokemon).where(RareDefinitionModel.pokemon == pokemon).scalar()
         return rarity
     except DoesNotExist:
         return None

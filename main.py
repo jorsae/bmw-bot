@@ -6,10 +6,11 @@ import re
 import logging
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
-from discord.ext import tasks, flags
+from discord.ext import tasks
 
 import query
 import constants
+from poketwo import Poketwo
 import utility
 from BaseModel import BaseModel, database
 from UserModel import UserModel
@@ -23,6 +24,8 @@ import cogs
 settings = Settings('../settings.json')
 bot = discord_commands.Bot(command_prefix=discord_commands.when_mentioned_or(constants.DEFAULT_PREFIX))
 bot.remove_command('help')
+
+poketwo = Poketwo(bot, settings)
 
 @bot.event
 async def on_guild_join(guild):
@@ -44,64 +47,9 @@ async def on_message(message: discord.Message):
         logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Command: "{message.content}"')
     
     if str(message.author) == constants.POKETWO:
-        await process_poketwo(bot, message)
+        await poketwo.process_message(message)
 
     await bot.process_commands(message)
-
-async def process_poketwo(bot, message):
-    if message.content is None:
-        return
-    
-    content = message.content.lower()
-    if 'you caught a level' in content:
-        settings.total_pokemon_before_parse += 1
-
-        discord_id, pokemon = get_discordid_pokemon(content)
-        if discord_id is None or pokemon is None:
-            logging.critical(f'process_poketwo error: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
-            return
-        
-        # Handle rarity count
-        rarity = query.get_rare_definition(pokemon)
-
-        # Handle shiny count
-        is_shiny = pokemon_is_shiny(message)
-
-        await query.add_pokemon(bot, discord_id, rarity, is_shiny, message)
-        query.add_pokemon_catch(pokemon)
-        settings.total_pokemon_after_parse += 1
-
-def pokemon_is_shiny(message):
-    if 'these colors seem unusual..' in message.content:
-        logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Found shiny: {message.content}')
-        return True
-    else:
-        return False
-
-def get_discordid_pokemon(content):
-    user = get_from_message(constants.GET_USER, content)
-    if user is not None:
-        user = get_from_message(constants.GET_ALL_NUMBERS, user)
-
-    pokemon = constants.GET_POKEMON.search(content)
-    if '♀️' in content:
-        pokemon = 'nidoran-f'
-    elif '♂️' in content:
-        pokemon = 'nidoran-m'
-    else:
-        pokemon = get_from_message(constants.GET_POKEMON, content)
-        if pokemon is not None:
-            pokemon = pokemon[2:len(pokemon) - 1]
-    return user, pokemon
-
-def get_from_message(regex, content):
-    get = regex.search(content)
-    if get:
-        get = get.group(0)
-        return get
-    else:
-        logging.warning(f'Failed to get: {content}')
-        return None
 
 def setup_database():
     database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel, MedalModel])
@@ -146,8 +94,4 @@ if __name__ == '__main__':
     bot.add_cog(cogs.Utility(bot, settings))
     bot.add_cog(cogs.Admin(bot, settings))
 
-    # Sync settings.total_pokemon
-    settings.total_pokemon_before_parse = query.get_pokemon_caught(alltime=True)
-    settings.total_pokemon_after_parse = settings.total_pokemon_before_parse
-    
     bot.run(settings.token)
