@@ -6,11 +6,7 @@ from discord.ext import commands, flags
 import utility
 import constants
 import query
-from models import UserModel
-from models import UserStatModel
-from models import RareDefinitionModel
-from models import PokemonModel
-from models import MedalModel
+from models import UserModel, UserStatModel, RareDefinitionModel, PokemonModel, MedalModel
 
 class Admin(commands.Cog):
     def __init__(self, bot, settings):

@@ -11,9 +11,7 @@ import constants
 import utility
 import query
 import medals
-from models import UserStatModel
-from models import UserModel
-from models import PokemonModel
+from models import UserStatModel, UserModel, PokemonModel
 from enumeration import TimeFlag, HallOfFame
 
 class Ranking(commands.Cog):

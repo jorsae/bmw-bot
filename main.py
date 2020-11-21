@@ -12,12 +12,7 @@ import query
 import constants
 from poketwo import Poketwo
 import utility
-from models import BaseModel, database
-from models import UserModel
-from models import PokemonModel
-from models import RareDefinitionModel
-from models import UserStatModel
-from models import MedalModel
+from models import *
 from settings import Settings
 import cogs
 
