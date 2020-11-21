@@ -19,9 +19,9 @@ class Poketwo():
         
         content = message.content.lower()
         if 'you caught a level' in content:
-            discord_id, pokemon = self.get_discordid_pokemon(content)
-            if discord_id is None or pokemon is None:
-                logging.critical(f'poketwo.process_message: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
+            discord_user, pokemon = await self.get_discorduser_pokemon(content)
+            if discord_user is None or pokemon is None:
+                logging.critical(f'poketwo.process_message: discord_id: {discord_user}, pokemon: {pokemon}. {content}')
                 return
             
             # Handle rarity count
@@ -30,20 +30,19 @@ class Poketwo():
             # Handle shiny count
             is_shiny = self.pokemon_is_shiny(content)
             if rarity is not None or is_shiny:
-                logging.info(f'Found rares/shiny: [{rarity}] - {pokemon}: {content}')
+                logging.info(f'[{discord_user.name}#{discord_user.discriminator}] ({rarity}): found rares/shiny:  - {pokemon}: {content}')
 
-            await self.add_pokemon(discord_id, rarity, is_shiny)
+            await self.add_pokemon(discord_user, rarity, is_shiny)
             query.add_pokemon_catch(pokemon)
 
-    async def add_pokemon(self, discord_id, rarity, is_shiny):
+    async def add_pokemon(self, discord_user, rarity, is_shiny):
         today = datetime.now().date()
         try:
             # Ensure User is in database
-            discord_user = await self.bot.fetch_user(discord_id)
-            user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_id).scalar()
+            user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_user.id).scalar()
             if user_id is None:
                 username = f'{discord_user.name}#{discord_user.discriminator}'
-                user, created = UserModel.get_or_create(discord_id=discord_id, username=username)
+                user, created = UserModel.get_or_create(discord_id=discord_user.id, username=username)
                 user_id = user.user_id
 
             # Ensure UserStatModel object exist for user today
@@ -69,26 +68,32 @@ class Poketwo():
         except Exception as e:
             logging.critical(f'add_pokemon: {e} | discord_id: {discord_id}, rarity: {rarity}, is_shiny: {is_shiny}')
 
-    def get_discordid_pokemon(self, content):
-        user = self.get_from_message(constants.GET_USER, content)
-        if user is not None:
-            user = self.get_from_message(constants.GET_ALL_NUMBERS, user)
+    async def get_discorduser_pokemon(self, content):
+        try:
+            # Getting user
+            user_id = self.get_from_message(constants.GET_USER, content)
+            if user_id is not None:
+                user_id = self.get_from_message(constants.GET_ALL_NUMBERS, user_id)
+            discord_user = await self.bot.fetch_user(user_id)
 
-        pokemon = constants.GET_POKEMON.search(content)
-        if '♀️' in content:
-            pokemon = 'nidoran-f'
-        elif '♂️' in content:
-            pokemon = 'nidoran-m'
-        else:
-            pokemon = self.get_from_message(constants.GET_POKEMON, content)
-            if pokemon is not None:
-                pokemon = pokemon[2:len(pokemon) - 1]
-        return user, pokemon
-
-
+            # Getting pokemon
+            pokemon = constants.GET_POKEMON.search(content)
+            if '♀️' in content:
+                pokemon = 'nidoran-f'
+            elif '♂️' in content:
+                pokemon = 'nidoran-m'
+            else:
+                pokemon = self.get_from_message(constants.GET_POKEMON, content)
+                if pokemon is not None:
+                    pokemon = pokemon[2:len(pokemon) - 1]
+            
+            return discord_user, pokemon
+        except Exception as e:
+            logging.critical(f'poketwo.get_user_pokemon: {e}')
+            return None, None
+    
     def pokemon_is_shiny(self, content):
         if 'these colors seem unusual..' in content:
-            logging.info(f'Found shiny: {content}')
             return True
         else:
             return False
