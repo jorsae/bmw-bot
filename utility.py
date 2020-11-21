@@ -10,7 +10,7 @@ def parse_attribute_flags(**flags):
         return UserStatModel.legendary, 'Legendary'
     elif flags["mythical"]:
         return UserStatModel.mythical, 'Mythical'
-    elif flags["ultrabeast"]:
+    elif flags["ub"]:
         return UserStatModel.ultrabeast, 'Ultra beast'
     elif flags["shiny"]:
         return UserStatModel.shiny, 'Shiny'

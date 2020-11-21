@@ -24,7 +24,7 @@ class Ranking(commands.Cog):
     @flags.add_flag("--catches", action="store_true", default=True)
     @flags.add_flag("--legendary", action="store_true", default=False)
     @flags.add_flag("--mythical", action="store_true", default=False)
-    @flags.add_flag("--ultrabeast", action="store_true", default=False)
+    @flags.add_flag("--ub", action="store_true", default=False)
     @flags.add_flag("--shiny", action="store_true", default=False)
     @flags.add_flag("--week", action="store_true", default=False)
     @flags.add_flag("--day", action="store_true", default=False)
