@@ -71,7 +71,7 @@ class Admin(commands.Cog):
                 .order_by(MedalModel.pokemon_category))
         output = ''
         for medal in query:
-            output += f'[{medal.medal_id}] {medal.description}: {medal.pokemon_category}, {medal.time_category}\n'
+            output += f'[{medal.medal_id}] {medal.description}: {medal.pokemon_category}, {medal.value_requirement}, {medal.time_category}\n'
         await ctx.send(output)
 
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)

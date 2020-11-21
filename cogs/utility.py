@@ -31,7 +31,7 @@ class Utility(commands.Cog):
             medalmodel = query.get_medallist(constants.ITEMS_PER_PAGE, current_page)
             medal_number = (current_page - 1) * constants.ITEMS_PER_PAGE + 1
             for medal in medalmodel:
-                embed.add_field(name=f'{medal_number}. {medal.description}', value=f'Reward: {medal.medal} category: {medal.pokemon_category}', inline=False)
+                embed.add_field(name=f'{medal_number}. {medal.description}', value=f'Reward: {medal.medal} | Category: {medal.pokemon_category}', inline=False)
                 medal_number += 1
 
             message = await ctx.send(embed=embed)
