@@ -1,6 +1,6 @@
 from peewee import *
 import datetime
-from BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 class MedalModel(BaseModel):
     medal_id = PrimaryKeyField()

@@ -11,8 +11,8 @@ import logging
 import utility
 import query
 import constants
-from PokemonModel import PokemonModel
-from MedalModel import MedalModel
+from models.PokemonModel import PokemonModel
+from models.MedalModel import MedalModel
 
 class Utility(commands.Cog):
     def __init__(self, bot, settings):

@@ -4,11 +4,11 @@ import logging
 
 import utility
 from enumeration import HallOfFame
-from UserModel import UserModel
-from PokemonModel import PokemonModel
-from RareDefinitionModel import RareDefinitionModel
-from UserStatModel import UserStatModel
-from MedalModel import MedalModel
+from models.UserModel import UserModel
+from models.PokemonModel import PokemonModel
+from models.RareDefinitionModel import RareDefinitionModel
+from models.UserStatModel import UserStatModel
+from models.MedalModel import MedalModel
 
 def add_pokemon_catch(pokemon):
     try:

@@ -3,7 +3,7 @@ import logging
 import query
 from datetime import datetime, date, timedelta
 from enumeration import TimeFlag, HallOfFame
-from UserStatModel import UserStatModel
+from models.UserStatModel import UserStatModel
 
 def parse_attribute_flags(**flags):
     if flags["legendary"]:

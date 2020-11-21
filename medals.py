@@ -2,7 +2,7 @@ from peewee import *
 import logging
 import json
 
-from MedalModel import MedalModel
+from models.MedalModel import MedalModel
 
 def get_medals(sum_day, sum_all):
     total_medals = []
