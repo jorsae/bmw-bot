@@ -31,7 +31,7 @@ class Ranking(commands.Cog):
     @flags.add_flag("--month", action="store_true", default=True)
     @flags.add_flag("--all", action="store_true", default=False)
     @flags.add_flag("page", nargs="?", type=str, default=1)
-    @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ultrabeast, --shiny`')
+    @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ub, --shiny`')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
         date, time_flag = utility.parse_time_flags(**flags)
