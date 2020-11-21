@@ -1,7 +1,7 @@
 from peewee import *
 import datetime
-from models.BaseModel import BaseModel
-from models.UserModel import UserModel
+from models import BaseModel
+from models import UserModel
 
 class UserStatModel(BaseModel):
     userstat_id = PrimaryKeyField()

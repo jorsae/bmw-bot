@@ -5,8 +5,8 @@ from datetime import datetime
 import constants
 import query
 from settings import Settings
-from models.UserModel import UserModel
-from models.UserStatModel import UserStatModel
+from models import UserModel
+from models import UserStatModel
 
 class Poketwo():
     def __init__(self, bot, settings):
