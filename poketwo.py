@@ -5,6 +5,8 @@ from datetime import datetime
 import constants
 import query
 from settings import Settings
+from UserModel import UserModel
+from UserStatModel import UserStatModel
 
 class Poketwo():
     def __init__(self, bot, settings):
@@ -24,10 +26,11 @@ class Poketwo():
             
             # Handle rarity count
             rarity = query.get_rare_definition(pokemon)
-            print(f'{rarity=}')
 
             # Handle shiny count
             is_shiny = self.pokemon_is_shiny(content)
+            if rarity is not None or is_shiny:
+                logging.info(f'Found rares/shiny: [{rarity}] - {pokemon}: {content}')
 
             await self.add_pokemon(discord_id, rarity, is_shiny)
             query.add_pokemon_catch(pokemon)
@@ -36,7 +39,7 @@ class Poketwo():
         today = datetime.now().date()
         try:
             # Ensure User is in database
-            discord_user = await bot.fetch_user(discord_id)
+            discord_user = await self.bot.fetch_user(discord_id)
             user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_id).scalar()
             if user_id is None:
                 username = f'{discord_user.name}#{discord_user.discriminator}'
@@ -48,13 +51,12 @@ class Poketwo():
             
             # Check if we need to add rarity or shiny
             legendary_count, mythical_count, ultrabeast_count = 0, 0, 0
-            if rarity is not None:
-                if rarity.rarity == 'legendary':
-                    legendary_count = 1
-                elif rarity.rarity == 'mythical':
-                    mythical_count = 1
-                elif rarity.rarity == 'ultra beast':
-                    ultrabeast_count = 1
+            if rarity == 'legendary':
+                legendary_count = 1
+            elif rarity == 'mythical':
+                mythical_count = 1
+            elif rarity == 'ultra beast':
+                ultrabeast_count = 1
             shiny_count = 1 if is_shiny else 0
 
             UserStatModel.update(catches=UserStatModel.catches + 1, legendary=UserStatModel.legendary + legendary_count, 
@@ -86,6 +88,7 @@ class Poketwo():
 
     def pokemon_is_shiny(self, content):
         if 'these colors seem unusual..' in content:
+            logging.info(f'Found shiny: {content}')
             return True
         else:
             return False

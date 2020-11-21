@@ -152,7 +152,7 @@ def add_rare_definition(pokemon, rarity):
 # Gets the rarity description for a given pokemon. e.g: legendary, mythical
 def get_rare_definition(pokemon):
     try:
-        rarity = RareDefinitionModel.select(RareDefinitionModel.pokemon).where(RareDefinitionModel.pokemon == pokemon).scalar()
+        rarity = RareDefinitionModel.select(RareDefinitionModel.rarity).where(RareDefinitionModel.pokemon == pokemon).scalar()
         return rarity
     except DoesNotExist:
         return None
