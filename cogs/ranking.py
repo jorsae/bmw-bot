@@ -74,7 +74,6 @@ class Ranking(commands.Cog):
                 await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page, max_page, time_flag, field_attribute))
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:
-            logging.warning(f'ranking.leaderboard: timeout')
             pass
         except Exception as e:
             logging.critical(f'commands.leaderboard: {e}')
@@ -127,7 +126,6 @@ class Ranking(commands.Cog):
                 await message.edit(embed=embed)
                 await message.remove_reaction(reaction, discord_user)
         except asyncio.TimeoutError:
-            logging.warning(f'ranking.leaderboard: timeout')
             pass
         except Exception as e:
             logging.critical(f'commands.leaderboard: {e}')
