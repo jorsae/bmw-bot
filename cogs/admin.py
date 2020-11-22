@@ -114,7 +114,7 @@ class Admin(commands.Cog):
         value = ''
         rank = 1
         for winner in winners:
-            value += f'**{rank}. <@{winner[0]}>**: {rewards[rank - 1]}\nTotal catches: {winner[1]}\n\n'
+            value += f'**{rank}. <@{winner[0]}>**: {rewards[rank - 1]}\nTotal catches: {winner[1]:,}\n\n'
             rank += 1
         announcement_embed.add_field(name=f'{start} - {end}', value=value, inline=False)
 
