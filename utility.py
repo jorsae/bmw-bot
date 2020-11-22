@@ -14,16 +14,11 @@ def parse_start_flag(duration, **flags):
         return None, None
 
 def parse_rank_rewards(**flags):
-    first = flags["1"]
-    if first is None:
-        return None, None, None
-    second = flags["2"]
-    if second is None:
-        return None, None, None
-    third = flags["3"]
-    if third is None:
-        return None, None, None
-    return first, second, third
+    rewards = []
+    rewards.append(flags["1"])
+    rewards.append(flags["2"])
+    rewards.append(flags["3"])
+    return rewards
 
 def parse_attribute_flags(**flags):
     if flags["legendary"]:

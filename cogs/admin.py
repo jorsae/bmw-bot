@@ -74,26 +74,24 @@ class Admin(commands.Cog):
     @flags.add_flag("--1", type=str)
     @flags.add_flag("--2", type=str)
     @flags.add_flag("--3", type=str)
-    # @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ub, --shiny`')
-    @flags.command(name='week', help=f'Distributes ranking rewards for week')
+    @flags.add_flag("--publish", action="store_true", default=False)
+    @flags.command(name='week', help=f'Distributes weekly rewards.\nUsage`{constants.CURRENT_PREFIX}week --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nOnce ready add `--publish` to push it to database')
     async def week(self, ctx, **flags):
+        is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
+        if is_admin is False:
+            return
+        
         start, end = utility.parse_start_flag(6, **flags)
         if start is None:
             await ctx.send('You need to set start properly')
             return
         
-        first, second, third = utility.parse_rank_rewards(**flags)
-        if first is None:
+        rewards = utility.parse_rank_rewards(**flags)
+        if None in rewards:
             await ctx.send('You need to set all rewards')
             return
 
-        output = f'{start} - {end}\n'
-        output += f'1st: {first}\n'
-        output += f'2nd: {second}\n'
-        output += f'3rd: {third}\n'
-        await ctx.send(output)
-
-        qq = (UserStatModel
+        top3 = (UserStatModel
                 .select(fn.SUM(UserStatModel.catches).alias('sum_catches'), UserStatModel.user_id)
                 .where(
                     (UserStatModel.date >= start) &
@@ -103,13 +101,30 @@ class Admin(commands.Cog):
                 .order_by(fn.SUM(UserStatModel.catches).desc())
                 .limit(3)
                 )
+        
+        winners = []
         rank = 1
-        for u in qq:
-            await ctx.send(f'{u.sum_catches=} | {u.user_id.user_id=}')
-            RankModel.create(start_date=start, duration=6, reward=flags[str(rank)], placement=rank, user_id=u.user_id.user_id)
+        for user in top3:
+            if flags["publish"]:
+                RankModel.create(start_date=start, duration=6, reward=flags[str(rank)], placement=rank, user_id=user.user_id.user_id)
+            winners.append((query.get_user_by_userid(user.user_id.user_id).discord_id, user.sum_catches))
             rank += 1
+        
+        announcement_embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Weekly winners')
+        value = ''
+        rank = 1
+        for winner in winners:
+            value += f'**{rank}. <@{winner[0]}>**: {rewards[rank - 1]}\nTotal catches: {winner[1]}\n\n'
+            rank += 1
+        announcement_embed.add_field(name=f'{start} - {end}', value=value, inline=False)
 
-            print(f'{u.sum_catches=} | {u.user_id=}')
+        if flags["publish"]:
+            channel = self.bot.get_channel(self.settings.announcement_channel)
+            await channel.send(embed=announcement_embed)
+            await ctx.send('PUBLISHED SUCCESSFULLY')
+        else:
+            await ctx.send(embed=announcement_embed)
+            await ctx.send("Use same command with `--publish` when you are confident it's correct")
 
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
@@ -118,7 +133,7 @@ class Admin(commands.Cog):
             return
         try:
             channel_id = int(channel_id)
-            channel = self.bot.get_channel(channel_id)
+            channel = self.bot.get_channel(channel_id)  
             await channel.send(message)
         except:
             pass

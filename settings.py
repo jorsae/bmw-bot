@@ -9,6 +9,7 @@ class Settings():
         self.channel_reminder = None
         self.admin = None
         self.token = None
+        self.announcement_channel = None
         self.prefix = constants.DEFAULT_PREFIX
     
     def parse_settings(self):
@@ -18,6 +19,7 @@ class Settings():
             self.token = data.get("token")
             self.admin = data.get("admin")
             self.prefix = data.get("prefix")
+            self.announcement_channel = data.get("announcement_channel")
             return True
         except Exception as e:
             logging.critical(f'Failed to parse_settings: {e}')
