@@ -16,6 +16,38 @@ def get_profile_page(ctx, page, **flags):
 
 def profile_page_2(ctx, **flags):
     embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
+    user = UserModel.get(UserModel.discord_id == ctx.author.id)
+    monthly_rewards = (RankModel
+                        .select()
+                        .where(
+                            (RankModel.duration >= 28) &
+                            (RankModel.user_id == user.user_id)
+                            )
+                    )
+    monthly_value = ''
+    for monthly in monthly_rewards:
+        monthly_value += f'{monthly.reward} '
+    if monthly_value == '':
+        monthly_value = 'No top 3 monthly placings'
+    embed.add_field(name='Monthly placings', value=monthly_value)
+
+    weekly_rewards = (RankModel
+                        .select()
+                        .where(
+                            (RankModel.duration == 6) &
+                            (RankModel.user_id == user.user_id)
+                            )
+                    )
+    
+    weekly_value = ''
+    for weekly in weekly_rewards:
+        weekly_value += f'{weekly.reward}'
+    if weekly_value == '':
+        weekly_value = 'No top 3 weekly placings'
+    embed.add_field(name='Weekly placings', value=weekly_value)
+
+    embed.set_footer(text=f'Page: 2/2')
+    
     return embed
 
 def profile_page_1(ctx, **flags):
@@ -57,6 +89,7 @@ def profile_page_1(ctx, **flags):
             if (total % 5) == 0:
                 medals_text += '\n'
         embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals_text == "" else medals_text}', inline=False)
+        embed.set_footer(text=f'Page: 1/2')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
