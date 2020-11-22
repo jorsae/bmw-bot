@@ -46,9 +46,6 @@ async def on_message(message: discord.Message):
 
     await bot.process_commands(message)
 
-def setup_database():
-    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel, MedalModel])
-
 def build_rares():
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/legendary.txt', 'legendary')
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/mythical.txt', 'mythical')
@@ -59,14 +56,6 @@ def add_rares(file, rarity):
         line = line.strip()
         query.add_rare_definition(line, rarity)
 
-def setup_logging():
-    logFolder = '../logs'
-    logFile = 'BMW.log'
-    if not os.path.isdir(logFolder):
-        os.makedirs(logFolder)
-    handler = logging.FileHandler(filename=f'{logFolder}/{logFile}', encoding='utf-8', mode='a+')
-    logging.basicConfig(handlers=[handler], level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
-
 @tasks.loop(seconds=120, reconnect=True)
 async def change_status():
     total_caught = query.get_pokemon_caught(alltime=True)
@@ -76,6 +65,17 @@ async def change_status():
 @bot.event
 async def on_ready():
     change_status.start()
+
+def setup_logging():
+    logFolder = '../logs'
+    logFile = 'BMW.log'
+    if not os.path.isdir(logFolder):
+        os.makedirs(logFolder)
+    handler = logging.FileHandler(filename=f'{logFolder}/{logFile}', encoding='utf-8', mode='a+')
+    logging.basicConfig(handlers=[handler], level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
+
+def setup_database():
+    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel, MedalModel, RankModel])
 
 if __name__ == '__main__':
     setup_logging()

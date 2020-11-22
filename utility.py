@@ -5,6 +5,26 @@ from datetime import datetime, date, timedelta
 from enumeration import TimeFlag, HallOfFame
 from models import UserStatModel
 
+def parse_start_flag(duration, **flags):
+    try:
+        start = datetime.strptime(flags["start"], "%Y-%m-%d").date()
+        return start, start + timedelta(days=duration)
+    except Exception as e:
+        logging.warning(f'Failed to parse start: {e}')
+        return None, None
+
+def parse_rank_rewards(**flags):
+    first = flags["1"]
+    if first is None:
+        return None, None, None
+    second = flags["2"]
+    if second is None:
+        return None, None, None
+    third = flags["3"]
+    if third is None:
+        return None, None, None
+    return first, second, third
+
 def parse_attribute_flags(**flags):
     if flags["legendary"]:
         return UserStatModel.legendary, 'Legendary'

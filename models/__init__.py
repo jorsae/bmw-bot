@@ -4,3 +4,4 @@ from models.PokemonModel import PokemonModel
 from models.RareDefinitionModel import RareDefinitionModel
 from models.UserModel import UserModel
 from models.UserStatModel import UserStatModel
+from models.RankModel import RankModel

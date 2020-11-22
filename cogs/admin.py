@@ -1,12 +1,12 @@
 import discord
 from peewee import *
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from discord.ext import commands, flags
 
 import utility
 import constants
 import query
-from models import UserModel, UserStatModel, RareDefinitionModel, PokemonModel, MedalModel
+from models import *
 
 class Admin(commands.Cog):
     def __init__(self, bot, settings):
@@ -69,6 +69,47 @@ class Admin(commands.Cog):
         for medal in query:
             output += f'[{medal.medal_id}] {medal.description}: {medal.pokemon_category}, {medal.value_requirement}, {medal.time_category}\n'
         await ctx.send(output)
+
+    @flags.add_flag("--start", type=str)
+    @flags.add_flag("--1", type=str)
+    @flags.add_flag("--2", type=str)
+    @flags.add_flag("--3", type=str)
+    # @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ub, --shiny`')
+    @flags.command(name='week', help=f'Distributes ranking rewards for week')
+    async def week(self, ctx, **flags):
+        start, end = utility.parse_start_flag(6, **flags)
+        if start is None:
+            await ctx.send('You need to set start properly')
+            return
+        
+        first, second, third = utility.parse_rank_rewards(**flags)
+        if first is None:
+            await ctx.send('You need to set all rewards')
+            return
+
+        output = f'{start} - {end}\n'
+        output += f'1st: {first}\n'
+        output += f'2nd: {second}\n'
+        output += f'3rd: {third}\n'
+        await ctx.send(output)
+
+        qq = (UserStatModel
+                .select(fn.SUM(UserStatModel.catches).alias('sum_catches'), UserStatModel.user_id)
+                .where(
+                    (UserStatModel.date >= start) &
+                    (UserStatModel.date <= end)
+                    )
+                .group_by(UserStatModel.user_id)
+                .order_by(fn.SUM(UserStatModel.catches).desc())
+                .limit(3)
+                )
+        rank = 1
+        for u in qq:
+            await ctx.send(f'{u.sum_catches=} | {u.user_id.user_id=}')
+            RankModel.create(start_date=start, duration=6, reward=flags[str(rank)], placement=rank, user_id=u.user_id.user_id)
+            rank += 1
+
+            print(f'{u.sum_catches=} | {u.user_id=}')
 
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
