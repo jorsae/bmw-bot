@@ -6,17 +6,19 @@ import constants
 import utility
 import query
 import medals
-from models import *
+from models import UserModel, UserStatModel, RankModel
 
-def get_profile_page(ctx, page, **flags):
-    if page <= 1:
-        return profile_page_1(ctx, **flags)
+def get_profile_page(ctx, user, current_page, max_page, **flags):
+    embed = None
+    if current_page <= 1:
+        embed = profile_page_1(ctx, user, **flags)
     else:
-        return profile_page_2(ctx, **flags)
+        embed = profile_page_2(ctx, user, **flags)
+    embed.set_footer(text=f'Page: {current_page}/{max_page}')
+    return embed
 
-def profile_page_2(ctx, **flags):
+def profile_page_2(ctx, user, **flags):
     embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
-    user = UserModel.get(UserModel.discord_id == ctx.author.id)
     monthly_rewards = (RankModel
                         .select()
                         .where(
@@ -46,13 +48,10 @@ def profile_page_2(ctx, **flags):
         weekly_value = 'No top 3 weekly placings'
     embed.add_field(name='Weekly placings', value=weekly_value)
 
-    embed.set_footer(text=f'Page: 2/2')
-    
     return embed
 
-def profile_page_1(ctx, **flags):
+def profile_page_1(ctx, user, **flags):
     try:
-        user = UserModel.get(UserModel.discord_id == ctx.author.id)
         total = query.get_sum(user.user_id).get()
         stats = f'**Catches: **{total.sum_catches:,}\n'
         stats += f'**Legendary: **{total.sum_legendary}\n'
@@ -89,7 +88,6 @@ def profile_page_1(ctx, **flags):
             if (total % 5) == 0:
                 medals_text += '\n'
         embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals_text == "" else medals_text}', inline=False)
-        embed.set_footer(text=f'Page: 1/2')
         return embed
     except DoesNotExist:
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')

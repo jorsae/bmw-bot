@@ -102,7 +102,9 @@ class Ranking(commands.Cog):
         max_page = 2
         try:
             current_page = page
-            embed = profile.get_profile_page(ctx, current_page, **flags)
+            user = UserModel.get(UserModel.discord_id == ctx.author.id)
+
+            embed = profile.get_profile_page(ctx, user, current_page, max_page, **flags)
 
             message = await ctx.send(embed=embed)
             await message.add_reaction("◀️")
@@ -115,15 +117,15 @@ class Ranking(commands.Cog):
                     return False
             
             while True:
-                reaction, user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
+                reaction, discord_user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
                 if str(reaction.emoji) == "▶️" and current_page < max_page:
                     current_page += 1
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
                 
-                embed = profile.get_profile_page(ctx, current_page, **flags)
+                embed = profile.get_profile_page(ctx, user, current_page, max_page, **flags)
                 await message.edit(embed=embed)
-                await message.remove_reaction(reaction, user)
+                await message.remove_reaction(reaction, discord_user)
         except asyncio.TimeoutError:
             logging.warning(f'ranking.leaderboard: timeout')
             pass
