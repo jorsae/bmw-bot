@@ -6,11 +6,11 @@ import asyncio
 import math
 import logging
 
-
 import constants
 import utility
 import query
 import medals
+import profile
 from models import UserStatModel, UserModel, PokemonModel
 from enumeration import TimeFlag, HallOfFame
 
@@ -98,52 +98,37 @@ class Ranking(commands.Cog):
     
     @commands.command(name='profile', aliases=['p'], help="Displays your profile")
     async def profile(self, ctx, **flags):
+        page = 1
+        max_page = 2
         try:
-            user = UserModel.get(UserModel.discord_id == ctx.author.id)
-            total = query.get_sum(user.user_id).get()
-            stats = f'**Catches: **{total.sum_catches:,}\n'
-            stats += f'**Legendary: **{total.sum_legendary}\n'
-            stats += f'**Mythical: **{total.sum_mythical}\n'
-            stats += f'**Ultra Beast: **{total.sum_ultrabeast}\n'
-            stats += f'**Shiny: **{total.sum_shiny}'
-            rank = (UserStatModel
-                    .select()
-                    .group_by(UserStatModel.user_id)
-                    .having(fn.SUM(UserStatModel.catches) > total.sum_catches)
-                    .count()) + 1
+            current_page = page
+            embed = profile.get_profile_page(ctx, current_page, **flags)
 
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
-            embed.set_thumbnail(url=ctx.author.avatar_url)
-            embed.add_field(name=f'{rank}. {user.username}', value=f'{stats}', inline=False)
+            message = await ctx.send(embed=embed)
+            await message.add_reaction("◀️")
+            await message.add_reaction("▶️")
             
-            sum_day = query.get_max_day(user.user_id).get()
-            sum_all = query.get_sum(user.user_id).get()
-            total_medals = medals.get_medals(sum_day, sum_all)
-
-            medals_text = ''
-            total = 0
-            for medal in query.get_hof_medals(f'{ctx.author.name}#{ctx.author.discriminator}'):
-                medals_text += f'{utility.get_hof_emote(medal)} '
-                total += 1
+            def check(reaction, user):
+                if reaction.message.id == message.id:
+                    return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+                else:
+                    return False
             
-            if total > 0:
-                medals_text += '\n\n'
-                total = 0
-            
-            for medal in total_medals:
-                medals_text += f'{medal} '
-                total += 1
-                if (total % 5) == 0:
-                    medals_text += '\n'
-            embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals_text == "" else medals_text}', inline=False)
-            await ctx.send(embed=embed)
-        except DoesNotExist:
-            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
-            embed.set_thumbnail(url=ctx.author.avatar_url)
-            embed.add_field(name=f'You have not caught any pokémon', value=f'Go catch pokémon!')
-            await ctx.send(embed=embed)
+            while True:
+                reaction, user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
+                if str(reaction.emoji) == "▶️" and current_page < max_page:
+                    current_page += 1
+                elif str(reaction.emoji) == "◀️" and current_page > 1:
+                    current_page -= 1
+                
+                embed = profile.get_profile_page(ctx, current_page, **flags)
+                await message.edit(embed=embed)
+                await message.remove_reaction(reaction, user)
+        except asyncio.TimeoutError:
+            logging.warning(f'ranking.leaderboard: timeout')
+            pass
         except Exception as e:
-            logging.critical(f'commands.profile: {e}')
+            logging.critical(f'commands.leaderboard: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
