@@ -18,7 +18,7 @@ def get_profile_page(ctx, user, current_page, max_page, **flags):
     return embed
 
 def profile_page_2(ctx, user, **flags):
-    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
+    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f"{str(ctx.author.name)}'s profile")
     monthly_rewards = (RankModel
                         .select()
                         .where(
@@ -64,7 +64,7 @@ def profile_page_1(ctx, user, **flags):
                 .having(fn.SUM(UserStatModel.catches) > total.sum_catches)
                 .count()) + 1
 
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f"{str(ctx.author.name)}'s profile")
         embed.set_thumbnail(url=ctx.author.avatar_url)
         embed.add_field(name=f'{rank}. {user.username}', value=f'{stats}', inline=False)
         
