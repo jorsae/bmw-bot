@@ -122,7 +122,7 @@ def get_user_by_userid(user_id):
 def get_medallist(amount, page):
     return (MedalModel
             .select()
-            .order_by(MedalModel.pokemon_category)
+            .order_by(MedalModel.pokemon_category, MedalModel.value_requirement)
             .limit(amount)
             ).paginate(page, amount)
 
