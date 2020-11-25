@@ -69,7 +69,7 @@ class Utility(commands.Cog):
             await ctx.send(embed=embed)
     
     # TODO: Add flags, such as desc/asc, if just pokemon name is given, show amount of catches + rank: x/y
-    @commands.command(name="catch", help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
+    @commands.command(name="catch", aliases=['c'], help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
     async def catch(self, ctx, pokemon: str=None):
         if pokemon is None:
             await ctx.send(f'You need to specify a pokémon')
