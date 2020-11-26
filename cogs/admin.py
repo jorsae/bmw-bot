@@ -139,10 +139,7 @@ class Admin(commands.Cog):
         
         current_month = utility.get_date_current_month()
         next_month = date(current_month.year, current_month.month + 1, current_month.day)
-        print(f'{current_month} | {next_month}')
         days = (next_month - current_month).days - 1
-        print(f'{days=} | {current_month + timedelta(days=days)}')
-
 
         start, end = utility.parse_start_flag(days, **flags)
         if start is None:
