@@ -5,6 +5,8 @@ RARE_DEFINITION_FOLDER = 'RareDefinition'
 
 ITEMS_PER_PAGE = 10
 
+CATCH_BMW_EASTER_EGG = ['<@!777052225099792386>', '<@777052225099792386>', 'bmw']
+
 # Discord
 COLOUR_OK = Colour.green()
 COLOUR_NEUTRAL = Colour.orange()

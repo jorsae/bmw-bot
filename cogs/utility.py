@@ -69,14 +69,31 @@ class Utility(commands.Cog):
             await ctx.send(embed=embed)
     
     # TODO: Add flags, such as desc/asc, if just pokemon name is given, show amount of catches + rank: x/y
-    @commands.command(name="catch", aliases=['c'], help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
-    async def catch(self, ctx, pokemon: str=None):
+    # @flags.add_flag("--start", type=str)
+    # @flags.add_flag("--1", type=str)
+    # @flags.add_flag("--2", type=str)
+    # @flags.add_flag("--3", type=str)
+    # @flags.add_flag("--publish", action="store_true", default=False)
+    # @flags.command(name='month', help=f'Distributes monthly rewards', hidden=True)
+    # async def month(self, ctx, **flags):
+    @flags.add_flag('--desc', action='store_true', default=True)
+    @flags.add_flag('--asc', action='store_true', default=False)
+    @flags.add_flag("pokemon", nargs="?", type=str, default=None)
+    @flags.command(name="catch", aliases=['c'], help=f'Displays how many times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`')
+    async def catch(self, ctx, **flags):
+        pokemon = flags["pokemon"]
+
         if pokemon is None:
+            descending = False if flags["asc"] else True
+            # TODO: Add page showing top 10 caughtdependig on desc/asc. Add paginator for this.
             await ctx.send(f'You need to specify a pokémon')
-        if pokemon == '<@!777052225099792386>' or pokemon == 'bmw':
+        
+        pokemon = pokemon.lower()
+        if pokemon in constants.CATCH_BMW_EASTER_EGG:
             await ctx.send(f"Wild <@777052225099792386> fled!")
             return
-        pokemon = pokemon.lower()
+        
+        
         try:
             pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
             time = 'time' if pokemon.catches <= 1 else 'times'
