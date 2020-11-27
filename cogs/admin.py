@@ -75,7 +75,7 @@ class Admin(commands.Cog):
     @flags.add_flag("--2", type=str)
     @flags.add_flag("--3", type=str)
     @flags.add_flag("--publish", action="store_true", default=False)
-    @flags.command(name='week', help=f'Distributes weekly rewards.\nUsage`{constants.CURRENT_PREFIX}week --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nOnce ready add `--publish` to push it to database')
+    @flags.command(name='week', help=f'Distributes weekly rewards.\nUsage`{constants.CURRENT_PREFIX}week --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nOnce ready add `--publish` to push it to database', hidden=True)
     async def week(self, ctx, **flags):
         is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
         if is_admin is False:
@@ -131,7 +131,7 @@ class Admin(commands.Cog):
     @flags.add_flag("--2", type=str)
     @flags.add_flag("--3", type=str)
     @flags.add_flag("--publish", action="store_true", default=False)
-    @flags.command(name='month', help=f'Distributes monthly rewards.\nUsage`{constants.CURRENT_PREFIX}month --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nOnce ready add `--publish` to push it to database')
+    @flags.command(name='month', help=f'Distributes monthly rewards.\nUsage`{constants.CURRENT_PREFIX}month --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nOnce ready add `--publish` to push it to database', hidden=True)
     async def month(self, ctx, **flags):
         is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
         if is_admin is False:
