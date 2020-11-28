@@ -69,7 +69,6 @@ class Utility(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
     
-    # TODO: Add flags, such as desc/asc, if just pokemon name is given, show amount of catches + rank: x/y
     @flags.add_flag('--desc', action='store_true', default=True)
     @flags.add_flag('--asc', action='store_true', default=False)
     @flags.add_flag("pokemon", nargs="?", type=str, default=None)
