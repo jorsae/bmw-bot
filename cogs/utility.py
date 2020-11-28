@@ -73,7 +73,7 @@ class Utility(commands.Cog):
     @flags.add_flag('--desc', action='store_true', default=True)
     @flags.add_flag('--asc', action='store_true', default=False)
     @flags.add_flag("pokemon", nargs="?", type=str, default=None)
-    @flags.command(name="catch", aliases=['c'], help=f'Displays times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name>`\nFlags: `--desc, --asc`')
+    @flags.command(name="catch", aliases=['c'], help=f'Displays times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name> [Flags]`\nFlags: `--desc, --asc`')
     async def catch(self, ctx, **flags):
         pokemon = flags["pokemon"]
 
