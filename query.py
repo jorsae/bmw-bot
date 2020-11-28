@@ -126,6 +126,19 @@ def get_medallist(amount, page):
             .limit(amount)
             ).paginate(page, amount)
 
+# Gets top most caught pokemon
+def get_top_pokemon_catches(amount, page, descending=True):
+    order = PokemonModel.catches.desc()
+    if descending is False:
+        order = PokemonModel.catches
+    
+    return (PokemonModel
+            .select()
+            .order_by(order)
+            .limit(amount)
+            .paginate(page, amount)
+            )
+
 # Gets <amount> catches, after <after_date> on page: <page>
 def get_top_attribute_desc(attribute, amount, page, after_date):
     return (UserStatModel

@@ -11,6 +11,7 @@ import logging
 import utility
 import query
 import constants
+import cog_help
 from models import PokemonModel, MedalModel
 
 class Utility(commands.Cog):
@@ -69,13 +70,6 @@ class Utility(commands.Cog):
             await ctx.send(embed=embed)
     
     # TODO: Add flags, such as desc/asc, if just pokemon name is given, show amount of catches + rank: x/y
-    # @flags.add_flag("--start", type=str)
-    # @flags.add_flag("--1", type=str)
-    # @flags.add_flag("--2", type=str)
-    # @flags.add_flag("--3", type=str)
-    # @flags.add_flag("--publish", action="store_true", default=False)
-    # @flags.command(name='month', help=f'Distributes monthly rewards', hidden=True)
-    # async def month(self, ctx, **flags):
     @flags.add_flag('--desc', action='store_true', default=True)
     @flags.add_flag('--asc', action='store_true', default=False)
     @flags.add_flag("pokemon", nargs="?", type=str, default=None)
@@ -83,26 +77,57 @@ class Utility(commands.Cog):
     async def catch(self, ctx, **flags):
         pokemon = flags["pokemon"]
 
-        if pokemon is None:
-            descending = False if flags["asc"] else True
-            # TODO: Add page showing top 10 caughtdependig on desc/asc. Add paginator for this.
-            await ctx.send(f'You need to specify a pokémon')
-        
-        pokemon = pokemon.lower()
-        if pokemon in constants.CATCH_BMW_EASTER_EGG:
-            await ctx.send(f"Wild <@777052225099792386> fled!")
-            return
-        
-        
+        if pokemon is not None:
+            pokemon = pokemon.lower()
+            
+            # Check for easter egg
+            if pokemon in constants.CATCH_BMW_EASTER_EGG:
+                await ctx.send(f"Wild <@777052225099792386> fled!")
+                return
+            
+            try:
+                pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
+                time = 'time' if pokemon.catches <= 1 else 'times'
+                await ctx.send(f'**{string.capwords(pokemon.pokemon)}** has been caught {pokemon.catches:,} {time}!')
+            except DoesNotExist:
+                await ctx.send(f'**{string.capwords(pokemon)}** has yet to be caught!')
+            except Exception as e:
+                logging.critical(f'commands.catch: {e}')
+                await ctx.send('Oops, something went wrong')
+
+        descending = False if flags["asc"] else True
         try:
-            pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
-            time = 'time' if pokemon.catches <= 1 else 'times'
-            await ctx.send(f'**{string.capwords(pokemon.pokemon)}** has been caught {pokemon.catches:,} {time}!')
-        except DoesNotExist:
-            await ctx.send(f'**{string.capwords(pokemon)}** has yet to be caught!')
+            current_page = 1
+            total_pokemon = PokemonModel.select(fn.COUNT()).scalar()
+            max_page = math.ceil(total_pokemon / constants.ITEMS_PER_PAGE)
+            
+            pokemon_catches = query.get_top_pokemon_catches(constants.ITEMS_PER_PAGE, current_page, descending)
+            message = await ctx.send(embed=cog_help.catch_embed(pokemon_catches, current_page, max_page, descending))
+            await message.add_reaction("◀️")
+            await message.add_reaction("▶️")
+
+            def check(reaction, user):
+                if reaction.message.id == message.id:
+                    return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+                else:
+                    return False
+            
+            while True:
+                reaction, user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
+                if str(reaction.emoji) == "▶️" and current_page < max_page:
+                    current_page += 1
+                elif str(reaction.emoji) == "◀️" and current_page > 1:
+                    current_page -= 1
+                
+                pokemon_catches = query.get_top_pokemon_catches(constants.ITEMS_PER_PAGE, current_page, descending)
+                await message.edit(embed=cog_help.catch_embed(pokemon_catches, current_page, max_page, descending))
+                await message.remove_reaction(reaction, user)
+        except asyncio.TimeoutError:
+            pass
         except Exception as e:
-            logging.critical(f'commands.catch: {e}')
-            await ctx.send('Oops, something went wrong')
+            logging.critical(f'commands.leaderboard: {e}')
+            embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+            await ctx.send(embed=embed)
     
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
