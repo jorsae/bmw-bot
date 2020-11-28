@@ -11,6 +11,7 @@ import utility
 import query
 import medals
 import profile
+import cog_help
 from models import UserStatModel, UserModel, PokemonModel
 from enumeration import TimeFlag, HallOfFame
 
@@ -54,7 +55,7 @@ class Ranking(commands.Cog):
 
             top_catches = query.get_top_attribute_desc(attribute, constants.ITEMS_PER_PAGE, current_page, date)
 
-            message = await ctx.send(embed=self.create_leaderboard_embed(top_catches, current_page, max_page, time_flag, field_attribute))
+            message = await ctx.send(embed=cog_help.create_leaderboard_embed(top_catches, current_page, max_page, time_flag, field_attribute))
             await message.add_reaction("◀️")
             await message.add_reaction("▶️")
             
@@ -71,7 +72,7 @@ class Ranking(commands.Cog):
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
                 top_catches = query.get_top_attribute_desc(attribute, constants.ITEMS_PER_PAGE, current_page, date)
-                await message.edit(embed=self.create_leaderboard_embed(top_catches, current_page, max_page, time_flag, field_attribute))
+                await message.edit(embed=cog_help.create_leaderboard_embed(top_catches, current_page, max_page, time_flag, field_attribute))
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:
             pass
@@ -80,21 +81,6 @@ class Ranking(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
-    def create_leaderboard_embed(self, query, current_page, max_page, time_flag, field_attribute):
-        rank = (current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1
-        top_rank = constants.ITEMS_PER_PAGE if current_page == 1 else f'{(current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1} - {current_page * constants.ITEMS_PER_PAGE}'
-        
-        title, author = utility.get_title_author_by_timeflag(time_flag)
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{str(title)}]')
-        embed.set_footer(text=f'Page: {current_page}/{max_page}')
-        embed.set_author(name=f'Time remaining: {str(author)}')
-
-        for user_stat in query:
-            user = UserModel.get(UserModel.user_id == user_stat.user_id)
-            embed.add_field(name=f'{rank}. {user.username}', value=f'{field_attribute}: {user_stat.sum:,}')
-            rank += 1
-        return embed
-    
     @commands.command(name='profile', aliases=['p'], help="Displays your profile")
     async def profile(self, ctx, **flags):
         page = 1
