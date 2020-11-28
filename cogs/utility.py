@@ -94,6 +94,7 @@ class Utility(commands.Cog):
             except Exception as e:
                 logging.critical(f'commands.catch: {e}')
                 await ctx.send('Oops, something went wrong')
+            return
 
         descending = False if flags["asc"] else True
         try:
