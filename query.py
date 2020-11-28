@@ -40,37 +40,6 @@ def get_max_attribute(attribute):
                 .scalar()
             )
 
-# TODO: Move this to utility or somewhere. query should only have pure database queries
-def get_hof_medals(username):
-    medals = []
-
-    catches = get_max_attribute(UserStatModel.catches)
-    catches_users = get_username_by_stat(UserStatModel.catches, catches)
-    if username in catches_users:
-        medals.append(HallOfFame.catches)
-    
-    legendary = get_max_attribute(UserStatModel.legendary)
-    legendary_users = get_username_by_stat(UserStatModel.legendary, legendary)
-    if username in legendary_users:
-        medals.append(HallOfFame.legendary)
-
-    mythical = get_max_attribute(UserStatModel.mythical)
-    mythical_users = get_username_by_stat(UserStatModel.mythical, mythical)
-    if username in mythical_users:
-        medals.append(HallOfFame.mythical)
-
-    ultrabeast = get_max_attribute(UserStatModel.ultrabeast)
-    ultrabeast_users = get_username_by_stat(UserStatModel.ultrabeast, ultrabeast)
-    if username in ultrabeast_users:
-        medals.append(HallOfFame.ultrabeast)
-
-    shiny = get_max_attribute(UserStatModel.shiny)
-    shiny_users = get_username_by_stat(UserStatModel.shiny, shiny)
-    if username in shiny_users:
-        medals.append(HallOfFame.shiny)
-    
-    return medals
-
 # Returns sum of attributes, by a user, before and after date
 def get_max_day(user_id):
     return (UserStatModel

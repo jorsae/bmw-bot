@@ -74,7 +74,7 @@ def profile_page_1(ctx, user, **flags):
 
         medals_text = ''
         total = 0
-        for medal in query.get_hof_medals(f'{ctx.author.name}#{ctx.author.discriminator}'):
+        for medal in utility.get_hof_medals(f'{ctx.author.name}#{ctx.author.discriminator}'):
             medals_text += f'{utility.get_hof_emote(medal)} '
             total += 1
         

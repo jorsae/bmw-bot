@@ -53,6 +53,37 @@ def is_admin(author, admin_list):
             return True
     return False
 
+# Gets all hof medals by username
+def get_hof_medals(username):
+    medals = []
+
+    catches = query.get_max_attribute(UserStatModel.catches)
+    catches_users = query.get_username_by_stat(UserStatModel.catches, catches)
+    if username in catches_users:
+        medals.append(HallOfFame.catches)
+    
+    legendary = query.get_max_attribute(UserStatModel.legendary)
+    legendary_users = query.get_username_by_stat(UserStatModel.legendary, legendary)
+    if username in legendary_users:
+        medals.append(HallOfFame.legendary)
+
+    mythical = query.get_max_attribute(UserStatModel.mythical)
+    mythical_users = query.get_username_by_stat(UserStatModel.mythical, mythical)
+    if username in mythical_users:
+        medals.append(HallOfFame.mythical)
+
+    ultrabeast = query.get_max_attribute(UserStatModel.ultrabeast)
+    ultrabeast_users = query.get_username_by_stat(UserStatModel.ultrabeast, ultrabeast)
+    if username in ultrabeast_users:
+        medals.append(HallOfFame.ultrabeast)
+
+    shiny = query.get_max_attribute(UserStatModel.shiny)
+    shiny_users = query.get_username_by_stat(UserStatModel.shiny, shiny)
+    if username in shiny_users:
+        medals.append(HallOfFame.shiny)
+    
+    return medals
+
 # returns emote for the given HallOfFame title
 def get_hof_emote(title):
     if title == HallOfFame.catches:
