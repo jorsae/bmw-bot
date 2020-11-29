@@ -24,7 +24,11 @@ class Admin(commands.Cog):
         total_pokemon = PokemonModel.select(fn.COUNT()).scalar()
         total_medals = MedalModel.select(fn.COUNT()).scalar()
 
-        await ctx.send(f'Total users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}\nTotal Medals: {total_medals}')
+        start_date = date(2020, 11, 16)
+        now = datetime.now()
+        days = (date(now.year, now.month, now.day) - start_date).days
+        
+        await ctx.send(f'Days running: {days}\nTotal users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}\nTotal Medals: {total_medals}\n')
     
     @commands.command(name='guild', help='Displays guilds', hidden=True)
     async def guild(self, ctx):
