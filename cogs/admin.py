@@ -67,6 +67,9 @@ class Admin(commands.Cog):
     @flags.add_flag("--month", action='store_true', default=True)
     @flags.command(name='dumpreward', help=f'Dumps RankReward rewards.\nFlags: `--week, --month`', hidden=True)
     async def dumpreward(self, ctx, **flags):
+        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
+        if is_admin is False:
+            return
         reward_type = 'week'
         if flags['month']:
             reward_type = 'month'
