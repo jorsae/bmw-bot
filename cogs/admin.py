@@ -178,7 +178,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(embed=announcement_embed)
             await ctx.send("Use same command with `--publish` when you are confident it's correct")
-
+    
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])

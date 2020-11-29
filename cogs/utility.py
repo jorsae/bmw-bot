@@ -12,7 +12,7 @@ import utility
 import query
 import constants
 import cog_help
-from models import PokemonModel, MedalModel
+from models import PokemonModel, MedalModel, UserStatModel
 
 class Utility(commands.Cog):
     def __init__(self, bot, settings):
@@ -128,6 +128,57 @@ class Utility(commands.Cog):
             logging.critical(f'commands.leaderboard: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
+
+    @commands.command(name='check', help=f'Check who/how many people have a medal.\nUsage: `{constants.CURRENT_PREFIX}check <medal emote>`.\ne.g: `{constants.CURRENT_PREFIX}check TrioBadge`')
+    async def test(self, ctx, medal):
+        medal_model = MedalModel.select().where(MedalModel.medal.contains(medal))
+        if len(medal_model) <= 0:
+            await ctx.send('Found no matches')
+            return
+        value_requirement = medal_model[0].value_requirement
+        pokemon_category = medal_model[0].pokemon_category
+        time_category = medal_model[0].time_category
+        attribute = None
+        if pokemon_category == 'catches':
+            attribute = UserStatModel.catches
+        elif pokemon_category == 'legendary':
+            attribute = UserStatModel.legendary
+        elif pokemon_category == 'mythical':
+            attribute = UserStatModel.mythical
+        elif pokemon_category == 'ultrabeast':
+            attribute = UserStatModel.ultrabeast
+        elif pokemon_category == 'shiny':
+            attribute = UserStatModel.shiny
+        else:
+            await ctx.send(f'Error in pokemon_category: {pokemon_category}')
+            return
+        start, end = None, None
+        if time_category == 'all':
+            start, end = utility.get_datespan_all()
+            attribute = fn.SUM(attribute)
+        elif time_category == 'day':
+            attribute = fn.MAX(attribute)
+            start, end = utility.get_datespan_day()
+        else:
+            await ctx.send(f'Error in time_category {time_category}')
+            return
+        start, end = utility.get_datespan_all()
+        users = (UserStatModel
+                    .select(attribute.alias("value"), UserStatModel.user_id)
+                    .group_by(UserStatModel.user_id)
+                    .order_by(attribute.desc())
+                )
+        
+        output = ''
+        total = 0
+        for user in users:
+            if user.value >= value_requirement:
+                username = query.get_user_by_userid(user.user_id).username
+                output += f'**{username}: **{user.value:,}\n'
+                total += 1
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+        embed.add_field(name=f'{medal_model[0].medal} {medal_model[0].description}\n{total} people have the medal', value=output)
+        await ctx.send(embed=embed)
 
     @commands.command(name='guild', help='Displays guilds')
     async def guild(self, ctx):
