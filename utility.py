@@ -1,5 +1,6 @@
 import logging
 
+import constants
 import query
 from datetime import datetime, date, timedelta
 from enumeration import TimeFlag, HallOfFame
@@ -52,6 +53,10 @@ def is_admin(author, admin_list):
             logging.warning(f'is_admin == true: {author}')
             return True
     return False
+
+# Get rank number, by page
+def get_rank_by_page(current_page):
+    return current_page * constants.ITEMS_PER_PAGE
 
 # Gets all hof medals by username
 def get_hof_medals(username):

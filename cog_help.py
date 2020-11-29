@@ -11,7 +11,7 @@ def catch_embed(pokemon_catches, current_page, max_page, descending):
     embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
     output_value = ''
     
-    rank = (current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1
+    rank = utility.get_rank_by_page(current_page) - constants.ITEMS_PER_PAGE + 1
     for pokemon_catch in pokemon_catches:
         output_value += f'**{rank}. {string.capwords(pokemon_catch.pokemon)}: **{pokemon_catch.catches}\n'
         rank += 1
@@ -23,8 +23,8 @@ def catch_embed(pokemon_catches, current_page, max_page, descending):
 
 # Helper function to create embed for 'leaderboard'
 def create_leaderboard_embed(query, current_page, max_page, time_flag, field_attribute):
-    rank = (current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1
-    top_rank = constants.ITEMS_PER_PAGE if current_page == 1 else f'{(current_page * constants.ITEMS_PER_PAGE) - constants.ITEMS_PER_PAGE + 1} - {current_page * constants.ITEMS_PER_PAGE}'
+    rank = utility.get_rank_by_page(current_page)
+    top_rank = rank if current_page == 1 else f'{rank} - {rank + constants.ITEMS_PER_PAGE}'
     
     title, author = utility.get_title_author_by_timeflag(time_flag)
     embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{str(title)}]')
