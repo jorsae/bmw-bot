@@ -70,7 +70,7 @@ class Admin(commands.Cog):
     @flags.add_flag("--publish", action="store_true", default=False)
     @flags.add_flag("--week", action="store_true", default=True)
     @flags.add_flag("--month", action="store_true", default=False)
-    @flags.command(name='addreward', help=f'Adds rewards.\nUsage`{constants.CURRENT_PREFIX}addreward --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nFlags: `--week, --month, --publish`', hidden=True)
+    @flags.command(name='addreward', help=f'Adds rewards for weekly/monthly catches.\nUsage`{constants.CURRENT_PREFIX}addreward --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nFlags: `--week, --month, --publish`', hidden=True)
     async def week(self, ctx, **flags):
         is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
         if is_admin is False:
