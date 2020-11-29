@@ -85,7 +85,7 @@ class Poketwo():
                     )
                 .execute()
             )
-        except Exception as e:1
+        except Exception as e:
             logging.critical(f'add_pokemon_catch: {e}')
 
     # Gets the rarity description for a given pokemon. e.g: legendary, mythical

@@ -169,18 +169,16 @@ class General(commands.Cog):
         users = (UserStatModel
                     .select(attribute.alias("value"), UserStatModel.user_id)
                     .group_by(UserStatModel.user_id)
+                    .having(attribute >= value_requirement)
                     .order_by(attribute.desc())
                 )
         
         output = ''
-        total = 0
         for user in users:
-            if user.value >= value_requirement:
-                username = query.get_user_by_userid(user.user_id).username
-                output += f'**{username}: **{user.value:,}\n'
-                total += 1
+            username = query.get_user_by_userid(user.user_id).username
+            output += f'**{username}: **{user.value:,}\n'
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-        embed.add_field(name=f'{medal_model[0].medal} {medal_model[0].description}\n{total} people have the medal', value=output)
+        embed.add_field(name=f'{medal_model[0].medal} {medal_model[0].description}\n{len(users)} people have the medal', value=output)
         await ctx.send(embed=embed)
 
     @commands.command(name='guild', help='Displays guilds')
