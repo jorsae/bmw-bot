@@ -24,13 +24,14 @@ def catch_embed(pokemon_catches, current_page, max_page, descending):
 # Helper function to create embed for 'leaderboard'
 def create_leaderboard_embed(query, current_page, max_page, time_flag, field_attribute):
     rank = utility.get_rank_by_page(current_page)
-    top_rank = rank if current_page == 1 else f'{rank} - {rank + constants.ITEMS_PER_PAGE}'
+    top_rank = rank if current_page == 1 else f'{rank - constants.ITEMS_PER_PAGE + 1} - {rank}'
     
     title, author = utility.get_title_author_by_timeflag(time_flag)
     embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Top {top_rank} rankings [{str(title)}]')
     embed.set_footer(text=f'Page: {current_page}/{max_page}')
     embed.set_author(name=f'Time remaining: {str(author)}')
 
+    rank -= constants.ITEMS_PER_PAGE -1
     for user_stat in query:
         user = UserModel.get(UserModel.user_id == user_stat.user_id)
         embed.add_field(name=f'{rank}. {user.username}', value=f'{field_attribute}: {user_stat.sum:,}')
