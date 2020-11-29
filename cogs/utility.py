@@ -149,6 +149,9 @@ class Utility(commands.Cog):
             attribute = UserStatModel.ultrabeast
         elif pokemon_category == 'shiny':
             attribute = UserStatModel.shiny
+        elif pokemon_category == 'Hall of Fame':
+            await ctx.send(f"I don't support HoF medals.\nPlease use `.hof` to check.")
+            return
         else:
             await ctx.send(f'Error in pokemon_category: {pokemon_category}')
             return
