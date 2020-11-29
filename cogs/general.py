@@ -71,13 +71,13 @@ class General(commands.Cog):
     
     @flags.add_flag('--desc', action='store_true', default=True)
     @flags.add_flag('--asc', action='store_true', default=False)
-    @flags.add_flag("pokemon", nargs="?", type=str, default=None)
+    @flags.add_flag("pokemon", nargs="*", type=str, default=None)
     @flags.command(name="catch", aliases=['c'], help=f'Displays times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name> [Flags]`\nFlags: `--desc, --asc`')
     async def catch(self, ctx, **flags):
         pokemon = flags["pokemon"]
 
-        if pokemon is not None:
-            pokemon = pokemon.lower()
+        if len(pokemon) > 0:
+            pokemon = ' '.join(pokemon).lower()
             
             # Check for easter egg
             if pokemon in constants.CATCH_BMW_EASTER_EGG:
