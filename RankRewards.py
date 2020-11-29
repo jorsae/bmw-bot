@@ -47,8 +47,6 @@ class RankRewards():
         end_date = start_date + timedelta(days=6)
         days = 6
         
-
-        
         await self.give_rewards(start_date, end_date, rewards, days, "Weekly winners")
 
     async def give_monthly(self, start_date):
