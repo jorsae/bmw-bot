@@ -14,7 +14,7 @@ import constants
 import cog_help
 from models import PokemonModel, MedalModel, UserStatModel
 
-class Utility(commands.Cog):
+class General(commands.Cog):
     def __init__(self, bot, settings):
         self.bot = bot
         self.settings = settings
@@ -65,7 +65,7 @@ class Utility(commands.Cog):
         except asyncio.TimeoutError:
             pass
         except Exception as e:
-            logging.critical(f'commands.leaderboard: {e}')
+            logging.critical(f'general.medal: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
     
@@ -91,7 +91,7 @@ class Utility(commands.Cog):
             except DoesNotExist:
                 await ctx.send(f'**{string.capwords(pokemon)}** has yet to be caught!')
             except Exception as e:
-                logging.critical(f'commands.catch: {e}')
+                logging.critical(f'general.catch: {e}')
                 await ctx.send('Oops, something went wrong')
             return
 
@@ -125,7 +125,7 @@ class Utility(commands.Cog):
         except asyncio.TimeoutError:
             pass
         except Exception as e:
-            logging.critical(f'commands.leaderboard: {e}')
+            logging.critical(f'general.catch: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 

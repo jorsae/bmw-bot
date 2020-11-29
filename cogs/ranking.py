@@ -77,8 +77,7 @@ class Ranking(commands.Cog):
         except asyncio.TimeoutError:
             pass
         except Exception as e:
-            print(f'{type(e)}')
-            logging.critical(f'commands.leaderboard: {e}')
+            logging.critical(f'ranking.leaderboard: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
@@ -115,6 +114,7 @@ class Ranking(commands.Cog):
         except asyncio.TimeoutError:
             pass
         except Exception as e:
+            logging.critical(f'ranking.profile: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
@@ -145,7 +145,7 @@ class Ranking(commands.Cog):
             embed.add_field(name='BMW pokémon stats', value=f'**Total pokémon caught:** {total_caught:,}\n**Total rare pokémon:** 0\n**Percentage rare pokémon:** 0%\n**Total shiny pokémon: **0\n**Percentage shiny pokémon **0%')
             await ctx.send(embed=embed)
         except Exception as e:
-            logging.critical(f'server: {e}')
+            logging.critical(f'ranking.server: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
@@ -166,7 +166,7 @@ class Ranking(commands.Cog):
             embed.add_field(name='Rare pokémon caught', value=f'**Total:** 0\n**Legendary**: 0\n**Mythical**: 0\n**Ultra beast**: 0\n**Shiny**: 0')
             await ctx.send(embed=embed)
         except Exception as e:
-            logging.critical(f'commands.catch: {e}')
+            logging.critical(f'ranking.rares: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
         
@@ -199,14 +199,14 @@ class Ranking(commands.Cog):
             
             await ctx.send(embed=embed)
         except Exception as e:
-            logging.critical(f'commands.hof: {e}')
+            logging.critical(f'ranking.hof: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if type(error) is discord.ext.flags._parser.ArgumentParsingError:
-            logging.error(f'ranking.con_command_error. Sent: {error}')
+            logging.warning(f'ranking.on_command_error. Sent: {error}')
             await ctx.send(f'{error}')
         
         username = f'{ctx.message.author.name}#{ctx.message.author.discriminator}'
