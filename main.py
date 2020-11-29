@@ -67,8 +67,7 @@ async def change_status():
 @tasks.loop(seconds=60, reconnect=True)
 async def check_rank_rewards():
     now = datetime.now()
-    # if now.hour == 0 and now.minute == 0:
-    if now.hour == 0:
+    if now.hour == 0 and now.minute == 0:
         await rank_rewards.distribute_rewards()
 
 @bot.event

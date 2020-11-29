@@ -68,7 +68,9 @@ class Admin(commands.Cog):
     @flags.add_flag("--2", type=str)
     @flags.add_flag("--3", type=str)
     @flags.add_flag("--publish", action="store_true", default=False)
-    @flags.command(name='week', help=f'Distributes weekly rewards.\nUsage`{constants.CURRENT_PREFIX}week --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nOnce ready add `--publish` to push it to database', hidden=True)
+    @flags.add_flag("--week", action="store_true", default=True)
+    @flags.add_flag("--month", action="store_true", default=False)
+    @flags.command(name='addreward', help=f'Adds rewards.\nUsage`{constants.CURRENT_PREFIX}addreward --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nFlags: `--week, --month, --publish`', hidden=True)
     async def week(self, ctx, **flags):
         is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
         if is_admin is False:
@@ -84,101 +86,29 @@ class Admin(commands.Cog):
             await ctx.send('You need to set all rewards')
             return
 
-        top3 = (UserStatModel
-                .select(fn.SUM(UserStatModel.catches).alias('sum_catches'), UserStatModel.user_id)
-                .where(
-                    (UserStatModel.date >= start) &
-                    (UserStatModel.date <= end)
-                    )
-                .group_by(UserStatModel.user_id)
-                .order_by(fn.SUM(UserStatModel.catches).desc())
-                .limit(3)
-                )
-        
-        winners = []
-        rank = 1
-        for user in top3:
-            if flags["publish"]:
-                RankModel.create(start_date=start, duration=6, reward=flags[str(rank)], placement=rank, user_id=user.user_id.user_id)
-            winners.append((query.get_user_by_userid(user.user_id.user_id).discord_id, user.sum_catches))
-            rank += 1
-        
-        announcement_embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Weekly winners')
-        value = ''
-        rank = 1
-        for winner in winners:
-            value += f'**{rank}. <@{winner[0]}>**: {rewards[rank - 1]}\nTotal catches: {winner[1]:,}\n\n'
-            rank += 1
-        announcement_embed.add_field(name=f'{start} - {end}', value=value, inline=False)
+        reward_time = 'week'
+        if flags['month']:
+            reward_time = 'month'
 
         if flags["publish"]:
-            channel = self.bot.get_channel(self.settings.announcement_channel)
-            await channel.send(embed=announcement_embed)
-            await ctx.send('PUBLISHED SUCCESSFULLY')
-        else:
-            await ctx.send(embed=announcement_embed)
-            await ctx.send("Use same command with `--publish` when you are confident it's correct")
-
-    @flags.add_flag("--start", type=str)
-    @flags.add_flag("--1", type=str)
-    @flags.add_flag("--2", type=str)
-    @flags.add_flag("--3", type=str)
-    @flags.add_flag("--publish", action="store_true", default=False)
-    @flags.command(name='month', help=f'Distributes monthly rewards.\nUsage`{constants.CURRENT_PREFIX}month --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nOnce ready add `--publish` to push it to database', hidden=True)
-    async def month(self, ctx, **flags):
-        is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
-        if is_admin is False:
-            return
-        
-        current_month = utility.get_date_current_month()
-        next_month = date(current_month.year, current_month.month + 1, current_month.day)
-        days = (next_month - current_month).days - 1
-
-        start, end = utility.parse_start_flag(days, **flags)
-        if start is None:
-            await ctx.send('You need to set start properly')
-            return
-        
-        rewards = utility.parse_rank_rewards(**flags)
-        if None in rewards:
-            await ctx.send('You need to set all rewards')
-            return
-
-        top3 = (UserStatModel
-                .select(fn.SUM(UserStatModel.catches).alias('sum_catches'), UserStatModel.user_id)
-                .where(
-                    (UserStatModel.date >= start) &
-                    (UserStatModel.date <= end)
-                    )
-                .group_by(UserStatModel.user_id)
-                .order_by(fn.SUM(UserStatModel.catches).desc())
-                .limit(3)
+            rank_reward, created = (RankRewardModel
+                    .get_or_create(
+                        start_date=start,
+                        reward_type=reward_time,
+                        place_1=rewards[0],
+                        place_2=rewards[1],
+                        place_3=rewards[2]
+                        )
                 )
-        
-        winners = []
-        rank = 1
-        for user in top3:
-            if flags["publish"]:
-                RankModel.create(start_date=start, duration=days, reward=flags[str(rank)], placement=rank, user_id=user.user_id.user_id)
-            winners.append((query.get_user_by_userid(user.user_id.user_id).discord_id, user.sum_catches))
-            rank += 1
-        
-        announcement_embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'Monthly winners')
-        value = ''
-        rank = 1
-        for winner in winners:
-            value += f'**{rank}. <@{winner[0]}>**: {rewards[rank - 1]}\nTotal catches: {winner[1]:,}\n\n'
-            rank += 1
-        announcement_embed.add_field(name=f'{start} - {end}', value=value, inline=False)
-
-        if flags["publish"]:
-            channel = self.bot.get_channel(self.settings.announcement_channel)
-            await channel.send(embed=announcement_embed)
-            await ctx.send('PUBLISHED SUCCESSFULLY')
+            await ctx.send(f'PUBLISHED: {created}')
         else:
-            await ctx.send(embed=announcement_embed)
-            await ctx.send("Use same command with `--publish` when you are confident it's correct")
-    
+            output = f'start_date: {start}\nreward_type: {reward_time}\nRewards: '
+            rank = 1
+            for reward in rewards:
+                output += f'{rank}. {reward} , '
+                rank += 1
+            await ctx.send(f'{output}\nNOT PUBLISHED.\nAdd `--publish` to publish')
+
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
