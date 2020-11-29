@@ -30,17 +30,6 @@ class Admin(commands.Cog):
         
         await ctx.send(f'Days running: {days}\nTotal users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}\nTotal Medals: {total_medals}\n')
     
-    @commands.command(name='guild', help='Displays guilds', hidden=True)
-    async def guild(self, ctx):
-        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
-        if is_admin is False:
-            return
-        
-        guild_names = f'{datetime.now()}\n'
-        for guild in self.bot.guilds:
-            guild_names += f'{guild.name}\n'
-        await ctx.author.send(guild_names)
-
     @commands.command(name='addmedal', help=f'Adds a medal to MedalList.\nUsage: `{constants.CURRENT_PREFIX}addmedal description pokemon_category value_requirement time_category medal`', hidden=True)
     async def addmedal(self, ctx, description, pokemon_category, value_requirement, time_category, medal):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])

@@ -128,7 +128,16 @@ class Utility(commands.Cog):
             logging.critical(f'commands.leaderboard: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
-    
+
+    @commands.command(name='guild', help='Displays guilds')
+    async def guild(self, ctx):
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+        output = ''
+        for guild in self.bot.guilds:
+            output += f'{guild.name}\n'
+        embed.add_field(name='Servers I am in', value=output)
+        await ctx.send(embed=embed)
+
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
         start = time.monotonic()
