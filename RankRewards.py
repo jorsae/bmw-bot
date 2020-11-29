@@ -24,10 +24,35 @@ class RankRewards():
             await self.give_monthly(give_monthly_date)
     
     async def give_weekly(self, start_date):
-        print(f'give_weekly: {start_date=}')
+        rewards = []
+        try:
+            rank_reward = (RankRewardModel  
+                            .get(
+                                (RankRewardModel.start_date == start_date) &
+                                (RankRewardModel.reward_type == 'week')
+                                )
+                            )
+            rewards.append(rank_reward.place_1)
+            rewards.append(rank_reward.place_2)
+            rewards.append(rank_reward.place_3)
+        except DoesNotExist:
+            logging.critical(f'RankRewards.give_weekly: RankRewards are missing. start_date: {start_date}')
+            rewards.append('missing_emote')
+            rewards.append('missing_emote')
+            rewards.append('missing_emote')
+        except Exception as e:
+            logging.critical(f'RankRewards.give_weekly: {e}')
+            return
+        
+        end_date = start_date + timedelta(days=6)
+        days = 6
+        
+
+        
+        await self.give_rewards(start_date, end_date, rewards, days, "Weekly winners")
 
     async def give_monthly(self, start_date):
-        production = False
+        rewards = []
         try:
             rank_reward = (RankRewardModel  
                             .get(
@@ -35,9 +60,14 @@ class RankRewards():
                                 (RankRewardModel.reward_type == 'month')
                                 )
                             )
+            rewards.append(rank_reward.place_1)
+            rewards.append(rank_reward.place_2)
+            rewards.append(rank_reward.place_3)
         except DoesNotExist:
             logging.critical(f'RankRewards.give_monthly: RankRewards are missing. start_date: {start_date}')
-            return
+            rewards.append('missing_emote')
+            rewards.append('missing_emote')
+            rewards.append('missing_emote')
         except Exception as e:
             logging.critical(f'RankRewards.give_monthly: {e}')
             return
@@ -48,11 +78,6 @@ class RankRewards():
         else:
             end_date = date(start_date.year, start_date.month + 1, 1) - timedelta(days=1)
         days = (end_date - start_date).days
-        
-        rewards = []
-        rewards.append(rank_reward.place_1)
-        rewards.append(rank_reward.place_2)
-        rewards.append(rank_reward.place_3)
         
         await self.give_rewards(start_date, end_date, rewards, days, "Monthly winners")
     
