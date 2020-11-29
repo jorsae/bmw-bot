@@ -77,6 +77,7 @@ class Ranking(commands.Cog):
         except asyncio.TimeoutError:
             pass
         except Exception as e:
+            print(f'{type(e)}')
             logging.critical(f'commands.leaderboard: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
@@ -114,7 +115,6 @@ class Ranking(commands.Cog):
         except asyncio.TimeoutError:
             pass
         except Exception as e:
-            logging.critical(f'commands.leaderboard: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
@@ -205,5 +205,9 @@ class Ranking(commands.Cog):
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        if type(error) is discord.ext.flags._parser.ArgumentParsingError:
+            logging.error(f'ranking.con_command_error. Sent: {error}')
+            await ctx.send(f'{error}')
+        
         username = f'{ctx.message.author.name}#{ctx.message.author.discriminator}'
         logging.error(f'ranking.on_command_error {username}: {error}')

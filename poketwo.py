@@ -57,13 +57,19 @@ class Poketwo():
                 ultrabeast_count = 1
             shiny_count = 1 if is_shiny else 0
 
-            UserStatModel.update(catches=UserStatModel.catches + 1, legendary=UserStatModel.legendary + legendary_count, 
-                                mythical=UserStatModel.mythical + mythical_count,
-                                ultrabeast=UserStatModel.ultrabeast + ultrabeast_count,
-                                shiny=UserStatModel.shiny + shiny_count).where(
-                                    (UserStatModel.user_id == user_id) &
-                                    (UserStatModel.date == today)
-                                ).execute()
+            (UserStatModel
+                .update(
+                    catches=UserStatModel.catches + 1,
+                    legendary=UserStatModel.legendary + legendary_count, 
+                    mythical=UserStatModel.mythical + mythical_count,
+                    ultrabeast=UserStatModel.ultrabeast + ultrabeast_count,
+                    shiny=UserStatModel.shiny + shiny_count)
+                .where(
+                    (UserStatModel.user_id == user_id) &
+                    (UserStatModel.date == today)
+                    )
+                .execute()
+            )
         except Exception as e:
             logging.critical(f'add_pokemon: {e} | discord_id: {discord_id}, rarity: {rarity}, is_shiny: {is_shiny}')
 
