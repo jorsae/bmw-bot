@@ -137,7 +137,8 @@ class Ranking(commands.Cog):
             now = datetime.now()
             days = (date(now.year, now.month, now.day) - start_date).days
             
-            embed.add_field(name=f'BMW pokémon stats | Days: {days}', value=f'**Total pokémon caught: **{total_caught:,}\n**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}%')
+            embed.add_field(name=f'BMW pokémon stats', value=f'**Total pokémon caught: **{total_caught:,}\n**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}%')
+            embed.set_footer(text=f'Tracking stats for {days} days.')
             await ctx.send(embed=embed)
         except DoesNotExist:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
