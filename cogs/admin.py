@@ -62,7 +62,24 @@ class Admin(commands.Cog):
         for medal in query:
             output += f'[{medal.medal_id}] {medal.description}: {medal.pokemon_category}, {medal.value_requirement}, {medal.time_category}\n'
         await ctx.send(output)
+    
+    @flags.add_flag("--week", action='store_true', default=True)
+    @flags.add_flag("--month", action='store_true', default=True)
+    @flags.command(name='dumpreward', help=f'Dumps RankReward rewards', hidden=True)
+    async def dumpreward(self, ctx, **flags):
+        reward_type = 'week'
+        if flags['month']:
+            reward_type = 'month'
 
+        rank_rewards = (RankRewardModel
+                        .select()
+                        .where(RankRewardModel.reward_type == reward_type)
+                        )
+        output = f'Dumping: {reward_type}\n'
+        for rank_reward in rank_rewards:
+            output += f'{rank_reward.start_date}: {rank_reward.reward_type} | 1. {rank_reward.place_1}, 2. {rank_reward.place_2}, 3. {rank_reward.place_3}'
+        await ctx.send(output)
+    
     @flags.add_flag("--start", type=str)
     @flags.add_flag("--1", type=str)
     @flags.add_flag("--2", type=str)
