@@ -6,13 +6,12 @@ from datetime import datetime, date, timedelta
 from enumeration import TimeFlag, HallOfFame
 from models import UserStatModel
 
-def parse_start_flag(duration, **flags):
+def parse_start_flag(**flags):
     try:
-        start = datetime.strptime(flags["start"], "%Y-%m-%d").date()
-        return start, start + timedelta(days=duration)
+        return datetime.strptime(flags["start"], "%Y-%m-%d").date()
     except Exception as e:
         logging.warning(f'Failed to parse start: {e}')
-        return None, None
+        return None
 
 def parse_rank_rewards(**flags):
     rewards = []

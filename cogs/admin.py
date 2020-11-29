@@ -76,7 +76,7 @@ class Admin(commands.Cog):
         if is_admin is False:
             return
         
-        start, end = utility.parse_start_flag(6, **flags)
+        start = utility.parse_start_flag(**flags)
         if start is None:
             await ctx.send('You need to set start properly')
             return
