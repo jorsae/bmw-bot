@@ -64,7 +64,7 @@ class Admin(commands.Cog):
         await ctx.send(output)
     
     @flags.add_flag("--week", action='store_true', default=True)
-    @flags.add_flag("--month", action='store_true', default=True)
+    @flags.add_flag("--month", action='store_true', default=False)
     @flags.command(name='dumpreward', help=f'Dumps RankReward rewards.\nFlags: `--week, --month`', hidden=True)
     async def dumpreward(self, ctx, **flags):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
