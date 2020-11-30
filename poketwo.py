@@ -91,8 +91,11 @@ class Poketwo():
     # Gets the rarity description for a given pokemon. e.g: legendary, mythical
     def get_rare_definition(self, pokemon):
         try:
-            rarity = RareDefinitionModel.select(RareDefinitionModel.rarity).where(RareDefinitionModel.pokemon == pokemon).scalar()
-            return rarity
+            return (RareDefinitionModel
+                        .select(RareDefinitionModel.rarity)
+                        .where(RareDefinitionModel.pokemon == pokemon)
+                        .scalar()
+                    )
         except DoesNotExist:
             return None
         except Exception as e:
