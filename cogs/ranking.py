@@ -120,7 +120,7 @@ class Ranking(commands.Cog):
 
     @commands.command(name='server', aliases=['s'], help='Displays pokémon statistics for BMW')
     async def server(self, ctx):
-        total_caught = query.get_pokemon_caught()
+        total_caught = query.get_pokemon_caught(alltime=True)
         try:
             legendary = UserStatModel.select(fn.SUM(UserStatModel.legendary)).scalar()
             mythical = UserStatModel.select(fn.SUM(UserStatModel.mythical)).scalar()
