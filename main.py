@@ -4,11 +4,13 @@ import asyncio
 import os
 import re
 import logging
+import schedule
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
 from discord.ext import tasks
 
 import query
+import RankRewards
 import constants
 from poketwo import Poketwo
 import utility
@@ -62,9 +64,15 @@ async def change_status():
     total_caught = 0 if total_caught is None else total_caught
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{total_caught:,} caught'))
 
+@tasks.loop(seconds=50, reconnect=True)
+async def check_rank_rewards():
+    # schedule.run_pending()
+    schedule.run_all()
+
 @bot.event
 async def on_ready():
     change_status.start()
+    check_rank_rewards.start()
 
 def setup_logging():
     logFolder = '../logs'
@@ -84,6 +92,8 @@ if __name__ == '__main__':
     bot.command_prefix = discord_commands.when_mentioned_or(settings.prefix)
     constants.CURRENT_PREFIX = settings.prefix # Way to have prefix in command.help description
     build_rares()
+    
+    schedule.every().day.at("11:31").do(RankRewards.give_rewards) # Schedule to run to automatically distribute weekly/monthly rewards
     
     bot.add_cog(cogs.Ranking(bot, settings))
     bot.add_cog(cogs.General(bot, settings))

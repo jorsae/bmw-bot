@@ -146,8 +146,8 @@ def get_datespan_month():
     return start_month, end_month
 
 def get_datespan_day():
-    now = datetime.now()
-    return date(now.year, now.month, now.day), date(now.year, now.month, now.day)
+    today = date.today()
+    return today, today
 
 def get_date_current_week():
     now = date.today()
