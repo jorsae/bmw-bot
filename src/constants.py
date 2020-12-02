@@ -1,7 +1,7 @@
 from discord import Colour
 import re
 
-RARE_DEFINITION_FOLDER = 'RareDefinition'
+RARE_DEFINITION_FOLDER = './src/RareDefinition'
 
 ITEMS_PER_PAGE = 10
 
