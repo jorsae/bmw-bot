@@ -20,5 +20,3 @@ POKETWO = 'Pokétwo#8236'
 GET_USER = re.compile('@!?\d{17,18}')
 GET_POKEMON = re.compile("\d{1} [\w| |:|\-|′|\.|%]+!")
 GET_ALL_NUMBERS = re.compile('\d+')
-
-REMOVE_EMOTES = re.compile('<.+>')
