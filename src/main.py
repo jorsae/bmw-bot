@@ -39,7 +39,7 @@ async def on_message(message: discord.Message):
         .replace("‘", "′")
         .replace("’", "′")
     )
-    
+
     if message.content.startswith(settings.prefix):
         logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Command: "{message.content}"')
     
@@ -47,6 +47,29 @@ async def on_message(message: discord.Message):
         await poketwo.process_message(message)
 
     await bot.process_commands(message)
+    if str(message.author) != settings.discord_bot:
+        await process_on_triggers(message)
+
+async def process_on_triggers(message):
+    if 'barrel roll' in message.content:
+        await barrel_roll(message)
+    
+    if 'Cat game trash' in message.content and str(message.author) == 'Dyno#3861':
+        await message.channel.send('Not cool <@155149108183695360>')
+
+async def barrel_roll(message):
+    text = 'barrel roll'
+    cd = 0.5
+    msg = await message.channel.send('barrel roll')
+    await asyncio.sleep(cd)
+    await msg.edit(content='\n'.join(text[i:i+1] for i in range(0, len(text))))
+    await asyncio.sleep(cd)
+    text_rev = text[::-1]
+    await msg.edit(content=text_rev)
+    await asyncio.sleep(cd)
+    await msg.edit(content='\n'.join(text_rev[i:i+1] for i in range(0, len(text_rev))))
+    await asyncio.sleep(cd)
+    await msg.edit(content=text)
 
 def build_rares():
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/legendary.txt', 'legendary')
