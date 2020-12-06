@@ -7,4 +7,4 @@ class RareDefinitionModel(BaseModel):
     rarity = TextField()
     
     class Meta:
-        db_table = 'RareDefinition'
+        table_name = 'RareDefinition'

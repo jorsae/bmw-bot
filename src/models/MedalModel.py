@@ -3,11 +3,11 @@ import datetime
 from models import BaseModel
 
 class MedalModel(BaseModel):
-    medal_id = PrimaryKeyField()
+    medal_id = AutoField()
     description = TextField()
     pokemon_category = TextField()
     value_requirement = IntegerField()
     time_category = TextField()
     medal = TextField()
     class Meta:
-        db_table = 'MedalList'
+        table_name = 'MedalList'

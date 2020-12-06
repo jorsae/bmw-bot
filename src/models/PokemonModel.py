@@ -7,4 +7,4 @@ class PokemonModel(BaseModel):
     catches = IntegerField(default=0)
     
     class Meta:
-        db_table = 'Pokemon'
+        table_name = 'Pokemon'

@@ -4,8 +4,8 @@ from models import BaseModel
 from datetime import datetime
 
 class UserModel(BaseModel):
-    user_id = PrimaryKeyField()
+    user_id = AutoField()
     discord_id = TextField(unique=True)
     username = TextField()
     class Meta:
-        db_table = 'Users'
+        table_name = 'Users'
