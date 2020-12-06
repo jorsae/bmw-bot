@@ -59,6 +59,7 @@ async def process_on_triggers(message):
     
     content = re.sub(constants.REMOVE_EMOTES, '', message.content)
     if '69' in content:
+        print(content)
         await message.channel.send('nice')
 
 async def barrel_roll(message):
