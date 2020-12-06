@@ -56,6 +56,9 @@ async def process_on_triggers(message):
     
     if 'Cat game trash' in message.content and str(message.author) == 'Dyno#3861':
         await message.channel.send('Not cool <@155149108183695360>')
+    
+    if '69' in message.content:
+        await message.channel.send('nice')
 
 async def barrel_roll(message):
     text = 'barrel roll'
