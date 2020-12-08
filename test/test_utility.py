@@ -4,7 +4,7 @@ sys.path.append('src')
 import utility
 from enumeration import HallOfFame
 
-def get_hof_emote_test():
+def test_get_hof_emote():
     catches = utility.get_hof_emote(HallOfFame.catches)
     assert(catches) == '<:HofCatches:779248403502202901>'
     
@@ -19,3 +19,9 @@ def get_hof_emote_test():
     
     shiny = utility.get_hof_emote(HallOfFame.shiny)
     assert(shiny) == '<:HofShiny:779250293849587743>'
+
+def test_str_to_int():
+    assert(utility.str_to_int(10) == 10)
+    assert(utility.str_to_int(-20) == -20)
+    assert(utility.str_to_int('test') == 1)
+    assert(utility.str_to_int(13.2) == 13)
