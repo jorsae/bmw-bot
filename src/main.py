@@ -78,6 +78,13 @@ def build_rares():
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/legendary.txt', 'legendary')
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/mythical.txt', 'mythical')
     add_rares(f'{constants.RARE_DEFINITION_FOLDER}/ultrabeast.txt', 'ultra beast')
+    add_roles(f'{constants.RARE_DEFINITION_FOLDER}/roles.txt')
+
+def add_roles(file):
+    for line in open(file, 'r', encoding='utf-8').readlines():
+        line = line.strip()
+        print(f'{line}')
+        query.add_role_definition(line)
 
 def add_rares(file, rarity):
     for line in open(file, 'r').readlines():
@@ -110,7 +117,7 @@ def setup_logging():
     logging.basicConfig(handlers=[handler], level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
 
 def setup_database():
-    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel, MedalModel, RankModel, RankRewardModel])
+    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel, MedalModel, RankModel, RankRewardModel, RoleDefinitionModel])
 
 if __name__ == '__main__':
     setup_logging()

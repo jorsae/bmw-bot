@@ -121,6 +121,13 @@ def add_rare_definition(pokemon, rarity):
     except Exception as e:
         logging.critical(f'add_rare_definition: {e}')
 
+# Adds a role to the role definition
+def add_role_definition(role):
+    try:
+        role, _ = RoleDefinitionModel.get_or_create(role=role)
+    except Exception as e:
+        logging.critical(f'add_role_definition: {e}')
+
 # Returns count of all pokemon caught
 def get_pokemon_caught(alltime=False):
     try:
