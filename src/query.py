@@ -128,6 +128,17 @@ def add_role_definition(role):
     except Exception as e:
         logging.critical(f'add_role_definition: {e}')
 
+# Checks if a role is blacklisted. returns boolean
+def role_is_blacklisted(role):
+    try:
+        query = (RoleDefinitionModel
+                    .select()
+                    .where(RoleDefinitionModel.role == role)
+                )
+        return query.exists()
+    except Exception as e:
+        logging.critical(f'role_is_blacklisted: {e}')
+
 # Returns count of all pokemon caught
 def get_pokemon_caught(alltime=False):
     try:

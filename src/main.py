@@ -82,8 +82,7 @@ def build_rares():
 
 def add_roles(file):
     for line in open(file, 'r', encoding='utf-8').readlines():
-        line = line.strip()
-        print(f'{line}')
+        line = line.strip().lower()
         query.add_role_definition(line)
 
 def add_rares(file, rarity):

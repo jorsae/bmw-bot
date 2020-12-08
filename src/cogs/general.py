@@ -201,6 +201,10 @@ class General(commands.Cog):
         if usermodel.shiny_hunt == shiny_hunt:
             await ctx.send(f'You are already shiny hunting: {shiny_hunt}')
             return
+        
+        if query.role_is_blacklisted(shiny_hunt):
+            await ctx.send(f"You can't shiny hunt: {shiny_hunt}")
+            return
 
         try:
             level_role = None
