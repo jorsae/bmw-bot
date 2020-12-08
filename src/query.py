@@ -71,6 +71,13 @@ def get_username_by_stat(attribute, value):
 def get_user_by_userid(user_id):
     return UserModel.get(UserModel.user_id == user_id)
 
+# Gets amount of people shiny hunting
+def get_count_shinyhunt(shiny_hunt):
+    return (UserModel
+            .select(fn.COUNT())
+            .where(UserModel.shiny_hunt == shiny_hunt)
+            .scalar())
+
 # Gets MedalList
 def get_medallist(amount, page):
     return (MedalModel

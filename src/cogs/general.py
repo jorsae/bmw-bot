@@ -196,11 +196,12 @@ class General(commands.Cog):
         else:
             await ctx.send(f'Must specify a pokémon. e.g: `{constants.DEFAULT_PREFIX}sh abra`')
             return
-        print(f'{shiny_hunt=}')
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
         usermodel, created = query.create_user(ctx.author.id, username, shiny_hunt)
-        print(f'{usermodel=}')
-        print(f'{created=}')
+        if usermodel.shiny_hunt == shiny_hunt:
+            await ctx.send(f'You are already shiny hunting: {shiny_hunt}')
+            return
+
         try:
             level_role = None
             for role in ctx.author.roles:
@@ -216,14 +217,15 @@ class General(commands.Cog):
             await ctx.send('No level found. Too low level to shiny hunt')
             return
         
-        output = ''
+        output = f''
         for guild_id in constants.BMW_SERVERS:
             guild = self.bot.get_guild(guild_id)
             try:
                 user = await guild.fetch_member(ctx.author.id)
                 if user is None:
                     break
-            except:
+            # User not found | 404
+            except Exception as e:
                 break
             
             old_role = get(guild.roles, name=usermodel.shiny_hunt)
@@ -257,8 +259,13 @@ class General(commands.Cog):
             .execute()
         )
         
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{ctx.author.name} is shiny hunting!')
-        embed.add_field(name=f'Shiny hunting {shiny_hunt} from {usermodel.shiny_hunt}', value=output)
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+
+        shiny_hunters = query.get_count_shinyhunt(shiny_hunt)
+        if shiny_hunters >= 2:
+            embed.set_footer(text=f'{shiny_hunters - 1} other person(s) are also shiny hunting {shiny_hunt}')
+        output += f'\n**Remember to change shiny hunt for {constants.POKETWO} too!**'
+        embed.add_field(name=f'You are now shiny hunting {shiny_hunt}.', value=output)
         await ctx.send(embed=embed)
 
     @commands.command(name='guild', help='Displays guilds')
