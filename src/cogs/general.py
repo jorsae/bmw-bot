@@ -187,12 +187,20 @@ class General(commands.Cog):
     #  2.a) If they do not, delete the role
     # 3. Make a pokemon_role that will remove shiny hunt
     # 4. Add a BLACKLIST of roles. What happends if you shiny hunt: "Trainer", and then shiny hunt something else? will trainer be deleted
-    @commands.command(name='sh', help=f'Start shiny hunt, `{constants.DEFAULT_PREFIX}sh stop` to stop.\nUsage: `{constants.DEFAULT_PREFIX}sh <pokemon>`')
-    async def shiny_hunt(self, ctx, shiny_hunt):
-        shiny_hunt = shiny_hunt.lower()
-
+    @flags.add_flag("shiny_hunt", nargs="*", type=str, default=None)
+    @flags.command(name='sh', help=f'Start shiny hunt, `{constants.DEFAULT_PREFIX}sh stop` to stop.\nUsage: `{constants.DEFAULT_PREFIX}sh <pokemon>`')
+    async def shiny_hunt(self, ctx, **flags):
+        shiny_hunt = None
+        if flags['shiny_hunt']:
+            shiny_hunt = ''.join(flags['shiny_hunt']).lower()
+        else:
+            await ctx.send(f'Must specify a pokémon. e.g: `{constants.DEFAULT_PREFIX}sh abra`')
+            return
+        print(f'{shiny_hunt=}')
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
         usermodel, created = query.create_user(ctx.author.id, username, shiny_hunt)
+        print(f'{usermodel=}')
+        print(f'{created=}')
         try:
             level_role = None
             for role in ctx.author.roles:
@@ -235,7 +243,8 @@ class General(commands.Cog):
             # User is in the guild
             role = get(guild.roles, name=shiny_hunt)
             if role is None:
-                role = await guild.create_role(name=shiny_hunt, mentionable=True)
+                if shiny_hunt != 'stop':
+                    role = await guild.create_role(name=shiny_hunt, mentionable=True)
             output += f'Added role: {shiny_hunt} in {guild.name}\n'
             await user.add_roles(role)
         
