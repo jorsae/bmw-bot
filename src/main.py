@@ -107,7 +107,7 @@ def setup_logging():
     logging.basicConfig(handlers=[handler], level=logging.INFO, format='%(asctime)s %(levelname)s:[%(filename)s:%(lineno)d] %(message)s')
 
 def setup_database():
-    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel, MedalModel, RankModel, RankRewardModel])
+    database.create_tables([UserModel, PokemonModel, RareDefinitionModel, UserStatModel, MedalModel, RankModel, RankRewardModel, ShinyHuntModel])
 
 if __name__ == '__main__':
     setup_logging()

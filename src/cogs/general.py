@@ -1,6 +1,7 @@
 import discord
 from peewee import *
 from discord.ext import commands, flags
+from discord.utils import get
 from datetime import datetime
 import string
 import asyncio
@@ -180,6 +181,46 @@ class General(commands.Cog):
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
         embed.add_field(name=f'{medal_model[0].medal} {medal_model[0].description}\n{len(users)} people have the medal', value=output)
         await ctx.send(embed=embed)
+
+    @commands.command(name='sh', help='Start shiny hunt.\nUsage: `{constants.CURRENT_PREFIX}sh <pokemon>`')
+    async def shiny_hunt(self, ctx, pokemon_role):
+        pokemon_role = pokemon_role.lower()
+        try:
+            level_role = None
+            for role in ctx.author.roles:
+                if role.name.startswith('Lv '):
+                    level_role = role
+                    break
+            
+            level = int(constants.GET_ALL_NUMBERS.search(level_role.name).group())
+            if level < 8:
+                await ctx.send('Too low level to shiny hunt')
+                return
+        except Exception as e:
+            await ctx.send('No level found. Too low level to shiny hunt')
+            return
+        
+        print(ctx.author)
+        for guild_id in constants.BMW_SERVERS:
+            guild = self.bot.get_guild(guild_id)
+            try:
+                user = await guild.fetch_member(ctx.author.id)
+                if user is None:
+                    break
+            except:
+                break
+            print(user)
+            role = get(guild.roles, name=pokemon_role)
+            if role is None:
+                role = await guild.create_role(name=pokemon_role, mentionable=True)
+            print(f'role: {role}')
+            await user.add_roles(role)
+            print(f'is member: {guild.name}')
+
+
+        # role = get(guild.roles, name=pokemon)
+        # await role.delete()
+        print(f'deleted: role: {pokemon_role}')
 
     @commands.command(name='guild', help='Displays guilds')
     async def guild(self, ctx):
