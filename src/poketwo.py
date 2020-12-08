@@ -28,8 +28,10 @@ class Poketwo():
 
             # Handle shiny count
             is_shiny = self.pokemon_is_shiny(content)
-            if rarity is not None or is_shiny:
-                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_user.name}#{discord_user.discriminator}]: found rares/shiny: ({rarity} / {pokemon}): {content}')
+            if rarity is not None:
+                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_user.name}#{discord_user.discriminator}]: found rare: ({rarity} / {pokemon}): {content}')
+            if is_shiny:
+                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_user.name}#{discord_user.discriminator}]: found shiny: ({pokemon}): {content}')
 
             await self.add_pokemon(discord_user, rarity, is_shiny)
             self.add_pokemon_catch(pokemon)
