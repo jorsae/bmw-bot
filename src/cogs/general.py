@@ -204,6 +204,7 @@ class General(commands.Cog):
             await ctx.send('No level found. Too low level to shiny hunt')
             return
         
+        output = ''
         for guild_id in constants.BMW_SERVERS:
             guild = self.bot.get_guild(guild_id)
             try:
@@ -212,18 +213,17 @@ class General(commands.Cog):
                     break
             except:
                 break
-            print(user)
             role = get(guild.roles, name=pokemon_role)
             if role is None:
                 role = await guild.create_role(name=pokemon_role, mentionable=True)
-            print(f'role: {role}')
+            output += f'Added role: {pokemon_role} in {guild.name}\n'
             await user.add_roles(role)
-            print(f'is member: {guild.name}')
-
-
         # role = get(guild.roles, name=pokemon)
         # await role.delete()
-        print(f'deleted: role: {pokemon_role}')
+        
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{ctx.author.name} is shiny hunting!')
+        embed.add_field(name=f'Shiny hunting to {pokemon_role} from <...>', value=output)
+        await ctx.send(embed=embed)
 
     @commands.command(name='guild', help='Displays guilds')
     async def guild(self, ctx):
