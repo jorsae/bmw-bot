@@ -125,3 +125,14 @@ def get_pokemon_caught(alltime=False):
     except Exception as e:
         logging.critical(f'get_pokemon_caught: {e}')
         return 0
+
+def create_user(discord_id, username, shiny_hunt=None):
+    try:
+        # Ensure User is in database
+        user = UserModel.get(UserModel.discord_id == discord_id)
+        if user is None:
+            return UserModel.get_or_create(discord_id=discord_id, username=username, shiny_hunt=shiny_hunt)
+        else:
+            return user, None
+    except Exception as e:
+        logging.critical(f'create_user: {e} | {discord_id}, {shiny_hunt}')

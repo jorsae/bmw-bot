@@ -13,7 +13,7 @@ import utility
 import query
 import constants
 import cog_help
-from models import PokemonModel, MedalModel, UserStatModel
+from models import PokemonModel, MedalModel, UserStatModel, UserModel
 
 class General(commands.Cog):
     def __init__(self, bot, settings):
@@ -187,8 +187,11 @@ class General(commands.Cog):
     #  2.a) If they do not, delete the role
     # 3. Make a pokemon_role that will remove shiny hunt
     @commands.command(name='sh', help='Start shiny hunt.\nUsage: `{constants.CURRENT_PREFIX}sh <pokemon>`')
-    async def shiny_hunt(self, ctx, pokemon_role):
-        pokemon_role = pokemon_role.lower()
+    async def shiny_hunt(self, ctx, shiny_hunt):
+        shiny_hunt = shiny_hunt.lower()
+
+        username = f'{ctx.author.name}#{ctx.author.discriminator}'
+        usermodel, created = query.create_user(ctx.author.id, username, shiny_hunt)
         try:
             level_role = None
             for role in ctx.author.roles:
@@ -213,16 +216,39 @@ class General(commands.Cog):
                     break
             except:
                 break
-            role = get(guild.roles, name=pokemon_role)
+            
+            old_role = get(guild.roles, name=usermodel.shiny_hunt)
+            if old_role is not None:
+                print(f'{old_role=} {len(old_role.members)=}')
+                try:
+                    if len(old_role.members) <= 1:
+                        print('old_role.delete')
+                        await old_role.delete()
+                    else:
+                        print(f'remove role: {old_role.name} | {user=}')
+                        print(f'{user}')
+                        await user.remove_roles(old_role)
+                except Exception as e:
+                    logging.warning(f'Failed to delete or remove role: {e} | {old_role}')
+
+            # User is in the guild
+            role = get(guild.roles, name=shiny_hunt)
             if role is None:
-                role = await guild.create_role(name=pokemon_role, mentionable=True)
-            output += f'Added role: {pokemon_role} in {guild.name}\n'
+                role = await guild.create_role(name=shiny_hunt, mentionable=True)
+            output += f'Added role: {shiny_hunt} in {guild.name}\n'
             await user.add_roles(role)
-        # role = get(guild.roles, name=pokemon)
-        # await role.delete()
+        
+        (UserModel.update(
+            shiny_hunt=shiny_hunt
+            )
+            .where(
+                UserModel.discord_id == ctx.author.id
+            )
+            .execute()
+        )
         
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{ctx.author.name} is shiny hunting!')
-        embed.add_field(name=f'Shiny hunting to {pokemon_role} from <...>', value=output)
+        embed.add_field(name=f'Shiny hunting {shiny_hunt} from {usermodel.shiny_hunt}', value=output)
         await ctx.send(embed=embed)
 
     @commands.command(name='guild', help='Displays guilds')
