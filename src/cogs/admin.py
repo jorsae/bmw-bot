@@ -30,7 +30,7 @@ class Admin(commands.Cog):
         
         await ctx.send(f'Days running: {days}\nTotal users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}\nTotal Medals: {total_medals}\n')
     
-    @commands.command(name='addmedal', help=f'Adds a medal to MedalList.\nUsage: `{constants.CURRENT_PREFIX}addmedal description pokemon_category value_requirement time_category medal`', hidden=True)
+    @commands.command(name='addmedal', help=f'Adds a medal to MedalList.\nUsage: `{constants.DEFAULT_PREFIX}addmedal description pokemon_category value_requirement time_category medal`', hidden=True)
     async def addmedal(self, ctx, description, pokemon_category, value_requirement, time_category, medal):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
         if is_admin is False:
@@ -39,7 +39,7 @@ class Admin(commands.Cog):
         new_medal, created = MedalModel.get_or_create(description=description, pokemon_category=pokemon_category, value_requirement=value_requirement, time_category=time_category, medal=medal)
         await ctx.send(f'New medal, created: {created}')
 
-    @commands.command(name='delmedal', help=f'Deletes a medal: `{constants.CURRENT_PREFIX}delmedal <medal_id>`', hidden=True)
+    @commands.command(name='delmedal', help=f'Deletes a medal: `{constants.DEFAULT_PREFIX}delmedal <medal_id>`', hidden=True)
     async def delmedal(self, ctx, medal_id):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
         if is_admin is False:
@@ -90,7 +90,7 @@ class Admin(commands.Cog):
     @flags.add_flag("--publish", action="store_true", default=False)
     @flags.add_flag("--week", action="store_true", default=True)
     @flags.add_flag("--month", action="store_true", default=False)
-    @flags.command(name='addreward', help=f'Adds rewards for weekly/monthly catches.\nUsage`{constants.CURRENT_PREFIX}addreward --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nFlags: `--week, --month, --publish`', hidden=True)
+    @flags.command(name='addreward', help=f'Adds rewards for weekly/monthly catches.\nUsage`{constants.DEFAULT_PREFIX}addreward --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nFlags: `--week, --month, --publish`', hidden=True)
     async def week(self, ctx, **flags):
         is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
         if is_admin is False:
@@ -129,7 +129,7 @@ class Admin(commands.Cog):
                 rank += 1
             await ctx.send(f'{output}\nNOT PUBLISHED.\nAdd `--publish` to publish')
 
-    @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.CURRENT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
+    @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.DEFAULT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):
         is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
         if is_admin is False:

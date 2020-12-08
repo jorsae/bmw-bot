@@ -73,7 +73,7 @@ class General(commands.Cog):
     @flags.add_flag('--desc', action='store_true', default=True)
     @flags.add_flag('--asc', action='store_true', default=False)
     @flags.add_flag("pokemon", nargs="*", type=str, default=None)
-    @flags.command(name="catch", aliases=['c'], help=f'Displays times a pokémon has been caught.\n`Usage: {constants.CURRENT_PREFIX}catch <pokemon name> [Flags]`\nFlags: `--desc, --asc`')
+    @flags.command(name="catch", aliases=['c'], help=f'Displays times a pokémon has been caught.\n`Usage: {constants.DEFAULT_PREFIX}catch <pokemon name> [Flags]`\nFlags: `--desc, --asc`')
     async def catch(self, ctx, **flags):
         pokemon = flags["pokemon"]
 
@@ -130,7 +130,7 @@ class General(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
 
-    @commands.command(name='check', help=f'Check who/how many people have a medal.\nUsage: `{constants.CURRENT_PREFIX}check <medal emote>`.\ne.g: `{constants.CURRENT_PREFIX}check TrioBadge`')
+    @commands.command(name='check', help=f'Check who/how many people have a medal.\nUsage: `{constants.DEFAULT_PREFIX}check <medal emote>`.\ne.g: `{constants.DEFAULT_PREFIX}check TrioBadge`')
     async def test(self, ctx, medal):
         medal_model = MedalModel.select().where(MedalModel.medal.contains(medal))
         if len(medal_model) <= 0:
@@ -187,7 +187,7 @@ class General(commands.Cog):
     #  2.a) If they do not, delete the role
     # 3. Make a pokemon_role that will remove shiny hunt
     # 4. Add a BLACKLIST of roles. What happends if you shiny hunt: "Trainer", and then shiny hunt something else? will trainer be deleted
-    @commands.command(name='sh', help='Start shiny hunt.\nUsage: `{constants.CURRENT_PREFIX}sh <pokemon>`')
+    @commands.command(name='sh', help=f'Start shiny hunt, `{constants.DEFAULT_PREFIX}sh stop` to stop.\nUsage: `{constants.DEFAULT_PREFIX}sh <pokemon>`')
     async def shiny_hunt(self, ctx, shiny_hunt):
         shiny_hunt = shiny_hunt.lower()
 

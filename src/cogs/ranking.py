@@ -30,7 +30,7 @@ class Ranking(commands.Cog):
     @flags.add_flag("--month", action="store_true", default=True)
     @flags.add_flag("--all", action="store_true", default=False)
     @flags.add_flag("page", nargs="?", type=str, default=1)
-    @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.CURRENT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ub, --shiny`')
+    @flags.command(name="leaderboard", aliases=['l', 'rank'], help=f'Displays the leaderboard for total catches in BMW.\n`Usage: {constants.DEFAULT_PREFIX}leaderboard <page> [flags]`\nTime flags: `--all, --month, --week, --day`\nCategory flags: `--catches, --legendary, --mythical, --ub, --shiny`')
     async def leaderboard(self, ctx, **flags):
         page = abs(utility.str_to_int(flags['page']))
         date, time_flag = utility.parse_time_flags(**flags)
@@ -174,7 +174,7 @@ class Ranking(commands.Cog):
     async def hof(self, ctx):
         try:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-            embed.add_field(name='Hall of Fame [daily records]', value=f'For achieving the highest amount of catches in a single day\nThe medals will be displayed in your `{constants.CURRENT_PREFIX}profile`')
+            embed.add_field(name='Hall of Fame [daily records]', value=f'For achieving the highest amount of catches in a single day\nThe medals will be displayed in your `{constants.DEFAULT_PREFIX}profile`')
             
             catches = query.get_max_attribute(UserStatModel.catches)
             catches_users = "\n".join(query.get_username_by_stat(UserStatModel.catches, catches))
