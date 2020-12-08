@@ -186,6 +186,7 @@ class General(commands.Cog):
     # 2. check if anyone else has that role.
     #  2.a) If they do not, delete the role
     # 3. Make a pokemon_role that will remove shiny hunt
+    # 4. Add a BLACKLIST of roles. What happends if you shiny hunt: "Trainer", and then shiny hunt something else? will trainer be deleted
     @commands.command(name='sh', help='Start shiny hunt.\nUsage: `{constants.CURRENT_PREFIX}sh <pokemon>`')
     async def shiny_hunt(self, ctx, shiny_hunt):
         shiny_hunt = shiny_hunt.lower()
