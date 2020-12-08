@@ -181,7 +181,11 @@ class General(commands.Cog):
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
         embed.add_field(name=f'{medal_model[0].medal} {medal_model[0].description}\n{len(users)} people have the medal', value=output)
         await ctx.send(embed=embed)
-
+    # TODO:
+    # 1. Add role to users
+    # 2. check if anyone else has that role.
+    #  2.a) If they do not, delete the role
+    # 3. Make a pokemon_role that will remove shiny hunt
     @commands.command(name='sh', help='Start shiny hunt.\nUsage: `{constants.CURRENT_PREFIX}sh <pokemon>`')
     async def shiny_hunt(self, ctx, pokemon_role):
         pokemon_role = pokemon_role.lower()
@@ -200,7 +204,6 @@ class General(commands.Cog):
             await ctx.send('No level found. Too low level to shiny hunt')
             return
         
-        print(ctx.author)
         for guild_id in constants.BMW_SERVERS:
             guild = self.bot.get_guild(guild_id)
             try:
