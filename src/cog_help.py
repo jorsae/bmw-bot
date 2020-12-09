@@ -3,10 +3,23 @@ from discord.utils import get
 import string
 import logging
 
-import utility
 import constants
+import utility
+import query
 
 from models import UserModel
+
+# Helper function: Update shiny hunt post with new entries
+async def update_shiny_hunt():
+    shiny_hunt = query.get_shiny_hunt()
+    
+    output = ''
+    for sh in shiny_hunt:
+        output += f'<@{sh.discord_id}>: {string.capwords(sh.shiny_hunt)}\n'
+
+    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+    embed.add_field(name=f'Shiny hunters', value=output)
+    return embed
 
 # Helper function: Get user_id from a guild_id to check the user is in that guild
 async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):

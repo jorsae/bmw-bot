@@ -219,6 +219,8 @@ class General(commands.Cog):
             await ctx.send('Too low level to shiny hunt. You have to be level 8+')
             return
         
+        process_message = await ctx.send('Processing...')
+
         output = f''
         for guild_id in constants.BMW_SERVERS:
             result = await cog_help.fix_new_roles(self.bot, guild_id, ctx.author.id, shiny_hunt, usermodel.shiny_hunt)
@@ -240,13 +242,14 @@ class General(commands.Cog):
         if shiny_hunters >= 2:
             embed.set_footer(text=f'{shiny_hunters - 1} other person(s) are also shiny hunting {shiny_hunt}')
         output += f'\n**Remember to change shiny hunt for {constants.POKETWO} too!**'
-        embed.add_field(name=f'You are now shiny hunting {shiny_hunt}.', value=output)
-        await ctx.send(embed=embed)
-        
+        embed.add_field(name=f'You are now shiny hunting {string.capwords(shiny_hunt)}.', value=output)
+        await process_message.edit(content='', embed=embed)
+
         channel = self.bot.get_channel(742567116343083019)
         msg = await channel.fetch_message(786032117293383710)
-        await msg.edit(content=shiny_hunt)
-
+        shinyhunt_embed = await cog_help.update_shiny_hunt()
+        await msg.edit(content='', embed=shinyhunt_embed)
+        
     @commands.command(name='guild', help='Displays guilds')
     async def guild(self, ctx):
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)

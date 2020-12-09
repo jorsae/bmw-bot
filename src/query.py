@@ -139,6 +139,17 @@ def role_is_blacklisted(role):
     except Exception as e:
         logging.critical(f'role_is_blacklisted: {e}')
 
+def get_shiny_hunt():
+    try:
+        query = (UserModel
+                    .select()
+                    .where(UserModel.shiny_hunt != None)
+                    .order_by(UserModel.shiny_hunt)
+                )
+        return query
+    except Exception as e:
+        logging.critical(f'get_shiny_hunt: {e}')
+
 # Returns count of all pokemon caught
 def get_pokemon_caught(alltime=False):
     try:
