@@ -41,7 +41,7 @@ async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
         if role is None:
             if shiny_hunt != 'stop':
                 role = await guild.create_role(name=shiny_hunt, mentionable=True)
-        output += f'Added role: {shiny_hunt} in {guild.name}\n'
+        output += f'Processed {guild.name} successfully\n'
         await user.add_roles(role)
 
         return output
