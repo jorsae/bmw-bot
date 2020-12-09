@@ -42,6 +42,9 @@ async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
             else:
                 await user.remove_roles(old_role)
         
+        if shiny_hunt is None:
+            return f'Processed {guild.name} successfully\n'
+
         # User is in the guild
         role = get(guild.roles, name=shiny_hunt)
         if role is None:

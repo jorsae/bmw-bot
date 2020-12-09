@@ -216,6 +216,9 @@ class General(commands.Cog):
         
         process_message = await ctx.send('Processing...')
 
+        if shiny_hunt == 'stop':
+            shiny_hunt = None
+        
         output = f''
         for guild_id in constants.BMW_SERVERS:
             result = await cog_help.fix_new_roles(self.bot, guild_id, ctx.author.id, shiny_hunt, usermodel.shiny_hunt)
@@ -224,8 +227,6 @@ class General(commands.Cog):
             else:
                 break
         
-        if shiny_hunt == 'stop':
-            shiny_hunt = None
         (UserModel.update(
             shiny_hunt=shiny_hunt
             )
