@@ -221,6 +221,8 @@ class General(commands.Cog):
             result = await cog_help.fix_new_roles(self.bot, guild_id, ctx.author.id, shiny_hunt, usermodel.shiny_hunt)
             if result is not None:
                 output += result
+            else:
+                break
         
         if shiny_hunt == 'stop':
             shiny_hunt = None
