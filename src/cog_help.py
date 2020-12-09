@@ -19,12 +19,12 @@ async def update_shiny_hunt():
     output = ''
     for sh in shiny_hunt:
         if len(output) > 900:
-            embed.add_field(name=f'Shiny hunters {fields}', value=output)
+            embed.add_field(name=f'Shiny hunters {fields}', value=output, inline=False)
             output = ''
             fields += 1
-        output += f'<@{sh.discord_id}>: {string.capwords(sh.shiny_hunt)}\n'
+        output += f'{string.capwords(sh.shiny_hunt)}: <@{sh.discord_id}>\n'
     
-    embed.add_field(name=f'Shiny hunters {fields}', value=output)
+    embed.add_field(name=f'Shiny hunters {fields}', value=output, inline=False)
     return embed
 
 # Helper function: Get user_id from a guild_id to check the user is in that guild
