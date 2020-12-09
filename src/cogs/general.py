@@ -222,6 +222,8 @@ class General(commands.Cog):
             if result is not None:
                 output += result
         
+        if shiny_hunt == 'stop':
+            shiny_hunt = None
         (UserModel.update(
             shiny_hunt=shiny_hunt
             )
@@ -230,15 +232,17 @@ class General(commands.Cog):
             )
             .execute()
         )
-        
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+        if shiny_hunt is not None:
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
 
-        shiny_hunters = query.get_count_shinyhunt(shiny_hunt)
-        if shiny_hunters >= 2:
-            embed.set_footer(text=f'{shiny_hunters - 1} other person(s) are also shiny hunting {shiny_hunt}')
-        output += f'\n**Remember to change shiny hunt for {constants.POKETWO} too!**'
-        embed.add_field(name=f'You are now shiny hunting {string.capwords(shiny_hunt)}.', value=output)
-        await process_message.edit(content='', embed=embed)
+            shiny_hunters = query.get_count_shinyhunt(shiny_hunt)
+            if shiny_hunters >= 2:
+                embed.set_footer(text=f'{shiny_hunters - 1} other person(s) are also shiny hunting {shiny_hunt}')
+            output += f'\n**Remember to change shiny hunt for {constants.POKETWO} too!**'
+            embed.add_field(name=f'You are now shiny hunting {string.capwords(shiny_hunt)}.', value=output)
+            await process_message.edit(content='', embed=embed)
+        else:
+            await process_message.edit(content='Stopped your shiny hunt')
 
         channel = self.bot.get_channel(742567116343083019)
         msg = await channel.fetch_message(786032117293383710) #poke-shiny_hunt

@@ -13,12 +13,18 @@ from models import UserModel
 async def update_shiny_hunt():
     shiny_hunt = query.get_shiny_hunt()
     
+    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+    
+    fields = 1
     output = ''
     for sh in shiny_hunt:
+        if len(output) > 900:
+            embed.add_field(name=f'Shiny hunters {fields}', value=output)
+            output = ''
+            fields += 1
         output += f'<@{sh.discord_id}>: {string.capwords(sh.shiny_hunt)}\n'
-
-    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
-    embed.add_field(name=f'Shiny hunters', value=output)
+    
+    embed.add_field(name=f'Shiny hunters {fields}', value=output)
     return embed
 
 # Helper function: Get user_id from a guild_id to check the user is in that guild
