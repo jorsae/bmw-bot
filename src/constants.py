@@ -18,6 +18,9 @@ DEFAULT_PREFIX = "."
 DATABASE_FILE = "../production.db"
 POKETWO = 'Pokétwo#8236'
 
+MINIMUM_LEVEL_SHINY_HUNT = 8
+ORIGINAL_BMW_SERVER = 565046418990039042
+
 GET_USER = re.compile('@!?\d{17,18}')
 GET_POKEMON = re.compile("\d{1} [\w| |:|\-|′|\.|%]+!")
 GET_ALL_NUMBERS = re.compile('\d+')

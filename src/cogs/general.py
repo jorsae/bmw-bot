@@ -190,69 +190,40 @@ class General(commands.Cog):
     @flags.add_flag("shiny_hunt", nargs="*", type=str, default=None)
     @flags.command(name='sh', help=f'Start shiny hunt, `{constants.DEFAULT_PREFIX}sh stop` to stop.\nUsage: `{constants.DEFAULT_PREFIX}sh <pokemon>`')
     async def shiny_hunt(self, ctx, **flags):
-        shiny_hunt = None
-        if flags['shiny_hunt']:
-            shiny_hunt = ''.join(flags['shiny_hunt']).lower()
-        else:
+        if ctx.guild.id != constants.ORIGINAL_BMW_SERVER:
+            await ctx.send('You have to specify shiny hunt in the main BMW server')
+            return
+
+        # Make sure user specified a pokemon to shiny hunt
+        shiny_hunt = utility.parse_shinyhunt_flag(**flags)
+        if shiny_hunt is None:
             await ctx.send(f'Must specify a pokémon. e.g: `{constants.DEFAULT_PREFIX}sh abra`')
             return
+        
+        # Make sure the user is not already shiny hunting that pokemon
         username = f'{ctx.author.name}#{ctx.author.discriminator}'
         usermodel, created = query.create_user(ctx.author.id, username, shiny_hunt)
         if usermodel.shiny_hunt == shiny_hunt:
             await ctx.send(f'You are already shiny hunting: {shiny_hunt}')
             return
         
+        # Make sure the shiny_hunt is not a blacklisted role
         if query.role_is_blacklisted(shiny_hunt):
             await ctx.send(f"You can't shiny hunt: {shiny_hunt}")
             return
-
-        try:
-            level_role = None
-            for role in ctx.author.roles:
-                if role.name.startswith('Lv '):
-                    level_role = role
-                    break
-            
-            level = int(constants.GET_ALL_NUMBERS.search(level_role.name).group())
-            if level < 8:
-                await ctx.send('Too low level to shiny hunt')
-                return
-        except Exception as e:
-            await ctx.send('No level found. Too low level to shiny hunt')
+        
+        level = cog_help.get_level(ctx.author)
+        if level is None:
+            await ctx.send(f'Error getting your level')
+        if level < constants.MINIMUM_LEVEL_SHINY_HUNT:
+            await ctx.send('Too low level to shiny hunt. You have to be level 8+')
             return
         
         output = f''
         for guild_id in constants.BMW_SERVERS:
-            guild = self.bot.get_guild(guild_id)
-            try:
-                user = await guild.fetch_member(ctx.author.id)
-                if user is None:
-                    break
-            # User not found | 404
-            except Exception as e:
-                break
-            
-            old_role = get(guild.roles, name=usermodel.shiny_hunt)
-            if old_role is not None:
-                print(f'{old_role=} {len(old_role.members)=}')
-                try:
-                    if len(old_role.members) <= 1:
-                        print('old_role.delete')
-                        await old_role.delete()
-                    else:
-                        print(f'remove role: {old_role.name} | {user=}')
-                        print(f'{user}')
-                        await user.remove_roles(old_role)
-                except Exception as e:
-                    logging.warning(f'Failed to delete or remove role: {e} | {old_role}')
-
-            # User is in the guild
-            role = get(guild.roles, name=shiny_hunt)
-            if role is None:
-                if shiny_hunt != 'stop':
-                    role = await guild.create_role(name=shiny_hunt, mentionable=True)
-            output += f'Added role: {shiny_hunt} in {guild.name}\n'
-            await user.add_roles(role)
+            result = await cog_help.fix_new_roles(self.bot, guild_id, ctx.author.id, shiny_hunt, usermodel.shiny_hunt)
+            if result is not None:
+                output += result
         
         (UserModel.update(
             shiny_hunt=shiny_hunt
@@ -271,6 +242,10 @@ class General(commands.Cog):
         output += f'\n**Remember to change shiny hunt for {constants.POKETWO} too!**'
         embed.add_field(name=f'You are now shiny hunting {shiny_hunt}.', value=output)
         await ctx.send(embed=embed)
+        
+        channel = self.bot.get_channel(742567116343083019)
+        msg = await channel.fetch_message(786032117293383710)
+        await msg.edit(content=shiny_hunt)
 
     @commands.command(name='guild', help='Displays guilds')
     async def guild(self, ctx):

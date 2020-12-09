@@ -1,10 +1,53 @@
 import discord
+from discord.utils import get
 import string
+import logging
 
 import utility
 import constants
 
 from models import UserModel
+
+# Helper function: Get user_id from a guild_id to check the user is in that guild
+async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
+    output = ''
+    try:
+        guild = bot.get_guild(guild_id)
+        user = await guild.fetch_member(author_id)
+
+        # Delete or remove role from user, if other people also have the role
+        old_role = get(guild.roles, name=old_shiny_hunt)
+        if old_role is not None:
+            if len(old_role.members) <= 1:
+                await old_role.delete()
+            else:
+                await user.remove_roles(old_role)
+        
+        # User is in the guild
+        role = get(guild.roles, name=shiny_hunt)
+        if role is None:
+            if shiny_hunt != 'stop':
+                role = await guild.create_role(name=shiny_hunt, mentionable=True)
+        output += f'Added role: {shiny_hunt} in {guild.name}\n'
+        await user.add_roles(role)
+
+        return output
+    except Exception as e:
+        logging.critical(f'fix_new_roles: {e}')
+        return None
+
+# Helper function to get a persons level, by role
+def get_level(author):
+    level_role = 0
+    try:
+        for role in author.roles:
+            if role.name.startswith('Lv '):
+                level_role = role
+                break
+        return int(constants.GET_ALL_NUMBERS.search(level_role.name).group())
+    except Exception as e:
+        logging.info(f'cog_help.get_level. User does not have any levels(most likely): {e} | {author.roles}')
+        return 0
 
 # Helper function to create embed for 'catch'
 def catch_embed(pokemon_catches, current_page, max_page, descending):

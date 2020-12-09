@@ -6,6 +6,13 @@ from datetime import datetime, date, timedelta
 from enumeration import TimeFlag, HallOfFame
 from models import UserStatModel
 
+def parse_shinyhunt_flag(**flags):
+    shiny_hunt = None
+    if flags['shiny_hunt']:
+        return ''.join(flags['shiny_hunt']).lower()
+    else:
+        return None
+
 def parse_start_flag(**flags):
     try:
         return datetime.strptime(flags["start"], "%Y-%m-%d").date()
