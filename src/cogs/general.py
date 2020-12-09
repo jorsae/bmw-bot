@@ -181,12 +181,7 @@ class General(commands.Cog):
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
         embed.add_field(name=f'{medal_model[0].medal} {medal_model[0].description}\n{len(users)} people have the medal', value=output)
         await ctx.send(embed=embed)
-    # TODO:
-    # 1. Add role to users
-    # 2. check if anyone else has that role.
-    #  2.a) If they do not, delete the role
-    # 3. Make a pokemon_role that will remove shiny hunt
-    # 4. Add a BLACKLIST of roles. What happends if you shiny hunt: "Trainer", and then shiny hunt something else? will trainer be deleted
+    
     @flags.add_flag("shiny_hunt", nargs="*", type=str, default=None)
     @flags.command(name='sh', help=f'Start shiny hunt, `{constants.DEFAULT_PREFIX}sh stop` to stop.\nUsage: `{constants.DEFAULT_PREFIX}sh <pokemon>`')
     async def shiny_hunt(self, ctx, **flags):
@@ -270,16 +265,16 @@ class General(commands.Cog):
     async def help(self, ctx):
         author = ctx.message.author
         display_hidden_commands = utility.is_admin(author, self.settings.admin)
+        
+        cogs = []
+        cogs.append(self.bot.get_cog('Ranking'))
+        cogs.append(self.bot.get_cog('General'))
+        if display_hidden_commands:
+            cogs.append(self.bot.get_cog('Admin'))
 
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
         embed.set_author(name=f'BMW Help')
-        last_command = None
-        for command in self.bot.walk_commands():
-            command = self.bot.get_command(str(command))
-            if command is None:
-                continue
-            if command.hidden is False or display_hidden_commands:
-                if last_command != str(command):
-                    embed.add_field(name=f'{self.settings.prefix}{command}', value=command.help, inline=False)
-                last_command = str(command)
+        for cog in cogs:
+            for command in cog.walk_commands():
+                embed.add_field(name=f'{self.settings.prefix}{command}', value=command.help, inline=False)
         await ctx.send(embed=embed)
