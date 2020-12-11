@@ -7,6 +7,7 @@ import logging
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
 from discord.ext import tasks
+from discord.utils import get
 
 import query
 from RankRewards import RankRewards
@@ -33,6 +34,25 @@ async def on_guild_join(guild):
     await discord_user.send(f'Joined server: {guild.name}')
 
 @bot.event
+async def on_member_join(member):
+    username = f'{member.name}#{member.discriminator}'
+    if member.guild.id not in constants.BMW_SERVERS:
+        logging.info(f'{username} joined: {member.guild.name} | No need to do anything')
+        return
+    shiny_hunt = query.get_shinyhunt(member.id)
+    if shiny_hunt is None:
+        logging.info(f'{username} has no shiny_hunt')
+        return
+
+    role = get(member.guild.roles, name=shiny_hunt)
+    if role is None:
+        role = await member.guild.create_role(name=shiny_hunt, mentionable=True)
+        logging.info(f'{username} joined {member.guild.name}. Created role: {shiny_hunt}')
+    else:
+        logging.info(f'{username} joined {member.guild.name}. Role already exists: {shiny_hunt}')
+    await member.add_roles(role)
+
+@bot.event
 async def on_message(message: discord.Message):
     await bot.wait_until_ready()
     message.content = (
@@ -52,6 +72,7 @@ async def on_message(message: discord.Message):
     await bot.process_commands(message)
     if str(message.author) != settings.discord_bot:
         await process_on_triggers(message)
+
 
 async def process_on_triggers(message):
     if 'barrel roll' in message.content:
