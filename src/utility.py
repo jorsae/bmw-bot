@@ -48,6 +48,16 @@ def parse_time_flags(**flags):
         return date.today(), TimeFlag.DAY
     return date, TimeFlag.MONTH
 
+def get_aliases(aliases):
+    if aliases == []:
+        return ''
+    else:
+        output = ' | ('
+        for alias in aliases:
+            output += f'{alias}, '
+        output = output[:-2]
+        return f'{output})'
+
 # returns true if the user is an admin. False otherwise
 def is_admin(author, admin_list):
     if type(author) == str:
