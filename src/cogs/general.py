@@ -183,7 +183,7 @@ class General(commands.Cog):
         await ctx.send(embed=embed)
     
     @flags.add_flag("shiny_hunt", nargs="*", type=str, default=None)
-    @flags.command(name='sh', help=f'Start shiny hunt, `{constants.DEFAULT_PREFIX}sh stop` to stop.\nUsage: `{constants.DEFAULT_PREFIX}sh <pokemon>`')
+    @flags.command(name='shrole', aliases=['sh', 'hunt'] help=f'Start shiny hunt, `{constants.DEFAULT_PREFIX}shrole stop` to stop.\nUsage: `{constants.DEFAULT_PREFIX}shrole <pokemon>`')
     async def shiny_hunt(self, ctx, **flags):
         if ctx.guild.id != constants.ORIGINAL_BMW_SERVER:
             await ctx.send('You have to specify shiny hunt in the main BMW server')
