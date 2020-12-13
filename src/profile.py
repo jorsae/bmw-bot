@@ -1,5 +1,6 @@
 import discord
 from peewee import *
+import string
 import logging
 
 import constants
@@ -12,42 +13,11 @@ def get_profile_page(ctx, user, current_page, max_page, **flags):
     embed = None
     if current_page <= 1:
         embed = profile_page_1(ctx, user, **flags)
-    else:
+    elif current_page == 2:
         embed = profile_page_2(ctx, user, **flags)
+    else:
+        embed = profile_page_3(ctx, user, **flags)
     embed.set_footer(text=f'Page: {current_page}/{max_page}')
-    return embed
-
-def profile_page_2(ctx, user, **flags):
-    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f"{str(ctx.author.name)}'s profile")
-    monthly_rewards = (RankModel
-                        .select()
-                        .where(
-                            (RankModel.duration >= 28) &
-                            (RankModel.user_id == user.user_id)
-                            )
-                    )
-    monthly_value = ''
-    for monthly in monthly_rewards:
-        monthly_value += f'{monthly.reward} '
-    if monthly_value == '':
-        monthly_value = 'No top 3 monthly placings'
-    embed.add_field(name='Monthly placings', value=monthly_value)
-
-    weekly_rewards = (RankModel
-                        .select()
-                        .where(
-                            (RankModel.duration == 6) &
-                            (RankModel.user_id == user.user_id)
-                            )
-                    )
-    
-    weekly_value = ''
-    for weekly in weekly_rewards:
-        weekly_value += f'{weekly.reward}'
-    if weekly_value == '':
-        weekly_value = 'No top 3 weekly placings'
-    embed.add_field(name='Weekly placings', value=weekly_value)
-
     return embed
 
 def profile_page_1(ctx, user, **flags):
@@ -83,7 +53,7 @@ def profile_page_1(ctx, user, **flags):
             total = 0
         
         for medal in total_medals:
-            medals_text += f'{medal} '
+            medals_text += f'{medal.medal} '
             total += 1
             if (total % constants.MEDALS_PER_ROW) == 0:
                 medals_text += '\n'
@@ -98,3 +68,55 @@ def profile_page_1(ctx, user, **flags):
         logging.critical(f'commands.profile: {e}')
         embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
         return embed
+
+def profile_page_2(ctx, user, **flags):
+    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f"{str(ctx.author.name)}'s profile")
+    monthly_rewards = (RankModel
+                        .select()
+                        .where(
+                            (RankModel.duration >= 28) &
+                            (RankModel.user_id == user.user_id)
+                            )
+                    )
+    monthly_value = ''
+    for monthly in monthly_rewards:
+        monthly_value += f'{monthly.reward} '
+    if monthly_value == '':
+        monthly_value = 'No top 3 monthly placings'
+    embed.add_field(name='Monthly placings', value=monthly_value)
+
+    weekly_rewards = (RankModel
+                        .select()
+                        .where(
+                            (RankModel.duration == 6) &
+                            (RankModel.user_id == user.user_id)
+                            )
+                    )
+    
+    weekly_value = ''
+    for weekly in weekly_rewards:
+        weekly_value += f'{weekly.reward}'
+    if weekly_value == '':
+        weekly_value = 'No top 3 weekly placings'
+    embed.add_field(name='Weekly placings', value=weekly_value)
+
+    return embed
+
+def profile_page_3(ctx, user, **flags):
+    sum_day = query.get_max_day(user.user_id).get()
+    sum_all = query.get_sum(user.user_id).get()
+    total_medals = medals.get_medals(sum_day, sum_all)
+
+    embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f"{str(ctx.author.name)}'s profile | Medal list")
+    output = ''
+    last_category = None
+    for medal in total_medals:
+        if last_category is None:
+            last_category = medal.pokemon_category
+        
+        if last_category != medal.pokemon_category:
+            embed.add_field(name=f'{string.capwords(last_category)}', value=output, inline=False)
+            last_category = medal.pokemon_category
+            output = ''
+        output += f'{medal.medal} {medal.description}\n'
+    return embed

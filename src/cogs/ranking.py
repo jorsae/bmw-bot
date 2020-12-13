@@ -84,7 +84,7 @@ class Ranking(commands.Cog):
     @commands.command(name='profile', aliases=['p'], help="Displays your profile")
     async def profile(self, ctx, **flags):
         page = 1
-        max_page = 2
+        max_page = 3
         try:
             current_page = page
             user = UserModel.get(UserModel.discord_id == ctx.author.id)

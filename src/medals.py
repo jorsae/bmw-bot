@@ -23,23 +23,25 @@ def compare_medals(medals, sum):
 def compare_medal(medal, sum):
     if medal.pokemon_category == 'catches':
         if sum.sum_catches >= medal.value_requirement:
-            return medal.medal
+            return medal
     elif medal.pokemon_category == 'legendary':
         if sum.sum_legendary >= medal.value_requirement:
-            return medal.medal
+            return medal
     elif medal.pokemon_category == 'mythical':
         if sum.sum_mythical >= medal.value_requirement:
-            return medal.medal
+            return medal
     elif medal.pokemon_category == 'ultrabeast':
         if sum.sum_ultrabeast >= medal.value_requirement:
-            return medal.medal
+            return medal
     elif medal.pokemon_category == 'shiny':
         if sum.sum_shiny >= medal.value_requirement:
-            return medal.medal
+            return medal
     else:
         return None
 
 def get_medals_by_time_category(time_category):
     return (MedalModel
             .select()
-            .where(MedalModel.time_category == time_category))
+            .where(MedalModel.time_category == time_category)
+            .order_by(MedalModel.pokemon_category, MedalModel.value_requirement)
+            )
