@@ -119,4 +119,5 @@ def profile_page_3(ctx, user, **flags):
             last_category = medal.pokemon_category
             output = ''
         output += f'{medal.medal} {medal.description}\n'
+    embed.add_field(name=f'{string.capwords(last_category)}', value=output, inline=False)
     return embed
