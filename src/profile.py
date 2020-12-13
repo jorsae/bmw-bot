@@ -85,7 +85,7 @@ def profile_page_1(ctx, user, **flags):
         for medal in total_medals:
             medals_text += f'{medal} '
             total += 1
-            if (total % 5) == 0:
+            if (total % constants.MEDALS_PER_ROW) == 0:
                 medals_text += '\n'
         embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals_text == "" else medals_text}', inline=False)
         return embed
