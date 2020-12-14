@@ -132,6 +132,10 @@ class Admin(commands.Cog):
 
     @commands.command(name='clearsh', help=f'Sets shiny_hunt to None for a user.`{constants.DEFAULT_PREFIX}`clearsh Rither#7897', hidden=True)
     async def clearsh(self, ctx, username):
+        is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
+        if is_admin is False:
+            return
+        
         query = (UserModel
                     .update(shiny_hunt=None)
                     .where(
