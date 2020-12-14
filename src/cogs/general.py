@@ -246,11 +246,10 @@ class General(commands.Cog):
             await process_message.edit(content='', embed=embed)
         else:
             await process_message.edit(content='Stopped your shiny hunt')
-
+        
         channel = self.bot.get_channel(742567116343083019)
         msg = await channel.fetch_message(786032117293383710) #poke-shiny_hunt
-        shinyhunt_embed = await cog_help.update_shiny_hunt()
-        await msg.edit(content='', embed=shinyhunt_embed)
+        await cog_help.update_shiny_hunt(msg)
         
     @commands.command(name='guild', help='Displays guilds')
     async def guild(self, ctx):

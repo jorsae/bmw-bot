@@ -6,6 +6,7 @@ from discord.ext import commands, flags
 import utility
 import constants
 import query
+import cog_help
 from models import *
 
 class Admin(commands.Cog):
@@ -128,6 +129,19 @@ class Admin(commands.Cog):
                 output += f'{rank}. {reward} , '
                 rank += 1
             await ctx.send(f'{output}\nNOT PUBLISHED.\nAdd `--publish` to publish')
+
+    @commands.command(name='clearsh', help=f'Sets shiny_hunt to None for a user.`{constants.DEFAULT_PREFIX}`clearsh Rither#7897', hidden=True)
+    async def clearsh(self, ctx, username):
+        query = (UserModel
+                    .update(shiny_hunt=None)
+                    .where(
+                        UserModel.username == username
+                    )
+                ).execute()
+        channel = self.bot.get_channel(742567116343083019)
+        msg = await channel.fetch_message(786032117293383710) #poke-shiny_hunt
+        await cog_help.update_shiny_hunt(msg)
+        await ctx.send(f'Set shiny_hunt to None for user: {username}')
 
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.DEFAULT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
     async def speak(self, ctx, channel_id, message):

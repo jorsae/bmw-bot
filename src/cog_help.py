@@ -10,7 +10,7 @@ import query
 from models import UserModel
 
 # Helper function: Update shiny hunt post with new entries
-async def update_shiny_hunt():
+async def update_shiny_hunt(msg):
     shiny_hunt = query.get_shiny_hunt()
     
     embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
@@ -25,7 +25,7 @@ async def update_shiny_hunt():
         output += f'{string.capwords(sh.shiny_hunt)}: <@{sh.discord_id}>\n'
     
     embed.add_field(name=f'Shiny hunters {fields}', value=output, inline=False)
-    return embed
+    await msg.edit(content='', embed=embed)
 
 # Helper function: Get user_id from a guild_id to check the user is in that guild
 async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
