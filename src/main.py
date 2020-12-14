@@ -53,6 +53,28 @@ async def on_member_join(member):
     await member.add_roles(role)
 
 @bot.event
+async def on_member_remove(member):
+    username = f'{member.name}#{member.discriminator}'
+    if member.guild.id not in constants.BMW_SERVERS:
+        logging.info(f'{username} left: {member.guild.name} | No need to do anything')
+        return
+    
+    shiny_hunt = query.get_shinyhunt(member.id)
+    if shiny_hunt is None:
+        logging.info(f'{username} has no shiny_hunt')
+        return
+    role = get(member.guild.roles, name=shiny_hunt)
+    if role is None:
+        logging.info(f'{username} left {member.guild.name}. Role does not exists: {shiny_hunt}')
+    else:
+        if len(role.members) <= 0:
+            logging.info(f'{username} left {member.guild.name}. Deleted role: {shiny_hunt} | members: {len(role.members)}')
+            await role.delete()
+        else:
+            logging.info(f'{username} left {member.guild.name}. Did not delete role: {shiny_hunt} | members: {len(role.members)}')
+
+
+@bot.event
 async def on_message(message: discord.Message):
     await bot.wait_until_ready()
     message.content = (
