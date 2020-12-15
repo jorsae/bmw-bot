@@ -263,8 +263,8 @@ class General(commands.Cog):
     @commands.command(name='afk', help='Sets your status to afk')
     async def afk(self, ctx):
         author = ctx.message.author
+        await ctx.send(f'<@{ctx.message.author.id}> I will set you afk!')
         await cog_help.update_afk_status(self.bot, author.id, True)
-        await ctx.send('set afk. TODO: Proper output')
 
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):

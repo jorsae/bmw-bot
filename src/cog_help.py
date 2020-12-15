@@ -48,6 +48,7 @@ async def update_afk_status(bot, author_id, is_afk):
         query.set_afk(author_id, is_afk)
     except Exception as e:
         logging.critical(f'update_afk_status: {e}')
+        return None
 
 # Helper function: Get user_id from a guild_id to check the user is in that guild
 async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
