@@ -10,6 +10,7 @@ from discord.ext import tasks
 from discord.utils import get
 
 import query
+import cog_help
 from RankRewards import RankRewards
 import constants
 from poketwo import Poketwo
@@ -73,7 +74,6 @@ async def on_member_remove(member):
         else:
             logging.info(f'{username} left {member.guild.name}. Did not delete role: {shiny_hunt} | members: {len(role.members)}')
 
-
 @bot.event
 async def on_message(message: discord.Message):
     await bot.wait_until_ready()
@@ -91,17 +91,20 @@ async def on_message(message: discord.Message):
     if str(message.author) == constants.POKETWO:
         await poketwo.process_message(message)
 
-    await bot.process_commands(message)
     if str(message.author) != settings.discord_bot:
         await process_on_triggers(message)
+    
+    await bot.process_commands(message)
 
 
 async def process_on_triggers(message):
     if 'barrel roll' in message.content:
         await barrel_roll(message)
     
-    if 'Cat game trash' in message.content and str(message.author) == 'Dyno#3861':
-        await message.channel.send('Not cool <@155149108183695360>')
+    is_afk = query.get_is_afk_by_discordid(message.author.id)
+    if is_afk:
+        await cog_help.update_afk_status(bot, message.author.id, False)
+
 
 async def barrel_roll(message):
     text = 'barrel roll'

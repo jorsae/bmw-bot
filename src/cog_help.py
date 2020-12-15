@@ -27,6 +27,28 @@ async def update_shiny_hunt(msg):
     embed.add_field(name=f'Shiny hunters {fields}', value=output, inline=False)
     await msg.edit(content='', embed=embed)
 
+async def update_afk_status(bot, author_id, is_afk):
+    try:
+        for guild_id in constants.BMW_SERVERS:
+            guild = bot.get_guild(guild_id)
+            user = await guild.fetch_member(author_id)
+            if user is None:
+                break
+            
+            if is_afk:
+                if user.display_name.startswith(constants.AFK_PREFIX) is False:
+                    await user.edit(nick=f'{constants.AFK_PREFIX} {user.display_name}')
+                else:
+                    logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
+            else:
+                if user.display_name.startswith(constants.AFK_PREFIX):
+                    await user.edit(nick=f'{user.display_name[len(constants.AFK_PREFIX):]}')
+                else:
+                    logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
+        query.set_afk(author_id, is_afk)
+    except Exception as e:
+        logging.critical(f'update_afk_status: {e}')
+
 # Helper function: Get user_id from a guild_id to check the user is in that guild
 async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
     output = ''

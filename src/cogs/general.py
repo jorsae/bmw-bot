@@ -260,6 +260,12 @@ class General(commands.Cog):
         embed.add_field(name='Servers I am in', value=output)
         await ctx.send(embed=embed)
 
+    @commands.command(name='afk', help='Sets your status to afk')
+    async def afk(self, ctx):
+        author = ctx.message.author
+        await cog_help.update_afk_status(self.bot, author.id, True)
+        await ctx.send('set afk. TODO: Proper output')
+
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
         start = time.monotonic()

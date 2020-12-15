@@ -8,5 +8,7 @@ class UserModel(BaseModel):
     discord_id = TextField(unique=True)
     username = TextField()
     shiny_hunt = TextField(default=None)
+    is_afk = BooleanField(default=False)
+
     class Meta:
         table_name = 'Users'

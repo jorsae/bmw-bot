@@ -67,6 +67,24 @@ def get_username_by_stat(attribute, value):
     except Exception as e:
         logging.critical(f'get_username_by_stat: {e}')
 
+def get_is_afk_by_discordid(discord_id):
+    return (UserModel
+            .select(UserModel.is_afk)
+            .where(UserModel.discord_id == discord_id)
+            .scalar()
+            )
+
+def set_afk(discord_id, is_afk):
+    try:
+        (UserModel
+            .update(is_afk = is_afk)
+            .where(UserModel.discord_id == discord_id)
+        ).execute()
+        return True
+    except Exception as e:
+        logging.critical(f'set_afk: {e}')
+        return False
+
 # Get UserModel by user_id
 def get_user_by_userid(user_id):
     return UserModel.get(UserModel.user_id == user_id)
