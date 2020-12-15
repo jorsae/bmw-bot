@@ -101,6 +101,9 @@ async def process_on_triggers(message):
     if 'barrel roll' in message.content:
         await barrel_roll(message)
     
+    if message.content.startswith('?afk'):
+        await message.channel.send("I took <@155149108183695360>'s job. Use `.afk` instead :)")
+
     is_afk = query.get_is_afk_by_discordid(message.author.id)
     if is_afk:
         await message.channel.send(f'Welcome back: <@{message.author.id}>')
