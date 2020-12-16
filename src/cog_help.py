@@ -29,6 +29,8 @@ async def update_shiny_hunt(msg):
 
 async def update_afk_status(bot, author_id, is_afk):
     try:
+        query.set_afk(author_id, is_afk)
+        
         for guild_id in constants.BMW_SERVERS:
             guild = bot.get_guild(guild_id)
             user = await guild.fetch_member(author_id)
@@ -45,7 +47,6 @@ async def update_afk_status(bot, author_id, is_afk):
                     await user.edit(nick=f'{user.display_name[len(constants.AFK_PREFIX):]}')
                 else:
                     logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
-        query.set_afk(author_id, is_afk)
     except discord.HTTPException as http_exception:
         logging.error(f'update_afk_status: {http_exception}')
     except Exception as e:

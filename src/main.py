@@ -91,10 +91,10 @@ async def on_message(message: discord.Message):
     if str(message.author) == constants.POKETWO:
         await poketwo.process_message(message)
 
+    await bot.process_commands(message)
+
     if str(message.author) != settings.discord_bot:
         await process_on_triggers(message)
-    
-    await bot.process_commands(message)
 
 
 async def process_on_triggers(message):
@@ -103,7 +103,7 @@ async def process_on_triggers(message):
     
     if message.content.startswith('?afk'):
         await message.channel.send("I took <@155149108183695360>'s job. Use `.afk` instead :)")
-
+    
     is_afk = query.get_is_afk_by_discordid(message.author.id)
     if is_afk:
         try:
