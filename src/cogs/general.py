@@ -263,6 +263,10 @@ class General(commands.Cog):
     @commands.command(name='afk', help='Sets your status to afk')
     async def afk(self, ctx):
         author = ctx.message.author
+        total_length = len(author.display_name) + len(constants.AFK_PREFIX)
+        if total_length > constants.MAX_NICKNAME_LENGTH:
+            await ctx.send(f'Your nickname would be too long.\nOnly {constants.MAX_NICKNAME_LENGTH}characters allowed. ')
+            return
         await ctx.send(f'<@{ctx.message.author.id}> I will set you afk!')
         await cog_help.update_afk_status(self.bot, author.id, True)
 

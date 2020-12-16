@@ -37,7 +37,7 @@ async def update_afk_status(bot, author_id, is_afk):
             
             if is_afk:
                 if user.display_name.startswith(constants.AFK_PREFIX) is False:
-                    await user.edit(nick=f'{constants.AFK_PREFIX} {user.display_name}')
+                    await user.edit(nick=f'{constants.AFK_PREFIX}{user.display_name}')
                 else:
                     logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
             else:
@@ -46,9 +46,10 @@ async def update_afk_status(bot, author_id, is_afk):
                 else:
                     logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
         query.set_afk(author_id, is_afk)
+    except discord.HTTPException as http_exception:
+        logging.error(f'update_afk_status: {http_exception}')
     except Exception as e:
         logging.critical(f'update_afk_status: {e}')
-        return None
 
 # Helper function: Get user_id from a guild_id to check the user is in that guild
 async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):

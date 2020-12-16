@@ -106,8 +106,11 @@ async def process_on_triggers(message):
 
     is_afk = query.get_is_afk_by_discordid(message.author.id)
     if is_afk:
-        await message.channel.send(f'Welcome back: <@{message.author.id}>')
-        await cog_help.update_afk_status(bot, message.author.id, False)
+        try:
+            await message.channel.send(f'Welcome back <@{message.author.id}>')
+        except Exception as e:
+            logging.info(f"Can't welcome back: {message.author.display_name} | {e}")
+        output = await cog_help.update_afk_status(bot, message.author.id, False)
 
 async def barrel_roll(message):
     text = 'barrel roll'
