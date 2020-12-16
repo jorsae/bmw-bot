@@ -104,6 +104,9 @@ async def process_on_triggers(message):
     if message.content.startswith('?afk'):
         await message.channel.send("I took <@155149108183695360>'s job. Use `.afk` instead :)")
     
+    if message.content.startswith(f'{constants.DEFAULT_PREFIX}afk'):
+        return
+
     is_afk = query.get_is_afk_by_discordid(message.author.id)
     if is_afk:
         try:
