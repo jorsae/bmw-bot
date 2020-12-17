@@ -16,15 +16,11 @@ class Admin(commands.Cog):
     
     def is_admin():
         def predicate(ctx):
-            print(ctx.message.author.id)
-            print(constants.ADMIN_LIST)
             return ctx.message.author.id in constants.ADMIN_LIST
         return commands.check(predicate)
     
     def is_moderator():
         def predicate(ctx):
-            print(ctx.message.author.id)
-            print(constants.ADMIN_LIST)
             is_admin = ctx.message.author.id in constants.ADMIN_LIST
             if is_admin:
                 return True
