@@ -14,11 +14,26 @@ class Admin(commands.Cog):
         self.bot = bot
         self.settings = settings
     
-    @commands.command(name='dbstats', help=f'Display table count', hidden=True)
+    def is_admin():
+        def predicate(ctx):
+            print(ctx.message.author.id)
+            print(constants.ADMIN_LIST)
+            return ctx.message.author.id in constants.ADMIN_LIST
+        return commands.check(predicate)
+    
+    def is_moderator():
+        def predicate(ctx):
+            print(ctx.message.author.id)
+            print(constants.ADMIN_LIST)
+            is_admin = ctx.message.author.id in constants.ADMIN_LIST
+            if is_admin:
+                return True
+            return ctx.message.author.id in constants.MODERATOR_LIST
+        return commands.check(predicate)
+
+    @commands.command(name='dbstats', help=f'Display table count')
+    @is_moderator()
     async def dbstats(self, ctx):
-        is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
-        if is_admin is False:
-            return
         total_users = UserModel.select(fn.COUNT()).scalar()
         total_userstat = UserStatModel.select(fn.COUNT()).scalar()
         total_rares_definition = RareDefinitionModel.select(fn.COUNT()).scalar()
@@ -31,31 +46,23 @@ class Admin(commands.Cog):
         
         await ctx.send(f'Days running: {days}\nTotal users: {total_users}\nTotal UserStat: {total_userstat}\nTotal Rares Defined: {total_rares_definition}\nTotal Pokemon: {total_pokemon}\nTotal Medals: {total_medals}\n')
     
-    @commands.command(name='addmedal', help=f'Adds a medal to MedalList.\nUsage: `{constants.DEFAULT_PREFIX}addmedal description pokemon_category value_requirement time_category medal`', hidden=True)
+    @commands.command(name='addmedal', help=f'Adds a medal to MedalList.\nUsage: `{constants.DEFAULT_PREFIX}addmedal description pokemon_category value_requirement time_category medal`')
+    @is_admin()
     async def addmedal(self, ctx, description, pokemon_category, value_requirement, time_category, medal):
-        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
-        if is_admin is False:
-            return
-        
         new_medal, created = MedalModel.get_or_create(description=description, pokemon_category=pokemon_category, value_requirement=value_requirement, time_category=time_category, medal=medal)
         await ctx.send(f'New medal, created: {created}')
 
-    @commands.command(name='delmedal', help=f'Deletes a medal: `{constants.DEFAULT_PREFIX}delmedal <medal_id>`', hidden=True)
+    @commands.command(name='delmedal', help=f'Deletes a medal: `{constants.DEFAULT_PREFIX}delmedal <medal_id>`')
+    @is_admin()
     async def delmedal(self, ctx, medal_id):
-        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
-        if is_admin is False:
-            return
-        
         if medal_id is None:
             await ctx.send('medal_id is None')
         deleted = MedalModel.delete().where(MedalModel.medal_id == medal_id).execute()
         await ctx.send(f'Deleted: {deleted} MedalModels')
 
-    @commands.command(name='dumpmedal', help=f'Displays medals', hidden=True)
+    @commands.command(name='dumpmedal', help=f'Displays medals')
+    @is_moderator()
     async def dumpmedal(self, ctx):
-        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
-        if is_admin is False:
-            return
         query = (MedalModel
                 .select()
                 .order_by(MedalModel.pokemon_category))
@@ -66,11 +73,9 @@ class Admin(commands.Cog):
     
     @flags.add_flag("--week", action='store_true', default=True)
     @flags.add_flag("--month", action='store_true', default=False)
-    @flags.command(name='dumpreward', aliases=['checkreward'], help=f'Dumps RankReward rewards.\nFlags: `--week, --month`', hidden=True)
+    @flags.command(name='dumpreward', aliases=['checkreward'], help=f'Dumps RankReward rewards.\nFlags: `--week, --month`')
+    @is_moderator()
     async def dumpreward(self, ctx, **flags):
-        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
-        if is_admin is False:
-            return
         reward_type = 'week'
         if flags['month']:
             reward_type = 'month'
@@ -91,12 +96,9 @@ class Admin(commands.Cog):
     @flags.add_flag("--publish", action="store_true", default=False)
     @flags.add_flag("--week", action="store_true", default=True)
     @flags.add_flag("--month", action="store_true", default=False)
-    @flags.command(name='addreward', help=f'Adds rewards for weekly/monthly catches.\nUsage`{constants.DEFAULT_PREFIX}addreward --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nFlags: `--week, --month, --publish`', hidden=True)
+    @flags.command(name='addreward', help=f'Adds rewards for weekly/monthly catches.\nUsage`{constants.DEFAULT_PREFIX}addreward --start <yyyy-mm-dd> --1 <1st emote> --2 <2nd emote> --3 <3r emote>`\nFlags: `--week, --month, --publish`')
+    @is_admin()
     async def week(self, ctx, **flags):
-        is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
-        if is_admin is False:
-            return
-        
         start = utility.parse_start_flag(**flags)
         if start is None:
             await ctx.send('You need to set start properly')
@@ -130,12 +132,9 @@ class Admin(commands.Cog):
                 rank += 1
             await ctx.send(f'{output}\nNOT PUBLISHED.\nAdd `--publish` to publish')
 
-    @commands.command(name='clearsh', help=f'Sets shiny_hunt to None for a user.`{constants.DEFAULT_PREFIX}clearsh Someone#2321`', hidden=True)
+    @commands.command(name='clearsh', help=f'Sets shiny_hunt to None for a user.`{constants.DEFAULT_PREFIX}clearsh Someone#2321`')
+    @is_moderator()
     async def clearsh(self, ctx, username):
-        is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
-        if is_admin is False:
-            return
-        
         query = (UserModel
                     .update(shiny_hunt=None)
                     .where(
@@ -147,11 +146,9 @@ class Admin(commands.Cog):
         await cog_help.update_shiny_hunt(msg)
         await ctx.send(f'Set shiny_hunt to None for user: {username}')
 
-    @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.DEFAULT_PREFIX}speak <channel_id> "<message>"`', hidden=True)
+    @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.DEFAULT_PREFIX}speak <channel_id> "<message>"`')
+    @is_admin()
     async def speak(self, ctx, channel_id, message):
-        is_admin = utility.is_admin(ctx.message.author, ['Rither#7897'])
-        if is_admin is False:
-            return
         try:
             channel_id = int(channel_id)
             channel = self.bot.get_channel(channel_id)  

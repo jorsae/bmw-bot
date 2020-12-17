@@ -286,17 +286,16 @@ class General(commands.Cog):
     @commands.command(name='help', help='Displays this help message')
     async def help(self, ctx):
         author = ctx.message.author
-        display_hidden_commands = utility.is_admin(author, self.settings.admin)
         
         cogs = []
         cogs.append(self.bot.get_cog('Ranking'))
         cogs.append(self.bot.get_cog('General'))
-        if display_hidden_commands:
-            cogs.append(self.bot.get_cog('Admin'))
+        cogs.append(self.bot.get_cog('Admin'))
 
         embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
         embed.set_author(name=f'BMW Help')
         for cog in cogs:
             for command in cog.walk_commands():
-                embed.add_field(name=f'{self.settings.prefix}{command}{utility.get_aliases(command.aliases)}', value=command.help, inline=False)
+                if await command.can_run(ctx):
+                    embed.add_field(name=f'{self.settings.prefix}{command}{utility.get_aliases(command.aliases)}', value=command.help, inline=False)
         await ctx.send(embed=embed)

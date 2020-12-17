@@ -58,18 +58,6 @@ def get_aliases(aliases):
         output = output[:-2]
         return f'{output})'
 
-# returns true if the user is an admin. False otherwise
-def is_admin(author, admin_list):
-    if type(author) == str:
-        if author in admin_list:
-            logging.warning(f'is_admin == true: {author}')
-            return True
-    else:
-        if str(author) in admin_list:
-            logging.warning(f'is_admin == true: {author}')
-            return True
-    return False
-
 # Get rank number, by page
 def get_rank_by_page(current_page):
     return current_page * constants.ITEMS_PER_PAGE
