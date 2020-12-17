@@ -146,6 +146,21 @@ class Admin(commands.Cog):
         await cog_help.update_shiny_hunt(msg)
         await ctx.send(f'Set shiny_hunt to None for user: {username}')
 
+    @commands.command(name='staff', help=f'Lists all admins and moderators')
+    @is_moderator()
+    async def staff(self, ctx):
+        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+        admins = ''
+        for admin in constants.ADMIN_LIST:
+            admins += f'<@{admin}>\n'
+        embed.add_field(name='Admins', value=admins)
+        
+        mods = ''
+        for mod in constants.MODERATOR_LIST:
+            mods += f'<@{mod}>\n'
+        embed.add_field(name='Moderators', value=mods)
+        await ctx.send(embed=embed)
+    
     @commands.command(name='speak', help=f'Make me speak.\nUsage: `{constants.DEFAULT_PREFIX}speak <channel_id> "<message>"`')
     @is_admin()
     async def speak(self, ctx, channel_id, message):
