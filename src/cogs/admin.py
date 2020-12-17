@@ -130,7 +130,7 @@ class Admin(commands.Cog):
                 rank += 1
             await ctx.send(f'{output}\nNOT PUBLISHED.\nAdd `--publish` to publish')
 
-    @commands.command(name='clearsh', help=f'Sets shiny_hunt to None for a user.`{constants.DEFAULT_PREFIX}`clearsh Rither#7897', hidden=True)
+    @commands.command(name='clearsh', help=f'Sets shiny_hunt to None for a user.`{constants.DEFAULT_PREFIX}clearsh Someone#2321`', hidden=True)
     async def clearsh(self, ctx, username):
         is_admin = utility.is_admin(ctx.message.author, self.settings.admin)
         if is_admin is False:
