@@ -273,7 +273,7 @@ class General(commands.Cog):
             await ctx.send('You are already afk.')
             return
 
-        await ctx.send(f'<@{ctx.message.author.id}> I will set you afk!')
+        await ctx.send(f'<@{ctx.message.author.id}> is now afk.')
         await cog_help.update_afk_status(self.bot, author.id, True)
 
     @commands.command(name='ping', help="Checks the bot's latency")
