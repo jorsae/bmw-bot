@@ -89,7 +89,8 @@ async def on_message(message: discord.Message):
         logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Command: "{message.content}"')
     
     if str(message.author) == constants.POKETWO:
-        await poketwo.process_message(message)
+        pass
+        # await poketwo.process_message(message)
 
     if str(message.author) != settings.discord_bot:
         await process_on_triggers(message)

@@ -4,6 +4,7 @@ from discord.ext import commands, flags
 from datetime import datetime, date
 import asyncio
 import math
+import time
 import logging
 
 import constants
@@ -83,6 +84,8 @@ class Ranking(commands.Cog):
 
     @commands.command(name='profile', aliases=['p'], help="Displays your profile")
     async def profile(self, ctx, **flags):
+        start = time.monotonic()
+
         page = 1
         max_page = 3
         try:
@@ -90,7 +93,9 @@ class Ranking(commands.Cog):
             user = UserModel.get(UserModel.discord_id == ctx.author.id)
 
             embed = profile.get_profile_page(ctx, user, current_page, max_page, **flags)
-
+            
+            t = (time.monotonic() - start) * 1000
+            print(f'{int(t)}ms')
             message = await ctx.send(embed=embed)
             await message.add_reaction("◀️")
             await message.add_reaction("▶️")
