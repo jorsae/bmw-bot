@@ -267,6 +267,12 @@ class General(commands.Cog):
         if total_length > constants.MAX_NICKNAME_LENGTH:
             await ctx.send(f'Your nickname would be too long.\nOnly {constants.MAX_NICKNAME_LENGTH}characters allowed. ')
             return
+        
+        is_afk = query.get_is_afk_by_discordid(author.id)
+        if is_afk:
+            await ctx.send('You are already afk.')
+            return
+
         await ctx.send(f'<@{ctx.message.author.id}> I will set you afk!')
         await cog_help.update_afk_status(self.bot, author.id, True)
 

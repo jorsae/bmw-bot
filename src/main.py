@@ -91,11 +91,10 @@ async def on_message(message: discord.Message):
     if str(message.author) == constants.POKETWO:
         await poketwo.process_message(message)
 
-    await bot.process_commands(message)
-
     if str(message.author) != settings.discord_bot:
         await process_on_triggers(message)
-
+    
+    await bot.process_commands(message)
 
 async def process_on_triggers(message):
     if 'barrel roll' in message.content:

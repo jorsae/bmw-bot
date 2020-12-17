@@ -48,9 +48,11 @@ async def update_afk_status(bot, author_id, is_afk):
                 else:
                     logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
     except discord.HTTPException as http_exception:
-        logging.error(f'update_afk_status: {http_exception}')
+        if str(http_exception).startswith('404'):
+            return
+        logging.critical(f'update_afk_status(discord.HTTPException): {http_exception}')
     except Exception as e:
-        logging.critical(f'update_afk_status: {e}')
+        logging.critical(f'update_afk_status(Exception): {e}')
 
 # Helper function: Get user_id from a guild_id to check the user is in that guild
 async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
