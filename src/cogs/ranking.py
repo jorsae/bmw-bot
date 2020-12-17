@@ -205,9 +205,12 @@ class Ranking(commands.Cog):
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            return
+        
         if type(error) is discord.ext.flags._parser.ArgumentParsingError:
             logging.warning(f'ranking.on_command_error. Sent: {error}')
             await ctx.send(f'{error}')
-        
+
         username = f'{ctx.message.author.name}#{ctx.message.author.discriminator}'
         logging.error(f'ranking.on_command_error {username}: {error}')
