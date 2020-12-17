@@ -39,8 +39,7 @@ def profile_page_1(ctx, user, **flags):
         embed.add_field(name=f'{rank}. {user.username}', value=f'{stats}', inline=False)
         
         sum_day = query.get_max_day(user.user_id).get()
-        sum_all = query.get_sum(user.user_id).get()
-        total_medals = medals.get_medals(sum_day, sum_all)
+        total_medals = medals.get_medals(sum_day, total)
 
         medals_text = ''
         total = 0
