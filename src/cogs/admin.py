@@ -1,4 +1,6 @@
 import discord
+import asyncio
+import logging
 from peewee import *
 from datetime import datetime, date, timedelta
 from discord.ext import commands, flags
@@ -6,6 +8,7 @@ from discord.ext import commands, flags
 import utility
 import constants
 import query
+import profile
 import cog_help
 from RankRewards import RankRewards
 from models import *
@@ -163,6 +166,44 @@ class Admin(commands.Cog):
             await ctx.send('Triggering monthly giveaway')
             rank_rewards = RankRewards(self.bot, self.settings)
             await rank_rewards.give_monthly(start_date)
+    
+    @commands.command(name='aprofile', help='Displays a users profile.\nUsage: `.aprofile <discord_id>`')
+    @is_moderator()
+    async def aprofile(self, ctx, user_id, **flags):
+        page = 1
+        max_page = 3
+        try:
+            current_page = page
+            user = UserModel.get(UserModel.discord_id == user_id)
+
+            embed = profile.get_profile_page(ctx, user, current_page, max_page, **flags)
+            
+            message = await ctx.send(embed=embed)
+            await message.add_reaction("◀️")
+            await message.add_reaction("▶️")
+            
+            def check(reaction, user):
+                if reaction.message.id == message.id:
+                    return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+                else:
+                    return False
+            
+            while True:
+                reaction, discord_user = await self.bot.wait_for("reaction_add", timeout=60, check=check)
+                if str(reaction.emoji) == "▶️" and current_page < max_page:
+                    current_page += 1
+                elif str(reaction.emoji) == "◀️" and current_page > 1:
+                    current_page -= 1
+                
+                embed = profile.get_profile_page(ctx, user, current_page, max_page, **flags)
+                await message.edit(embed=embed)
+                await message.remove_reaction(reaction, discord_user)
+        except asyncio.TimeoutError:
+            pass
+        except Exception as e:
+            logging.critical(f'ranking.profile: {e}')
+            embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
+            await ctx.send(embed=embed)
 
     @commands.command(name='staff', help=f'Lists all admins and moderators')
     @is_moderator()
