@@ -7,6 +7,7 @@ import utility
 import constants
 import query
 import cog_help
+from RankRewards import RankRewards
 from models import *
 
 class Admin(commands.Cog):
@@ -141,6 +142,27 @@ class Admin(commands.Cog):
         msg = await channel.fetch_message(786032117293383710) #poke-shiny_hunt
         await cog_help.update_shiny_hunt(msg)
         await ctx.send(f'Set shiny_hunt to None for user: {username}')
+    
+    @flags.add_flag("--week", action="store_true", default=False)
+    @flags.add_flag("--month", action="store_true", default=False)
+    @flags.add_flag("--start", type=str)
+    @flags.command(name='triggerreward', help='Manually trigger reward.')
+    @is_admin()
+    async def trigger_reward(self, ctx, **flags):
+        start_date = utility.parse_start_flag(**flags)
+        if start_date is None:
+            await ctx.send('start_date is not set')
+            return
+        
+        if flags["week"]:
+            await ctx.send('Triggering weekly giveaway')
+            rank_rewards = RankRewards(self.bot, self.settings)
+            await rank_rewards.give_weekly(start_date)
+        
+        if flags["month"]:
+            await ctx.send('Triggering monthly giveaway')
+            rank_rewards = RankRewards(self.bot, self.settings)
+            await rank_rewards.give_monthly(start_date)
 
     @commands.command(name='staff', help=f'Lists all admins and moderators')
     @is_moderator()

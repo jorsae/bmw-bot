@@ -107,7 +107,6 @@ class RankRewards():
         announcement_embed.add_field(name=f'{start_date} - {end_date}', value=output, inline=False)
         
         channel = self.bot.get_channel(self.settings.announcement_channel)
-        # channel = self.bot.get_channel(777055535228911666) # Test channel
         await channel.send(embed=announcement_embed)
     
     # Returns true if should give out weekly rewards

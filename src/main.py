@@ -150,10 +150,11 @@ async def change_status():
     total_caught = 0 if total_caught is None else total_caught
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{total_caught:,} caught'))
 
-@tasks.loop(seconds=60, reconnect=True)
+@tasks.loop(seconds=59, reconnect=True)
 async def check_rank_rewards():
     now = datetime.now()
     if now.hour == 0 and now.minute == 0:
+        logging.info('Triggering rank rewards')
         await rank_rewards.distribute_rewards()
 
 @bot.event
