@@ -105,13 +105,13 @@ async def process_on_triggers(message):
     if is_afk:
         try:
             msg = await message.channel.send(f'Welcome back <@{message.author.id}>')
-            asyncio.run(await delete_wb(msg))
+            asyncio.run(await delete_message(msg))
         except Exception as e:
             logging.info(f"Can't welcome back: {message.author.display_name} | {e}")
         output = await cog_help.update_afk_status(bot, message.author.id, False)
 
-async def delete_wb(msg):
-    await asyncio.sleep(5)
+async def delete_message(msg, delay=5):
+    await asyncio.sleep(delay)
     await msg.delete()
 
 def build_rares():
