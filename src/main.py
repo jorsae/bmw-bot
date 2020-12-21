@@ -3,6 +3,8 @@ import math
 import asyncio
 import os
 import re
+import time
+import threading
 import logging
 from datetime import datetime, timedelta
 from discord.ext import commands as discord_commands
@@ -109,10 +111,15 @@ async def process_on_triggers(message):
     is_afk = query.get_is_afk_by_discordid(message.author.id)
     if is_afk:
         try:
-            await message.channel.send(f'Welcome back <@{message.author.id}>')
+            msg = await message.channel.send(f'Welcome back <@{message.author.id}>')
+            asyncio.run(await delete_wb(msg))
         except Exception as e:
             logging.info(f"Can't welcome back: {message.author.display_name} | {e}")
         output = await cog_help.update_afk_status(bot, message.author.id, False)
+
+async def delete_wb(msg):
+    await asyncio.sleep(5)
+    await msg.delete()
 
 async def barrel_roll(message):
     text = 'barrel roll'
