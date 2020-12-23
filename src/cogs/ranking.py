@@ -122,7 +122,7 @@ class Ranking(commands.Cog):
     @flags.add_flag("--day", action="store_true", default=False)
     @flags.add_flag("--month", action="store_true", default=False)
     @flags.add_flag("--all", action="store_true", default=False)
-    @flags.command(name='server', aliases=['s'], help='Displays pokémon statistics for BMW')
+    @flags.command(name='server', aliases=['s'], help='Displays pokémon statistics for BMW\nTime flags: `--all, --month, --week, --day`')
     async def server(self, ctx, **flags):
         date_stamp, time_flag = utility.parse_time_flags(default='all', **flags)
 
