@@ -1,5 +1,5 @@
 import constants
-from datetime import datetime
+from datetime import datetime, date
 import json
 import logging
 
@@ -10,6 +10,7 @@ class Settings():
         self.token = None
         self.discord_bot = None
         self.announcement_channel = None
+        self.start_date = None
         self.prefix = constants.DEFAULT_PREFIX
     
     def parse_settings(self):
@@ -22,10 +23,11 @@ class Settings():
             self.prefix = data.get("prefix")
             self.discord_bot = data.get("discord_bot")
             self.announcement_channel = data.get("announcement_channel")
+            self.start_date = self.string_to_date(data.get("start_date"))
             return True
         except Exception as e:
             logging.critical(f'Failed to parse_settings: {e}')
             return False
     
-    def string_to_datetime(self, string):
-        return datetime.strptime(string, "%B %d %Y, %H:%M:%S")
+    def string_to_date(self, string):
+        return datetime.strptime(string, "%Y-%m-%d").date()

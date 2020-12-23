@@ -143,9 +143,8 @@ class Ranking(commands.Cog):
             
             embed.add_field(name=f'BMW pokémon stats [{str(title)}]', value=f'**Total pokémon caught: **{total_caught:,}\n**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}%')
             if time_flag is TimeFlag.ALL:
-                start_date = date(2020, 11, 16)
                 now = datetime.now()
-                days = (date(now.year, now.month, now.day) - start_date).days
+                days = (date(now.year, now.month, now.day) - self.settings.start_date).days
                 embed.set_footer(text=f'Tracking stats for {days} days.')
             await ctx.send(embed=embed)
         except DoesNotExist:
