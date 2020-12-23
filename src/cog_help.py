@@ -81,8 +81,13 @@ async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
         await user.add_roles(role)
 
         return output
+    except discord.HTTPException as http_exception:
+        if str(http_exception).startswith('404'):
+            return None
+        logging.critical(f'update_afk_status(discord.HTTPException): {http_exception}')
+        return None
     except Exception as e:
-        logging.critical(f'fix_new_roles: {e}')
+        logging.critical(f'fix_new_roles: author_id: {author_id}, guild_id: {guild_id}, shiny_hunt: {shiny_hunt}, old_shiny_hunt: {old_shiny_hunt} {e}')
         return None
 
 # Helper function to get a persons level, by role
