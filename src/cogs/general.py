@@ -265,7 +265,7 @@ class General(commands.Cog):
         author = ctx.message.author
         total_length = len(author.display_name) + len(constants.AFK_PREFIX)
         if total_length > constants.MAX_NICKNAME_LENGTH:
-            await ctx.send(f'Your nickname would be too long.\nOnly {constants.MAX_NICKNAME_LENGTH}characters allowed. ')
+            await ctx.send(f'Your nickname would be too long, please shorten it!')
             return
         
         is_afk = query.get_is_afk_by_discordid(author.id)
@@ -274,8 +274,14 @@ class General(commands.Cog):
             return
 
         await ctx.send(f'<@{ctx.message.author.id}> is now afk.')
-        await cog_help.update_afk_status(self.bot, author.id, True)
-
+        output_guilds = await cog_help.update_afk_status(self.bot, author.id, True)
+        if output_guilds is None:
+            return
+        output = f'<@{ctx.message.author.id}> Could not set your name in:\n'
+        for guild in output_guilds:
+            output += f'{guild}\n'
+        await ctx.send(f'{output}\n**Your nickname would be too long, please shorten it!**')
+    
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
         start = time.monotonic()

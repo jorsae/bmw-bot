@@ -28,6 +28,7 @@ async def update_shiny_hunt(msg):
     await msg.edit(content='', embed=embed)
 
 async def update_afk_status(bot, author_id, is_afk):
+    output_guilds = []
     try:
         query.set_afk(author_id, is_afk)
         
@@ -37,9 +38,14 @@ async def update_afk_status(bot, author_id, is_afk):
             if user is None:
                 break
             
+            new_nickname = f'{constants.AFK_PREFIX}{user.display_name}'
+            if len(new_nickname) > constants.MAX_NICKNAME_LENGTH:
+                output_guilds.append(guild.name)
+                continue
+
             if is_afk:
                 if user.display_name.startswith(constants.AFK_PREFIX) is False:
-                    await user.edit(nick=f'{constants.AFK_PREFIX}{user.display_name}')
+                    await user.edit(nick=new_nickname)
                 else:
                     logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
             else:
@@ -47,9 +53,10 @@ async def update_afk_status(bot, author_id, is_afk):
                     await user.edit(nick=f'{user.display_name[len(constants.AFK_PREFIX):]}')
                 else:
                     logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
+        return output_guilds
     except discord.HTTPException as http_exception:
         if str(http_exception).startswith('404'):
-            return
+            return output_guilds
         logging.critical(f'update_afk_status(discord.HTTPException): {http_exception}')
     except Exception as e:
         logging.critical(f'update_afk_status(Exception): {e}')
@@ -84,7 +91,7 @@ async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
     except discord.HTTPException as http_exception:
         if str(http_exception).startswith('404'):
             return None
-        logging.critical(f'update_afk_status(discord.HTTPException): {http_exception}')
+        logging.critical(f'fix_new_roles(discord.HTTPException): {http_exception}')
         return None
     except Exception as e:
         logging.critical(f'fix_new_roles: author_id: {author_id}, guild_id: {guild_id}, shiny_hunt: {shiny_hunt}, old_shiny_hunt: {old_shiny_hunt} {e}')
