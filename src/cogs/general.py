@@ -275,7 +275,7 @@ class General(commands.Cog):
 
         await ctx.send(f'<@{ctx.message.author.id}> is now afk.')
         output_guilds = await cog_help.update_afk_status(self.bot, author.id, True)
-        if output_guilds is None:
+        if len(output_guilds) <= 0:
             return
         output = f'<@{ctx.message.author.id}> Could not set your name in:\n'
         for guild in output_guilds:
