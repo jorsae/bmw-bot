@@ -34,6 +34,16 @@ def get_max_day(user_id):
                 UserStatModel.user_id == user_id
                 )
             )
+def get_total_sum_after_date(attribute, date):
+    return (UserStatModel
+                .select(
+                    fn.SUM(attribute)
+                )
+                .where(
+                    UserStatModel.date >= date
+                )
+                .scalar()
+            )
 
 # Returns sum of attribute, by a user
 def get_sum(user_id):

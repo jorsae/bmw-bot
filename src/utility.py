@@ -38,15 +38,18 @@ def parse_attribute_flags(**flags):
         return UserStatModel.shiny, 'Shiny'
     return UserStatModel.catches, 'Catches'
 
-def parse_time_flags(**flags):
-    date = get_date_current_month()
+def parse_time_flags(default='month', **flags):
     if flags["all"]:
         return get_date_forever_ago(), TimeFlag.ALL
-    if flags["week"]:
+    elif flags["month"]:
+        return get_date_current_month(), TimeFlag.MONTH
+    elif flags["week"]:
         return get_date_current_week(), TimeFlag.WEEK
-    if flags["day"]:
+    elif flags["day"]:
         return date.today(), TimeFlag.DAY
-    return date, TimeFlag.MONTH
+    else:
+        flags[default] = True
+        return parse_time_flags(**flags)
 
 def get_aliases(aliases):
     if aliases == []:

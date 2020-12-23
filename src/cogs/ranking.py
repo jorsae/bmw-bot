@@ -117,15 +117,21 @@ class Ranking(commands.Cog):
             logging.critical(f'ranking.profile: {e}')
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
+    
+    @flags.add_flag("--week", action="store_true", default=False)
+    @flags.add_flag("--day", action="store_true", default=False)
+    @flags.add_flag("--month", action="store_true", default=False)
+    @flags.add_flag("--all", action="store_true", default=False)
+    @flags.command(name='server', aliases=['s'], help='Displays pokémon statistics for BMW')
+    async def server(self, ctx, **flags):
+        date_stamp, time_flag = utility.parse_time_flags(default='all', **flags)
 
-    @commands.command(name='server', aliases=['s'], help='Displays pokémon statistics for BMW')
-    async def server(self, ctx):
-        total_caught = query.get_pokemon_caught(alltime=True)
         try:
-            legendary = UserStatModel.select(fn.SUM(UserStatModel.legendary)).scalar()
-            mythical = UserStatModel.select(fn.SUM(UserStatModel.mythical)).scalar()
-            ultrabeast = UserStatModel.select(fn.SUM(UserStatModel.ultrabeast)).scalar()
-            shiny = UserStatModel.select(fn.SUM(UserStatModel.shiny)).scalar()
+            total_caught = query.get_total_sum_after_date(UserStatModel.catches, date_stamp)
+            legendary = query.get_total_sum_after_date(UserStatModel.legendary, date_stamp)
+            mythical = query.get_total_sum_after_date(UserStatModel.mythical, date_stamp)
+            ultrabeast = query.get_total_sum_after_date(UserStatModel.ultrabeast, date_stamp)
+            shiny = query.get_total_sum_after_date(UserStatModel.shiny, date_stamp)
 
             total_rares = legendary + mythical + ultrabeast
 
@@ -133,12 +139,14 @@ class Ranking(commands.Cog):
             percent_rare = round(100 / total_caught * total_rares, 2)
             percent_shiny = round(100 / total_caught * shiny, 2)
             
-            start_date = date(2020, 11, 16)
-            now = datetime.now()
-            days = (date(now.year, now.month, now.day) - start_date).days
+            title, author = utility.get_title_author_by_timeflag(time_flag)
             
-            embed.add_field(name=f'BMW pokémon stats', value=f'**Total pokémon caught: **{total_caught:,}\n**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}%')
-            embed.set_footer(text=f'Tracking stats for {days} days.')
+            embed.add_field(name=f'BMW pokémon stats [{str(title)}]', value=f'**Total pokémon caught: **{total_caught:,}\n**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}%')
+            if time_flag is TimeFlag.ALL:
+                start_date = date(2020, 11, 16)
+                now = datetime.now()
+                days = (date(now.year, now.month, now.day) - start_date).days
+                embed.set_footer(text=f'Tracking stats for {days} days.')
             await ctx.send(embed=embed)
         except DoesNotExist:
             embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
