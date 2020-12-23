@@ -149,7 +149,7 @@ class Admin(commands.Cog):
     @flags.add_flag("--week", action="store_true", default=False)
     @flags.add_flag("--month", action="store_true", default=False)
     @flags.add_flag("--start", type=str)
-    @flags.command(name='triggerreward', help='Manually trigger reward.')
+    @flags.command(name='triggerreward', help='Manually trigger reward.\nUsage: `.triggerreward --start <date> --week/--month`')
     @is_admin()
     async def trigger_reward(self, ctx, **flags):
         start_date = utility.parse_start_flag(**flags)
