@@ -85,7 +85,7 @@ class Admin(commands.Cog):
                         )
         output = f'Dumping: {reward_type}\n'
         for rank_reward in rank_rewards:
-            output += f'{rank_reward.start_date}: {rank_reward.reward_type} | 1. {rank_reward.place_1}, 2. {rank_reward.place_2}, 3. {rank_reward.place_3}'
+            output += f'{rank_reward.start_date}: {rank_reward.reward_type} | 1. {rank_reward.place_1}, 2. {rank_reward.place_2}, 3. {rank_reward.place_3}\n'
         await ctx.send(output)
     
     @flags.add_flag("--start", type=str)
