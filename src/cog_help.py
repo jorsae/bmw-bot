@@ -38,6 +38,7 @@ async def update_afk_status(bot, author_id, is_afk):
             if user is None:
                 break
             
+
             if is_afk:
                 new_nickname = f'{constants.AFK_PREFIX}{user.display_name}'
                 if len(new_nickname) > constants.MAX_NICKNAME_LENGTH:
