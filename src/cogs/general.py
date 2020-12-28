@@ -282,6 +282,13 @@ class General(commands.Cog):
             output += f'{guild}\n'
         await ctx.send(f'{output}\n**Your nickname would be too long, please shorten it!**')
     
+    @commands.command(name='unafk', help='Force sets your status/name to NOT be afk')
+    async def unafk(self, ctx):
+        author = ctx.message.author
+        msg = await ctx.send(f'<@{ctx.message.author.id}> force removing afk, give me a moment..')
+        await cog_help.update_afk_status(self.bot, author.id, False)
+        await msg.edit(content=f'<@{ctx.message.author.id}> afk status removed')
+    
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
         start = time.monotonic()
