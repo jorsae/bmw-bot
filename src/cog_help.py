@@ -38,21 +38,21 @@ async def update_afk_status(bot, author_id, is_afk):
             if user is None:
                 break
             
-            new_nickname = f'{constants.AFK_PREFIX}{user.display_name}'
-            if len(new_nickname) > constants.MAX_NICKNAME_LENGTH:
-                output_guilds.append(guild.name)
-                continue
-
             if is_afk:
+                new_nickname = f'{constants.AFK_PREFIX}{user.display_name}'
+                if len(new_nickname) > constants.MAX_NICKNAME_LENGTH:
+                    output_guilds.append(guild.name)
+                    continue
+                
                 if user.display_name.startswith(constants.AFK_PREFIX) is False:
                     await user.edit(nick=new_nickname)
                 else:
-                    logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
+                    logging.warning(f'update_afk_status: guild_name: {guild.name}, is_afk: {is_afk}, nick:{user.display_name}')
             else:
                 if user.display_name.startswith(constants.AFK_PREFIX):
                     await user.edit(nick=f'{user.display_name[len(constants.AFK_PREFIX):]}')
                 else:
-                    logging.warning(f'update_afk_status: is_afk: {is_afk}, nick:{user.display_name}')
+                    logging.warning(f'update_afk_status: guild_name: {guild.name}, is_afk: {is_afk}, nick:{user.display_name}')
         return output_guilds
     except discord.HTTPException as http_exception:
         if str(http_exception).startswith('404'):
