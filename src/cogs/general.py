@@ -297,7 +297,10 @@ class General(commands.Cog):
         author = ctx.message.author
         username = f'{author.name}#{author.discriminator}'
         updated = query.update_username(author.id, username)
-        await ctx.send(f'Updated: {updated}')
+        if updated:
+            await ctx.send('Your username was successfully updated')
+        else:
+            await ctx.send('Error updating your username. Please let Rither know.')
 
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
