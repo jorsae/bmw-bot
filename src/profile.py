@@ -58,11 +58,6 @@ def profile_page_1(ctx, user, **flags):
                 medals_text += '\n'
         embed.add_field(name=f'Medals', value=f'{"You have no medals" if medals_text == "" else medals_text}', inline=False)
         return embed
-    except DoesNotExist:
-        embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name=f'You have not caught any pokémon', value=f'Go catch pokémon!')
-        return embed
     except Exception as e:
         logging.critical(f'commands.profile: {e}')
         embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')

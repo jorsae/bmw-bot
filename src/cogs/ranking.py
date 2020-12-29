@@ -111,6 +111,11 @@ class Ranking(commands.Cog):
                 embed = profile.get_profile_page(ctx, user, current_page, max_page, **flags)
                 await message.edit(embed=embed)
                 await message.remove_reaction(reaction, discord_user)
+        except DoesNotExist:
+            embed = discord.Embed(colour=constants.COLOUR_NEUTRAL, title=f'{str(ctx.author.name)} Profile')
+            embed.set_thumbnail(url=ctx.author.avatar_url)
+            embed.add_field(name=f'You have not caught any pokémon', value=f'Go catch pokémon!')
+            await ctx.send(embed=embed)
         except asyncio.TimeoutError:
             pass
         except Exception as e:

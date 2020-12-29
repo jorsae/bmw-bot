@@ -18,9 +18,9 @@ class Poketwo():
         
         content = message.content.lower()
         if 'you caught a level' in content:
-            discord_user, pokemon = await self.get_discorduser_pokemon(content)
-            if discord_user is None or pokemon is None:
-                logging.critical(f'poketwo.process_message: discord_id: {discord_user}, pokemon: {pokemon}. {content}')
+            discord_id, pokemon = await self.get_discordid_pokemon(content)
+            if discord_id is None or pokemon is None:
+                logging.critical(f'poketwo.process_message: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
                 return
             
             # Handle rarity count
@@ -29,19 +29,21 @@ class Poketwo():
             # Handle shiny count
             is_shiny = self.pokemon_is_shiny(content)
             if rarity is not None:
-                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_user.name}#{discord_user.discriminator}]: found rare: ({rarity} / {pokemon}): {content}')
+                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_id}]: found rare: ({rarity} / {pokemon}): {content}')
             if is_shiny:
-                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_user.name}#{discord_user.discriminator}]: found shiny: ({pokemon}): {content}')
+                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_id}]: found shiny: ({pokemon}): {content}')
 
-            await self.add_pokemon(discord_user, rarity, is_shiny)
+            await self.add_pokemon(discord_id, rarity, is_shiny)
             self.add_pokemon_catch(pokemon)
 
-    async def add_pokemon(self, discord_user, rarity, is_shiny):
+    async def add_pokemon(self, discord_id, rarity, is_shiny):
         today = datetime.now().date()
         try:
             # Ensure User is in database
-            user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_user.id).scalar()
+            user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_id).scalar()
             if user_id is None:
+                print('user_id is None')
+                discord_user = await self.bot.fetch_user(user_id)
                 username = f'{discord_user.name}#{discord_user.discriminator}'
                 user, created = UserModel.get_or_create(discord_id=discord_user.id, username=username)
                 user_id = user.user_id
@@ -104,13 +106,12 @@ class Poketwo():
             logging.critical(f'get_rare_definition: {e}')
             return None
 
-    async def get_discorduser_pokemon(self, content):
+    async def get_discordid_pokemon(self, content):
         try:
             # Getting user
-            user_id = self.get_from_message(constants.GET_USER, content)
-            if user_id is not None:
-                user_id = self.get_from_message(constants.GET_ALL_NUMBERS, user_id)
-            discord_user = await self.bot.fetch_user(user_id)
+            discord_id = self.get_from_message(constants.GET_USER, content)
+            if discord_id is not None:
+                discord_id = self.get_from_message(constants.GET_ALL_NUMBERS, discord_id)
 
             # Getting pokemon
             pokemon = constants.GET_POKEMON.search(content)
@@ -123,7 +124,7 @@ class Poketwo():
                 if pokemon is not None:
                     pokemon = pokemon[2:len(pokemon) - 1]
             
-            return discord_user, pokemon
+            return discord_id, pokemon
         except Exception as e:
             logging.critical(f'poketwo.get_user_pokemon: {e}')
             return None, None
