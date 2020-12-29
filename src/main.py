@@ -98,7 +98,7 @@ async def on_message(message: discord.Message):
     await bot.process_commands(message)
 
 async def process_on_triggers(message):
-    if message.content.startswith(f'$afk'):
+    if message.content.startswith(f'{settings.prefix}afk'):
         return
 
     is_afk = query.get_is_afk_by_discordid(message.author.id)
