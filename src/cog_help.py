@@ -61,11 +61,10 @@ async def update_afk_status(bot, author_id, is_afk):
     except Exception as e:
         logging.critical(f'update_afk_status(Exception): {e}')
 
-# Helper function: Get user_id from a guild_id to check the user is in that guild
-async def fix_new_roles(bot, guild_id, author_id, shiny_hunt, old_shiny_hunt):
+# Helper function: Get user_id from a guild to check the user is in that guild
+async def fix_new_roles(bot, guild, author_id, shiny_hunt, old_shiny_hunt):
     output = ''
     try:
-        guild = bot.get_guild(guild_id)
         user = await guild.fetch_member(author_id)
 
         # Delete or remove role from user, if other people also have the role

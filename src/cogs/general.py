@@ -220,8 +220,8 @@ class General(commands.Cog):
             shiny_hunt = None
         
         output = f''
-        for guild_id in constants.BMW_SERVERS:
-            result = await cog_help.fix_new_roles(self.bot, guild_id, ctx.author.id, shiny_hunt, usermodel.shiny_hunt)
+        for guild in constants.LOADED_BMW_SERVERS:
+            result = await cog_help.fix_new_roles(self.bot, guild, ctx.author.id, shiny_hunt, usermodel.shiny_hunt)
             if result is not None:
                 output += result
             else:
