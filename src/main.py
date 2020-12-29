@@ -147,6 +147,11 @@ async def check_rank_rewards():
 async def on_ready():
     change_status.start()
     check_rank_rewards.start()
+    load_settings()
+
+def load_settings():
+    settings.announcement_channel = bot.get_channel(settings.announcement_channel)
+    settings.shiny_hunt_log_channel = bot.get_channel(settings.shiny_hunt_log_channel)
 
 def setup_logging():
     logFolder = '../logs'

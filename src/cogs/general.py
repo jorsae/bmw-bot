@@ -250,6 +250,9 @@ class General(commands.Cog):
         channel = self.bot.get_channel(742567116343083019)
         msg = await channel.fetch_message(786032117293383710) #poke-shiny_hunt
         await cog_help.update_shiny_hunt(msg)
+
+        # Update #shiny_hunt_update
+        await self.settings.shiny_hunt_log_channel.send(f'{username} changed shiny hunt to {string.capwords(shiny_hunt)}')
         
     @commands.command(name='guild', help='Displays guilds')
     async def guild(self, ctx):
