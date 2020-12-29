@@ -98,7 +98,7 @@ async def on_message(message: discord.Message):
     await bot.process_commands(message)
 
 async def process_on_triggers(message):
-    if message.content.startswith(f'{constants.DEFAULT_PREFIX}afk'):
+    if message.content.startswith(f'$afk'):
         return
 
     is_afk = query.get_is_afk_by_discordid(message.author.id)
@@ -147,11 +147,13 @@ async def check_rank_rewards():
 async def on_ready():
     change_status.start()
     check_rank_rewards.start()
-    load_settings()
+    preload_discord_settings()
 
-def load_settings():
+def preload_discord_settings():
     settings.announcement_channel = bot.get_channel(settings.announcement_channel)
     settings.shiny_hunt_log_channel = bot.get_channel(settings.shiny_hunt_log_channel)
+    for guild_id in constants.BMW_SERVERS:
+        constants.LOADED_BMW_SERVERS.append(bot.get_guild(guild_id))
 
 def setup_logging():
     logFolder = '../logs'

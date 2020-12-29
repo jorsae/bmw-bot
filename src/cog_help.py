@@ -32,8 +32,7 @@ async def update_afk_status(bot, author_id, is_afk):
     try:
         query.set_afk(author_id, is_afk)
         
-        for guild_id in constants.BMW_SERVERS:
-            guild = bot.get_guild(guild_id)
+        for guild in constants.LOADED_BMW_SERVERS:
             user = await guild.fetch_member(author_id)
             if user is None:
                 break
