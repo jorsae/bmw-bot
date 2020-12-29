@@ -42,8 +42,7 @@ class Poketwo():
             # Ensure User is in database
             user_id = UserModel.select(UserModel.user_id).where(UserModel.discord_id == discord_id).scalar()
             if user_id is None:
-                print('user_id is None')
-                discord_user = await self.bot.fetch_user(user_id)
+                discord_user = await self.bot.fetch_user(discord_id)
                 username = f'{discord_user.name}#{discord_user.discriminator}'
                 user, created = UserModel.get_or_create(discord_id=discord_user.id, username=username)
                 user_id = user.user_id
