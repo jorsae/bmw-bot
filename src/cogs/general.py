@@ -292,6 +292,13 @@ class General(commands.Cog):
         await cog_help.update_afk_status(self.bot, author.id, False)
         await msg.edit(content=f'<@{ctx.message.author.id}> afk status removed')
     
+    @commands.command(name='updateme', help='Automatically updates your discord name for the bot. This is only applicable if you changed it with discord nitro.')
+    async def updateme(self, ctx):
+        author = ctx.message.author
+        username = f'{author.name}#{author.discriminator}'
+        updated = query.update_username(author.id, username)
+        await ctx.send(f'Updated: {updated}')
+
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
         start = time.monotonic()

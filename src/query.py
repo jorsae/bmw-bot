@@ -198,6 +198,22 @@ def get_pokemon_caught(alltime=False):
         logging.critical(f'get_pokemon_caught: {e}')
         return 0
 
+        (UserModel
+            .update(is_afk = is_afk)
+            .where(UserModel.discord_id == discord_id)
+        ).execute()
+
+def update_username(discord_id, username):
+    try:
+        (UserModel
+            .update(username = username)
+            .where(UserModel.discord_id == discord_id)
+        ).execute()
+        return True
+    except Exception as e:
+        logging.critical(f'update_username: {e} | {discord_id}')
+        return False
+
 def create_user(discord_id, username, shiny_hunt=None):
     try:
         # Ensure User is in database
