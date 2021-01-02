@@ -251,7 +251,6 @@ class General(commands.Cog):
         msg = await channel.fetch_message(786032117293383710) #poke-shiny_hunt
         await cog_help.update_shiny_hunt(msg)
 
-        print('shiny_hunt none')
         # Update #shiny_hunt_update
         if shiny_hunt is None:
             await self.settings.shiny_hunt_log_channel.send(f'{username} stopped shiny hunt.')
