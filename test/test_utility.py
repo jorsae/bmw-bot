@@ -1,6 +1,7 @@
 import pytest
 import sys
 sys.path.append('src')
+import constants
 import utility
 from enumeration import HallOfFame
 
@@ -19,6 +20,14 @@ def test_get_hof_emote():
     
     shiny = utility.get_hof_emote(HallOfFame.shiny)
     assert(shiny) == '<:HofShiny:779250293849587743>'
+
+def test_get_rank_by_page():
+    page1 = utility.get_rank_by_page(1)
+    assert(page1 == 10)
+    page2 = utility.get_rank_by_page(2)
+    assert(page2 == 20)
+    page9 = utility.get_rank_by_page(9)
+    assert(page9 == 90)
 
 def test_str_to_int():
     assert(utility.str_to_int(10) == 10)
