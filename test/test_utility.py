@@ -28,6 +28,9 @@ def test_get_rank_by_page():
     assert(page2 == 20)
     page9 = utility.get_rank_by_page(9)
     assert(page9 == 90)
+    
+    page_neg2 = utility.get_rank_by_page(-2)
+    assert(page_neg2 == -20)
 
 def test_str_to_int():
     assert(utility.str_to_int(10) == 10)
