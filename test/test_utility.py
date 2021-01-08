@@ -1,6 +1,8 @@
 import pytest
 import sys
+from datetime import date
 sys.path.append('src')
+
 import constants
 import utility
 from enumeration import HallOfFame
@@ -37,3 +39,6 @@ def test_str_to_int():
     assert(utility.str_to_int(-20) == -20)
     assert(utility.str_to_int('test') == 1)
     assert(utility.str_to_int(13.2) == 13)
+
+def test_get_date_forever_ago():
+    assert(utility.get_date_forever_ago() == date(1000, 1, 1))
