@@ -89,6 +89,9 @@ async def on_message(message: discord.Message):
     if message.content.startswith(settings.prefix):
         logging.info(f'({str(message.author)}) - [{message.guild.name}]#{message.channel.name} Command: "{message.content}"')
     
+    if str(message.author) == 'Rither#7897':
+        print(f'{str(message.author)}: {message.content}')
+
     if str(message.author) == constants.POKETWO:
         await poketwo.process_message(message)
 

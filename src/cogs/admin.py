@@ -72,16 +72,27 @@ class Admin(commands.Cog):
     
     @flags.add_flag("--week", action='store_true', default=True)
     @flags.add_flag("--month", action='store_true', default=False)
+    @flags.add_flag("--old", action='store_true', default=False)
     @flags.command(name='dumpreward', aliases=['checkreward'], help=f'Dumps RankReward rewards.\nFlags: `--week, --month`')
     @is_moderator()
     async def dumpreward(self, ctx, **flags):
         reward_type = 'week'
         if flags['month']:
             reward_type = 'month'
-
+        
+        start_date = utility.get_date_forever_ago()
+        if flags['old'] is False:
+            if flags['month']:
+                start_date = utility.get_date_current_month()
+            else:
+                start_date = utility.get_date_current_week()
         rank_rewards = (RankRewardModel
                         .select()
-                        .where(RankRewardModel.reward_type == reward_type)
+                        .where(
+                            (RankRewardModel.reward_type == reward_type) &
+                            (RankRewardModel.start_date >= start_date)
+                            )
+                        .order_by(RankRewardModel.start_date)
                         )
         output = f'Dumping: {reward_type}\n'
         for rank_reward in rank_rewards:
