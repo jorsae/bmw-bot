@@ -305,6 +305,10 @@ class General(commands.Cog):
         else:
             await ctx.send('Error updating your username. Please let Rither know.')
 
+    @commands.command(name='record', help='Records your catches in a timeframe to track your catches/min')
+    async def record(self, ctx):
+        pass
+
     @commands.command(name='ping', help="Checks the bot's latency")
     async def ping(self, ctx):
         start = time.monotonic()
