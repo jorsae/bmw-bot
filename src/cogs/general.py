@@ -19,6 +19,7 @@ class General(commands.Cog):
     def __init__(self, bot, settings):
         self.bot = bot
         self.settings = settings
+        self.record_list = []
     
     @commands.command(name='medal', aliases=['m', 'medals'], help=f'Displays list of all available medals')
     async def medals(self, ctx):
@@ -307,6 +308,8 @@ class General(commands.Cog):
 
     @commands.command(name='record', help='Records your catches in a timeframe to track your catches/min')
     async def record(self, ctx):
+        id = f'{ctx.message.author.id}'
+        # TODO: get total catches
         pass
 
     @commands.command(name='ping', help="Checks the bot's latency")
