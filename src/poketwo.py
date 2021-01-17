@@ -11,30 +11,47 @@ class Poketwo():
     def __init__(self, bot, settings):
         self.bot = bot
         self.settings = settings
-
+    
     async def process_message(self, message):
+        embeds = message.embeds # return list of embeds
+        if len(embeds) == 1:
+            title = embeds[0].title.lower()
+            await self.process_fled_pokemon(title)
+            return
+
         if message.content is None:
+            print('message.content is None')
             return
         
+        if 'caught' in message.content:
+            await self.process_catch(message)
+
+    async def process_fled_pokemon(self, title):
+        if 'fled' in title:
+            pokemon = title[5:-39]
+            print(f'{pokemon} | {title}')
+
+    async def process_catch(self, message):
         content = message.content.lower()
-        if 'you caught a level' in content:
-            discord_id, pokemon = await self.get_discordid_pokemon(content)
-            if discord_id is None or pokemon is None:
-                logging.critical(f'poketwo.process_message: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
-                return
-            
-            # Handle rarity count
-            rarity = self.get_rare_definition(pokemon)
+        print(content)
 
-            # Handle shiny count
-            is_shiny = self.pokemon_is_shiny(content)
-            if rarity is not None:
-                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_id}]: found rare: ({rarity} / {pokemon}): {content}')
-            if is_shiny:
-                logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_id}]: found shiny: ({pokemon}): {content}')
+        discord_id, pokemon = await self.get_discordid_pokemon(content)
+        if discord_id is None or pokemon is None:
+            logging.critical(f'poketwo.process_message: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
+            return
+        
+        # Handle rarity count
+        rarity = self.get_rare_definition(pokemon)
 
-            await self.add_pokemon(discord_id, rarity, is_shiny)
-            self.add_pokemon_catch(pokemon)
+        # Handle shiny count
+        is_shiny = self.pokemon_is_shiny(content)
+        if rarity is not None:
+            logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_id}]: found rare: ({rarity} / {pokemon}): {content}')
+        if is_shiny:
+            logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_id}]: found shiny: ({pokemon}): {content}')
+
+        await self.add_pokemon(discord_id, rarity, is_shiny)
+        self.add_pokemon_catch(pokemon)
 
     async def add_pokemon(self, discord_id, rarity, is_shiny):
         today = datetime.now().date()
