@@ -29,12 +29,11 @@ class Poketwo():
     async def process_fled_pokemon(self, title):
         if 'fled' in title:
             pokemon = title[5:-39]
-            print(f'{pokemon} | {title}')
+            query.add_pokemon_fled(pokemon)
 
     async def process_catch(self, message):
         content = message.content.lower()
-        print(content)
-
+        
         discord_id, pokemon = await self.get_discordid_pokemon(content)
         if discord_id is None or pokemon is None:
             logging.critical(f'poketwo.process_message: discord_id: {discord_id}, pokemon: {pokemon}. {content}')
@@ -51,7 +50,7 @@ class Poketwo():
             logging.info(f'[{message.guild.name}]#{message.channel.name} - [{discord_id}]: found shiny: ({pokemon}): {content}')
 
         await self.add_pokemon(discord_id, rarity, is_shiny)
-        self.add_pokemon_catch(pokemon)
+        query.add_pokemon_catch(pokemon)
 
     async def add_pokemon(self, discord_id, rarity, is_shiny):
         today = datetime.now().date()
@@ -63,7 +62,6 @@ class Poketwo():
                 username = f'{discord_user.name}#{discord_user.discriminator}'
                 user, created = UserModel.get_or_create(discord_id=discord_user.id, username=username)
                 user_id = user.user_id
-
             # Ensure UserStatModel object exist for user today
             userstat, created = UserStatModel.get_or_create(date=today, user_id=user_id)
             
@@ -92,21 +90,6 @@ class Poketwo():
             )
         except Exception as e:
             logging.critical(f'add_pokemon: {e} | discord_id: {discord_id}, rarity: {rarity}, is_shiny: {is_shiny}')
-
-    def add_pokemon_catch(self, pokemon):
-        try:
-            pokemon, _ = PokemonModel.get_or_create(pokemon=pokemon)
-            (PokemonModel
-                .update(
-                    catches=PokemonModel.catches + 1
-                    )
-                .where(
-                    PokemonModel.pokemon == pokemon
-                    )
-                .execute()
-            )
-        except Exception as e:
-            logging.critical(f'add_pokemon_catch: {e}')
 
     # Gets the rarity description for a given pokemon. e.g: legendary, mythical
     def get_rare_definition(self, pokemon):

@@ -150,6 +150,38 @@ def get_top_attribute_desc(attribute, amount, page, after_date):
             .paginate(page, amount)
             )
 
+# Pokemon was caught, added to database
+def add_pokemon_catch(pokemon):
+    try:
+        pokemon, _ = PokemonModel.get_or_create(pokemon=pokemon)
+        (PokemonModel
+            .update(
+                catches=PokemonModel.catches + 1
+                )
+            .where(
+                PokemonModel.pokemon == pokemon
+                )
+            .execute()
+        )
+    except Exception as e:
+        logging.critical(f'add_pokemon_catch: {e}')
+
+# Pokemon fled, added to database
+def add_pokemon_fled(pokemon):
+    try:
+        pokemon, _ = PokemonModel.get_or_create(pokemon=pokemon)
+        (PokemonModel
+            .update(
+                fled=PokemonModel.fled + 1
+                )
+            .where(
+                PokemonModel.pokemon == pokemon
+                )
+            .execute()
+        )
+    except Exception as e:
+        logging.critical(f'add_pokemon_fled: {e}')
+
 # Adds a pokemon to the rarity definition
 def add_rare_definition(pokemon, rarity):
     try:
