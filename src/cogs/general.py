@@ -74,7 +74,7 @@ class General(commands.Cog):
     @flags.add_flag('--desc', action='store_true', default=True)
     @flags.add_flag('--asc', action='store_true', default=False)
     @flags.add_flag("pokemon", nargs="*", type=str, default=None)
-    @flags.command(name="catch", aliases=['c'], help=f'Displays times a pokémon has been caught.\n`Usage: {constants.DEFAULT_PREFIX}catch <pokemon name> [Flags]`\nFlags: `--desc, --asc`')
+    @flags.command(name='catch', aliases=['c'], help=f'Displays times a pokémon has been caught.\n`Usage: {constants.DEFAULT_PREFIX}catch <pokemon name> [Flags]`\nFlags: `--desc, --asc`')
     async def catch(self, ctx, **flags):
         pokemon = flags["pokemon"]
 
@@ -88,8 +88,11 @@ class General(commands.Cog):
             
             try:
                 pokemon = PokemonModel.get(PokemonModel.pokemon == pokemon)
-                time = 'time' if pokemon.catches <= 1 else 'times'
-                await ctx.send(f'**{string.capwords(pokemon.pokemon)}** has been caught {pokemon.catches:,} {time}!')
+                time_catches = 'time' if pokemon.catches <= 1 else 'times'
+                time_fled = 'time' if pokemon.fled == 1 else 'times'
+                embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
+                embed.add_field(name=f'**{string.capwords(pokemon.pokemon)} stats**', value=f'**Caught: **{pokemon.catches:,} {time_catches}\n**Fled: **{pokemon.fled:,} {time_fled}')
+                await ctx.send(embed=embed)
             except DoesNotExist:
                 await ctx.send(f'**{string.capwords(pokemon)}** has yet to be caught!')
             except Exception as e:
