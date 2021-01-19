@@ -20,7 +20,6 @@ class Poketwo():
             return
 
         if message.content is None:
-            print('message.content is None')
             return
         
         if 'caught' in message.content:
@@ -29,6 +28,12 @@ class Poketwo():
     async def process_fled_pokemon(self, title):
         if 'fled' in title:
             pokemon = title[5:-39]
+            if '♀️' in pokemon:
+                logging.error('♀️ in pokemon.changing to "nidoran-f"')
+                pokemon = 'nidoran-f'
+            elif '♂️' in pokemon:
+                logging.error('♀️ in pokemon.changing to "nidoran-m"')
+                pokemon = 'nidoran-m'
             query.add_pokemon_fled(pokemon)
 
     async def process_catch(self, message):
