@@ -71,6 +71,7 @@ class General(commands.Cog):
             embed = discord.Embed(colour=constants.COLOUR_ERROR, title=f'Oops, something went wrong')
             await ctx.send(embed=embed)
     
+    @flags.add_flag('--fled', action='store_true', default=False)
     @flags.add_flag('--desc', action='store_true', default=True)
     @flags.add_flag('--asc', action='store_true', default=False)
     @flags.add_flag("pokemon", nargs="*", type=str, default=None)
@@ -101,13 +102,16 @@ class General(commands.Cog):
             return
 
         descending = False if flags["asc"] else True
+        order_attribute = PokemonModel.catches
+        if flags['fled']:
+            order_attribute = PokemonModel.fled
         try:
             current_page = 1
             total_pokemon = PokemonModel.select(fn.COUNT()).scalar()
             max_page = math.ceil(total_pokemon / constants.ITEMS_PER_PAGE)
             
-            pokemon_catches = query.get_top_pokemon_catches(constants.ITEMS_PER_PAGE, current_page, descending)
-            message = await ctx.send(embed=cog_help.catch_embed(pokemon_catches, current_page, max_page, descending))
+            pokemon_catches = query.get_top_pokemon_catches(order_attribute, constants.ITEMS_PER_PAGE, current_page, descending)
+            message = await ctx.send(embed=cog_help.catch_embed(pokemon_catches, current_page, max_page, descending, flags['fled']))
             await message.add_reaction("◀️")
             await message.add_reaction("▶️")
 
@@ -124,8 +128,8 @@ class General(commands.Cog):
                 elif str(reaction.emoji) == "◀️" and current_page > 1:
                     current_page -= 1
                 
-                pokemon_catches = query.get_top_pokemon_catches(constants.ITEMS_PER_PAGE, current_page, descending)
-                await message.edit(embed=cog_help.catch_embed(pokemon_catches, current_page, max_page, descending))
+                pokemon_catches = query.get_top_pokemon_catches(order_attribute, constants.ITEMS_PER_PAGE, current_page, descending)
+                await message.edit(embed=cog_help.catch_embed(pokemon_catches, current_page, max_page, descending, flags['fled']))
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:
             pass

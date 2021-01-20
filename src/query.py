@@ -124,10 +124,10 @@ def get_medallist(amount, page):
             )
 
 # Gets top most caught pokemon
-def get_top_pokemon_catches(amount, page, descending=True):
-    order = PokemonModel.catches.desc()
+def get_top_pokemon_catches(attribute, amount, page, descending=True):
+    order = attribute.desc()
     if descending is False:
-        order = PokemonModel.catches
+        order = attribute
     
     return (PokemonModel
             .select()

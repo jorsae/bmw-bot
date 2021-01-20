@@ -110,13 +110,16 @@ def get_level(author):
         return 0
 
 # Helper function to create embed for 'catch'
-def catch_embed(pokemon_catches, current_page, max_page, descending):
+def catch_embed(pokemon_catches, current_page, max_page, descending, fled):
     embed = discord.Embed(colour=constants.COLOUR_NEUTRAL)
     output_value = ''
     
     rank = utility.get_rank_by_page(current_page) - constants.ITEMS_PER_PAGE + 1
     for pokemon_catch in pokemon_catches:
-        output_value += f'**{rank}. {string.capwords(pokemon_catch.pokemon)}: **{pokemon_catch.catches}\n'
+        if fled:
+            output_value += f'**{rank}. {string.capwords(pokemon_catch.pokemon)}: **{pokemon_catch.fled} fled\n'
+        else:
+            output_value += f'**{rank}. {string.capwords(pokemon_catch.pokemon)}: **{pokemon_catch.catches} catches\n'
         rank += 1
     
     order = 'descending' if descending else 'ascdending'
