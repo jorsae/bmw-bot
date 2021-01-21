@@ -60,6 +60,12 @@ def get_sum(user_id):
                 )
             )
 
+def get_sum_fled():
+    return (PokemonModel
+            .select(fn.SUM(PokemonModel.fled))
+            .scalar()
+            )
+
 # Returns list of all username who matches the max(value) of a certain attribute
 def get_username_by_stat(attribute, value):
     users = []

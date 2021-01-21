@@ -137,6 +137,11 @@ class Ranking(commands.Cog):
             mythical = query.get_total_sum_after_date(UserStatModel.mythical, date_stamp)
             ultrabeast = query.get_total_sum_after_date(UserStatModel.ultrabeast, date_stamp)
             shiny = query.get_total_sum_after_date(UserStatModel.shiny, date_stamp)
+            
+            fled_string = ''
+            if time_flag == TimeFlag.ALL:
+                total_fled = query.get_sum_fled()
+                fled_string = f'**Total pokémon fled: **{total_fled:,}\n'
 
             total_rares = legendary + mythical + ultrabeast
 
@@ -146,7 +151,7 @@ class Ranking(commands.Cog):
             
             title, author = utility.get_title_author_by_timeflag(time_flag)
             
-            embed.add_field(name=f'BMW pokémon stats [{str(title)}]', value=f'**Total pokémon caught: **{total_caught:,}\n**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}%')
+            embed.add_field(name=f'BMW pokémon stats [{str(title)}]', value=f'**Total pokémon caught: **{total_caught:,}\n{fled_string}**Total rare pokémon: **{total_rares:,}\n**Percentage rare pokémon: **{percent_rare}%\n**Total shiny pokémon: **{shiny:,}\n**Percentage shiny pokémon: **{percent_shiny}%')
             if time_flag is TimeFlag.ALL:
                 now = datetime.now()
                 days = (date(now.year, now.month, now.day) - self.settings.start_date).days
