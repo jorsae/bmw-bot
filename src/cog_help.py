@@ -116,14 +116,13 @@ def catch_embed(pokemon_catches, current_page, max_page, descending, fled):
     
     rank = utility.get_rank_by_page(current_page) - constants.ITEMS_PER_PAGE + 1
     for pokemon_catch in pokemon_catches:
-        if fled:
-            output_value += f'**{rank}. {string.capwords(pokemon_catch.pokemon)}: **{pokemon_catch.fled} fled\n'
-        else:
-            output_value += f'**{rank}. {string.capwords(pokemon_catch.pokemon)}: **{pokemon_catch.catches} catches\n'
+        stat = pokemon_catch.fled if fled else pokemon_catch.catches
+        output_value += f'**{rank}. {string.capwords(pokemon_catch.pokemon)}: **{stat}\n'
         rank += 1
     
     order = 'descending' if descending else 'ascdending'
-    embed.add_field(name=f'Most caught pokemon [{order}]', value=output_value)
+    poke_verb = 'fled' if fled else 'caught'
+    embed.add_field(name=f'Most {poke_verb} pokemon [{order}]', value=output_value)
     embed.set_footer(text=f'Page: {current_page}/{max_page}')
     return embed
 
