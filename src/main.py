@@ -95,6 +95,9 @@ async def on_message(message: discord.Message):
     if str(message.author) != settings.discord_bot:
         await process_on_triggers(message)
     
+    if message.author == 710897590631137332:
+        return
+    
     await bot.process_commands(message)
 
 async def process_on_triggers(message):
