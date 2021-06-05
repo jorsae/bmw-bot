@@ -4,7 +4,7 @@ import re
 # Bot settings
 RARE_DEFINITION_FOLDER = './src/RareDefinition'
 DEFAULT_PREFIX = "."
-DATABASE_FILE = "../production.db"
+DATABASE_FILE = "../production.sql"
 POKETWO = 'Pokétwo#8236'
 
 # Bot preferences
