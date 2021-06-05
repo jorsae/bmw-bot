@@ -69,6 +69,7 @@ async def fix_new_roles(bot, guild, author_id, shiny_hunt, old_shiny_hunt):
 
         # Delete or remove role from user, if other people also have the role
         old_role = get(guild.roles, name=old_shiny_hunt)
+        logging.info(f'fix_new_roles: [{author_id}] {old_shiny_hunt} -> {shiny_hunt}\n{old_role}')
         if old_role is not None:
             if len(old_role.members) <= 1:
                 await old_role.delete()
@@ -89,6 +90,7 @@ async def fix_new_roles(bot, guild, author_id, shiny_hunt, old_shiny_hunt):
         return output
     except discord.HTTPException as http_exception:
         if str(http_exception).startswith('404'):
+            logging.error(f'fix_new_roles(discord.HTTPException): {http_exception}')
             return None
         logging.critical(f'fix_new_roles(discord.HTTPException): {http_exception}')
         return None
