@@ -177,14 +177,24 @@ class Admin(commands.Cog):
             rank_rewards = RankRewards(self.bot, self.settings)
             await rank_rewards.give_monthly(start_date)
     
+    @commands.command(name='user', help='Displays display name, based on discord id.\nUsage: `.user <discord_id>`')
+    @is_moderator()
+    async def user(self, ctx, discord_id):
+        try:
+            user = UserModel.get(UserModel.discord_id == discord_id)
+            await ctx.send(f'**{user.username}:** {shiny_hunt}, afk: {is_afk}')
+        except Exception as e:
+            logging.error(f'{e}')
+            await ctx.send('Failed to get user. See logging.')
+
     @commands.command(name='aprofile', help='Displays a users profile.\nUsage: `.aprofile <discord_id>`')
     @is_moderator()
-    async def aprofile(self, ctx, user_id, **flags):
+    async def aprofile(self, ctx, discord_id, **flags):
         page = 1
         max_page = 3
         try:
             current_page = page
-            user = UserModel.get(UserModel.discord_id == user_id)
+            user = UserModel.get(UserModel.discord_id == discord_id)
 
             embed = profile.get_profile_page(ctx, user, current_page, max_page, **flags)
             
