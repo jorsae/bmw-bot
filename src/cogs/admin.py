@@ -182,7 +182,7 @@ class Admin(commands.Cog):
     async def user(self, ctx, discord_id):
         try:
             user = UserModel.get(UserModel.discord_id == discord_id)
-            await ctx.send(f'**{user.username}:** {shiny_hunt}, afk: {is_afk}')
+            await ctx.send(f'**{user.username}:** {user.shiny_hunt}, afk: {user.is_afk}')
         except Exception as e:
             logging.error(f'{e}')
             await ctx.send('Failed to get user. See logging.')
