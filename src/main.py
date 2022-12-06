@@ -21,10 +21,11 @@ from settings import Settings
 import cogs
 
 settings = Settings('../settings.json')
-intents = discord.Intents.default()
-intents.members = True
+# intents = discord.Intents.default()
+# intents.members = True
 
-bot = discord_commands.Bot(command_prefix=discord_commands.when_mentioned_or(constants.DEFAULT_PREFIX), intents=intents)
+# bot = discord_commands.Bot(command_prefix=discord_commands.when_mentioned_or(constants.DEFAULT_PREFIX), intents=intents)
+bot = discord_commands.Bot(command_prefix=discord_commands.when_mentioned_or(constants.DEFAULT_PREFIX))
 bot.remove_command('help')
 
 rank_rewards = RankRewards(bot, settings)
